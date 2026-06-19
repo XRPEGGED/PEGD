@@ -1,0 +1,5 @@
+Contact: mailto:xrpegged@proton.me
+Preferred-Languages: en
+Canonical: https://pegd.org/.well-known/security.txt
+Policy: https://pegd.org
+Acknowledgments: XRPEGGED responsible disclosure — report commerce, wallet, or PII issues before public disclosure.

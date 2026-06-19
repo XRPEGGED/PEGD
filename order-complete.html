@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="0;url=/order-status.html">
+  <title>Redirecting…</title>
+  <script>
+    const q = new URLSearchParams(window.location.search)
+    if (!q.has('new')) q.set('new', '1')
+    window.location.replace(`/order-status.html?${q.toString()}`)
+  </script>
+</head>
+<body>
+  <p><a href="/order-status.html">Continue to your order</a></p>
+</body>
+</html>

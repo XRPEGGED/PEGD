@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a1a">
+  <meta name="robots" content="noindex, nofollow">
+  <title>XRPEGGED Portal</title>
+  <style>
+    :root {
+      --bg: #0a0a1a; --card: #13132e; --neon: #00f5ff; --neon2: #9945ff;
+      --gold: #f0b90b; --text: #e0e0ff; --muted: #7070a0; --border: rgba(0,245,255,0.18);
+      --ok: #34d399; --warn: #fbbf24;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif; background: var(--bg); color: var(--text);
+      min-height: 100dvh; padding: max(14px, env(safe-area-inset-top)) 14px 24px;
+    }
+    h1 { font-size: 1.1rem; color: var(--neon); }
+    .sub { color: var(--muted); font-size: 0.8rem; margin: 4px 0 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+    .btn {
+      display: block; width: 100%; margin-top: 10px; padding: 14px; border: none; border-radius: 10px;
+      font-weight: 800; font-size: 0.9rem; cursor: pointer;
+    }
+    .btn-xumm { background: linear-gradient(135deg, #0052ff, #0039b3); color: #fff; }
+    .btn-phantom { background: linear-gradient(135deg, var(--neon2), #7c3aed); color: #fff; }
+    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+    .err { color: #f87171; font-size: 0.82rem; margin-top: 10px; }
+    .okmsg { color: var(--ok); font-size: 0.82rem; margin-top: 10px; }
+    .metric { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .metric div { background: rgba(0,0,0,0.25); border-radius: 10px; padding: 10px; }
+    .metric .l { font-size: 0.68rem; color: var(--muted); }
+    .metric .v { font-size: 0.95rem; font-weight: 800; margin-top: 2px; }
+    ul { list-style: none; font-size: 0.86rem; }
+    li { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .dir-item { display: flex; align-items: flex-start; gap: 8px; }
+    .dir-controls { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+    .dir-btn {
+      border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: var(--text);
+      border-radius: 6px; width: 28px; height: 24px; cursor: pointer; font-size: 0.75rem; padding: 0;
+    }
+    .dir-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .dir-label { flex: 1; line-height: 1.35; }
+    .hidden { display: none; }
+    a { color: var(--neon); }
+    #xumm-qr { max-width: 220px; margin: 12px auto; display: block; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div id="gate">
+    <h1>XRPEGGED Portal</h1>
+    <p class="sub">Wallet sign-in only · allowlisted addresses</p>
+    <div class="card">
+      <p style="font-size:0.88rem;color:var(--muted);">Sign with <strong style="color:var(--text)">Xaman</strong> (XRPL) or <strong style="color:var(--text)">Phantom</strong> (Solana). No password. No public data.</p>
+      <button type="button" class="btn btn-xumm" id="xumm-btn">🔵 Sign in with Xaman</button>
+      <button type="button" class="btn btn-phantom" id="phantom-btn">🟣 Sign in with Phantom</button>
+      <img id="xumm-qr" class="hidden" alt="Xumm QR">
+      <p id="gate-msg" class="err hidden"></p>
+    </div>
+    <p class="sub"><a href="/">← pegd.org</a></p>
+  </div>
+
+  <div id="dash" class="hidden">
+    <h1>Command HUD</h1>
+    <p class="sub" id="who">—</p>
+    <div class="card" id="directives-board">
+      <p class="sub" style="margin:0 0 8px;">SPRINT · HOLDERS CAN REORDER</p>
+      <p id="phase" style="color:var(--gold);font-weight:700;"></p>
+      <ul data-directives-sprint id="sprint"></ul>
+      <p class="sub" style="margin:12px 0 8px;">BACKLOG</p>
+      <ul data-directives-backlog id="backlog"></ul>
+      <p class="sub" data-directives-meta id="directives-meta" style="margin-top:10px;"></p>
+    </div>
+    <div class="card">
+      <p class="sub" style="margin:0 0 8px;">LIVE</p>
+      <div class="metric" id="metrics"></div>
+    </div>
+
+    <!-- Shipping Terminal - surfaces automatically for Chairman if pending fulfillment work -->
+    <div class="card" id="shipping-terminal-card" style="display: none; border: 2px solid var(--gold);">
+      <p class="sub" style="margin:0 0 8px; color: var(--gold); font-weight:700;">🚢 SHIPPING TERMINAL</p>
+      <div id="pending-shipments-list"></div>
+      <a href="/command.html" style="font-weight:700;display:block;margin-top:8px;">Open full Command Portal (Orders tab) →</a>
+    </div>
+
+    <div class="card">
+      <a href="/command.html" style="font-weight:700;display:block;margin-bottom:8px;">Open Command Portal →</a>
+      <a href="https://xrpegged-market.xrpegged.workers.dev/proof" style="font-weight:700;">Open Proof of Worth →</a>
+      <button type="button" class="btn btn-ghost" id="logout-btn">Sign out</button>
+      <p class="sub" id="updated" style="margin-top:10px;"></p>
+    </div>
+  </div>
+
+  <script src="/js/portal-auth.js"></script>
+  <script src="/js/directives-board.js"></script>
+  <script src="/js/portal-dashboard.js" defer></script>
+  <script src="/js/officer-sidecar.js" defer></script>
+</body>
+</html>

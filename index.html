@@ -1,0 +1,1842 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XRPEGGED — The PEGD Token | PEGD Market</title>
+  <meta name="description" content="PEGD — Solana SPL token powering PEGD Market marketplace. USD-priced goods, direct wallet checkout (PEGD preferred). XRP treasury on XRPL for verifiable reserves. Cross-chain via Wormhole.">
+  <meta name="keywords" content="XRPEGGED, PEGD, XRP, Solana, crypto token, XRP market, DeFi, treasury, pegged token">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="XRPEGGED — The PEGD Token">
+  <meta property="og:description" content="PEGD on Solana. PEGD Market marketplace — USD-priced goods, direct wallet checkout. XRP treasury on XRPL for on-chain reserves proof.">
+  <meta property="og:image" content="https://placehold.co/1200x630/0a0a1a/00f5ff?text=XRPEGGED">
+  <meta property="og:url" content="https://pegd.org">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="XRPEGGED — The PEGD Token">
+  <meta name="twitter:description" content="PEGD on Solana. PEGD Market marketplace — USD-priced goods, direct wallet checkout. XRP treasury on XRPL for on-chain reserves proof.">
+  <meta name="twitter:image" content="https://placehold.co/1200x630/0a0a1a/00f5ff?text=XRPEGGED">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230a0a1a' stroke='%2300f5ff' stroke-width='4'/%3E%3Ctext x='50' y='62' font-family='Arial' font-weight='bold' font-size='36' fill='%2300f5ff' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #0a0a1a;
+      --bg2: #0d0d22;
+      --bg3: #111130;
+      --neon: #00f5ff;
+      --neon2: #9945ff;
+      --gold: #f0b90b;
+      --text: #e0e0ff;
+      --muted: #7070a0;
+      --card: #13132e;
+      --border: rgba(0,245,255,0.15);
+      --radius: 12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,26,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .logo {
+      font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px;
+      color: var(--neon); text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .brand-word { color: var(--neon); white-space: nowrap; }
+    .brand-word .brand-accent { color: var(--neon2); }
+    .logo-badge {
+      background: var(--neon); color: var(--bg);
+      font-size: 0.6rem; font-weight: 800; padding: 2px 6px;
+      border-radius: 4px; letter-spacing: 1px;
+    }
+    nav { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    nav a {
+      color: var(--muted); text-decoration: none; font-size: 0.9rem;
+      font-weight: 500; transition: color 0.2s;
+    }
+    nav a:hover { color: var(--neon); }
+    .nav-cta {
+      background: var(--neon); color: var(--bg) !important;
+      padding: 8px 18px; border-radius: 8px; font-weight: 700 !important;
+      font-size: 0.85rem !important;
+    }
+    .nav-cta:hover { background: #00d4e0 !important; color: var(--bg) !important; }
+    .nav-unlock { display: none; }
+
+    /* ── CHAIRMAN WALLET SIGN-IN (unlocks Officers + Command HUD) ── */
+    .holders-gated { display: block; }
+    #holders { padding: 5rem 2rem; background: var(--bg2); }
+    .holders-card {
+      max-width: 520px; margin: 0 auto; text-align: center;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2.5rem 2rem;
+    }
+    .holders-card h2 { font-size: 1.6rem; margin-bottom: 0.5rem; }
+    .holders-card p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .holders-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .btn-connect {
+      display: inline-block; padding: 0.9rem 1.75rem; border-radius: 10px;
+      background: linear-gradient(135deg, var(--neon2), #7c3aed);
+      color: #fff; font-weight: 800; font-size: 0.95rem; border: none; cursor: pointer;
+    }
+    .btn-connect:hover { filter: brightness(1.08); }
+    .btn-connect.xumm {
+      margin-top: 0.75rem;
+      background: linear-gradient(135deg, #1a6bff, #0047e1);
+    }
+    #directives-board .dir-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    #directives-board .dir-controls { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+    #directives-board .dir-btn {
+      border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: var(--text);
+      border-radius: 6px; width: 28px; height: 24px; cursor: pointer; font-size: 0.75rem; padding: 0;
+    }
+    #directives-board .dir-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    #directives-board .dir-label { flex: 1; line-height: 1.35; }
+    .holders-actions { display: flex; flex-direction: column; gap: 0.5rem; align-items: stretch; }
+    .holders-divider {
+      font-size: 0.75rem; color: var(--muted); margin: 0.75rem 0 0.25rem;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .xumm-qr {
+      margin: 1rem auto 0; max-width: 220px; border-radius: 10px;
+      border: 1px solid var(--border); display: none;
+    }
+    .xumm-qr.visible { display: block; }
+    .holders-status { margin-top: 1rem; font-size: 0.82rem; color: var(--muted); min-height: 1.2rem; }
+    .holders-status.ok { color: var(--neon); }
+    .holders-status.err { color: #ff6b8a; }
+    .holders-wallet {
+      margin-top: 0.75rem; font-size: 0.72rem; color: var(--muted);
+      word-break: break-all; display: none;
+    }
+    body.holders-unlocked .holders-wallet { display: block; }
+    .hero-stat-gated { display: block; }
+    .public-teaser {
+      max-width: 640px; margin: 0 auto 2rem; color: var(--muted); font-size: 0.95rem;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 6rem 2rem 4rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero-glow {
+      position: absolute; top: 20%; left: 50%; transform: translateX(-50%);
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,245,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-glow2 {
+      position: absolute; bottom: 10%; right: 10%;
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(153,69,255,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 800px; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,245,255,0.08); border: 1px solid var(--border);
+      color: var(--neon); font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      padding: 6px 16px; border-radius: 100px; margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    h1 {
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      font-weight: 900; line-height: 1.05; letter-spacing: -2px;
+      margin-bottom: 1rem;
+    }
+    h1 .brand-word { color: var(--neon); letter-spacing: -2px; }
+    h1 .brand-word .brand-accent { color: var(--neon2); }
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--muted); max-width: 600px; margin: 0 auto 2.5rem;
+    }
+    .hero-sub strong { color: var(--text); }
+    .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--neon), #0099aa);
+      color: var(--bg); font-weight: 800; font-size: 1rem;
+      padding: 14px 32px; border-radius: 10px; text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 24px rgba(0,245,255,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(0,245,255,0.5); }
+    .btn-secondary {
+      background: transparent; color: var(--neon);
+      border: 1px solid var(--neon); font-weight: 700; font-size: 1rem;
+      padding: 14px 32px; border-radius: 10px; text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(0,245,255,0.08); }
+    .hero-stats {
+      display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;
+      margin-top: 4rem; padding-top: 3rem;
+      border-top: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-val { font-size: 1.8rem; font-weight: 900; color: var(--neon); }
+    .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Ghostly background PEGD price - big, faded, gradient of the dark bg tones with subtle neon tint, always visible on scroll (fixed), low opacity so it's ghostly/missable if not looking, live updating */
+    .bg-pegd-price {
+      position: fixed;
+      top: 32%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 22vw;
+      font-weight: 900;
+      line-height: 0.9;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+      opacity: 0.045;
+      /* gradient of the background with ghostly neon tint */
+      background: linear-gradient(95deg, rgba(10,10,26,0.7) 0%, rgba(0,245,255,0.22) 35%, rgba(153,69,255,0.18) 65%, rgba(10,10,26,0.7) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: blur(0.3px);
+      mix-blend-mode: screen;
+    }
+
+    /* ── TREASURY ── */
+    #treasury {
+      padding: 6rem 2rem;
+      background: var(--bg2);
+    }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      text-align: center; font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 3px; text-transform: uppercase; color: var(--neon);
+      margin-bottom: 0.75rem;
+    }
+    h2 {
+      text-align: center; font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900; margin-bottom: 0.75rem; letter-spacing: -1px;
+    }
+    .section-sub {
+      text-align: center; color: var(--muted); max-width: 560px;
+      margin: 0 auto 3rem; font-size: 0.95rem;
+    }
+    .treasury-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      max-width: 700px; margin: 0 auto;
+    }
+    .wallet-input-group {
+      display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;
+    }
+    .wallet-input-group label {
+      display: block; width: 100%;
+      font-size: 0.8rem; font-weight: 700; color: var(--neon);
+      letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.5rem;
+    }
+    .wallet-input {
+      flex: 1; background: var(--bg3); border: 1px solid var(--border);
+      color: var(--text); font-size: 0.9rem; padding: 12px 16px;
+      border-radius: 8px; outline: none; font-family: monospace;
+      min-width: 200px;
+    }
+    .wallet-input:focus { border-color: var(--neon); box-shadow: 0 0 0 3px rgba(0,245,255,0.1); }
+    .wallet-input::placeholder { color: var(--muted); }
+    .btn-verify {
+      background: var(--neon); color: var(--bg); font-weight: 800;
+      padding: 12px 24px; border-radius: 8px; border: none;
+      cursor: pointer; font-size: 0.9rem; white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-verify:hover { background: #00d4e0; }
+    .treasury-metrics {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+    .metric-card {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.25rem; text-align: center;
+    }
+    .metric-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .metric-val {
+      font-size: 1.4rem; font-weight: 900; color: var(--neon);
+      font-family: monospace; word-break: break-all;
+    }
+    .metric-val.sol { color: var(--neon2); }
+
+    .metric-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+    .metric-usd {
+      font-size: 0.68rem; color: var(--muted); margin-top: 2px; font-family: monospace;
+    }
+    .treasury-metrics.is-sticky {
+      position: sticky;
+      top: 70px;
+      z-index: 60;
+      background: rgba(10,10,26,0.96);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      transition: all 0.35s cubic-bezier(0.23, 1.0, 0.32, 1);
+      transform: scale(0.94);
+      display: flex !important;
+      flex-direction: row;
+      gap: 8px;
+    }
+    .treasury-metrics.is-sticky .metric-card {
+      padding: 6px 8px;
+      font-size: 0.82rem;
+      flex: 1;
+    }
+    .treasury-metrics.is-sticky .metric-val {
+      font-size: 0.95rem;
+    }
+    .treasury-metrics.is-sticky .metric-label {
+      font-size: 0.58rem;
+    }
+    .treasury-note {
+      margin-top: 1.5rem; padding: 1rem;
+      background: rgba(0,245,255,0.05); border-left: 3px solid var(--neon);
+      border-radius: 0 8px 8px 0; font-size: 0.82rem; color: var(--muted);
+    }
+    .treasury-note strong { color: var(--neon); }
+
+    /* ── ABOUT ── */
+    #about { padding: 6rem 2rem; }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center; max-width: 1100px; margin: 0 auto;
+    }
+    .about-text h2 { text-align: left; }
+    .about-text .section-label { text-align: left; }
+    .about-text p { color: var(--muted); margin-bottom: 1rem; font-size: 0.95rem; }
+    .about-text p strong { color: var(--text); }
+    .chain-badges { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    .chain-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--card); border: 1px solid var(--border);
+      padding: 8px 16px; border-radius: 100px; font-size: 0.85rem; font-weight: 600;
+    }
+    .chain-badge.xrp { border-color: rgba(0,245,255,0.4); color: var(--neon); }
+    .chain-badge.sol { border-color: rgba(153,69,255,0.4); color: var(--neon2); }
+    .about-visual {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem; text-align: center;
+    }
+    .token-diagram {
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    .token-circle {
+      width: 100px; height: 100px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 1.1rem;
+    }
+    .token-circle.xrp {
+      background: rgba(0,245,255,0.1); border: 2px solid var(--neon);
+      color: var(--neon);
+    }
+    .token-circle.pegd {
+      background: rgba(153,69,255,0.1); border: 2px solid var(--neon2);
+      color: var(--neon2);
+    }
+    .token-arrow { color: var(--muted); font-size: 1.5rem; }
+    .token-label { font-size: 0.75rem; color: var(--muted); text-align: center; max-width: 200px; }
+
+    /* ── FEATURES ── */
+    #features { padding: 6rem 2rem; background: var(--bg2); }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem; max-width: 1100px; margin: 0 auto;
+    }
+    .feature-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .feature-card:hover { border-color: var(--neon); transform: translateY(-4px); }
+    .feature-icon { font-size: 2.2rem; margin-bottom: 1rem; }
+    .feature-card h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .feature-card p { font-size: 0.88rem; color: var(--muted); }
+
+    /* ── SWAP ── */
+    #swap { padding: 6rem 2rem; }
+    .swap-container { max-width: 640px; margin: 0 auto; }
+    .xrp-pegd-swap {
+      background: var(--bg3); border: 1px solid rgba(0,82,255,0.25);
+      border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; text-align: left;
+    }
+    .xrp-pegd-swap h3 { margin: 0 0 6px; font-size: 1.05rem; color: var(--neon); }
+    .xrp-pegd-sub { font-size: 0.78rem; color: var(--muted); line-height: 1.45; margin: 0 0 12px; }
+    .xrp-pegd-wallets { display: grid; gap: 8px; margin-bottom: 12px; font-size: 0.72rem; }
+    .xrp-pegd-wallets .lbl { display: block; color: var(--muted); margin-bottom: 2px; }
+    .xrp-pegd-wallets code { word-break: break-all; color: var(--text); font-size: 0.7rem; }
+    .xrp-pegd-label { display: block; font-size: 0.72rem; color: var(--muted); margin: 8px 0 4px; }
+    .xrp-pegd-input, .xrp-pegd-output {
+      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); font-size: 0.9rem; box-sizing: border-box;
+    }
+    .xrp-pegd-output { display: block; min-height: 2.5rem; line-height: 2.5rem; font-weight: 800; color: var(--gold); }
+    .xrp-pegd-note { font-size: 0.72rem; color: var(--muted); margin: 6px 0 10px; }
+    .xrp-pegd-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .xrp-pegd-btn {
+      flex: 1; min-width: 120px; padding: 10px; border: none; border-radius: 8px;
+      font-weight: 700; font-size: 0.78rem; cursor: pointer;
+    }
+    .xrp-pegd-btn.xaman { background: linear-gradient(135deg, #0052ff, #0039b3); color: #fff; }
+    .xrp-pegd-btn.phantom { background: linear-gradient(135deg, #9945ff, #7c3aed); color: #fff; }
+    .xrp-pegd-btn.primary { flex-basis: 100%; background: linear-gradient(135deg, var(--gold), #d4a008); color: var(--bg); }
+    .xrp-pegd-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .xrp-pegd-qr { display: block; margin: 12px auto 0; border-radius: 8px; }
+    .xrp-pegd-qr.hidden { display: none; }
+    .xrp-pegd-msg { font-size: 0.78rem; min-height: 1.2rem; margin-top: 10px; }
+    .xrp-pegd-msg.ok { color: #34d399; }
+    .xrp-pegd-msg.err { color: #ff6b8a; }
+    .xrp-pegd-foot { font-size: 0.68rem; color: var(--muted); margin-top: 12px; line-height: 1.4; }
+    .xrp-pegd-foot a { color: var(--neon2); }
+    .swap-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2.5rem; text-align: center;
+    }
+    .swap-placeholder {
+      background: var(--bg3); border: 2px dashed var(--border);
+      border-radius: 10px; padding: 3rem 2rem; margin: 1.5rem 0;
+    }
+    .swap-placeholder .swap-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .swap-placeholder p { color: var(--muted); font-size: 0.9rem; }
+    .swap-placeholder strong { color: var(--neon); }
+    .swap-chains {
+      display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;
+    }
+    .swap-chain-tag {
+      background: var(--bg3); border: 1px solid var(--border);
+      padding: 6px 14px; border-radius: 100px; font-size: 0.8rem; font-weight: 600;
+    }
+    .trade-status {
+      background: rgba(0,245,255,0.06); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.25rem;
+      font-size: 0.88rem; color: var(--muted); text-align: left;
+    }
+    .trade-status strong { color: var(--neon); }
+    .graduation-wrap { margin: 1.25rem 0 1.5rem; text-align: left; }
+    .graduation-label {
+      display: flex; justify-content: space-between; font-size: 0.8rem;
+      color: var(--muted); margin-bottom: 0.5rem; font-weight: 600;
+    }
+    .graduation-bar {
+      height: 8px; background: var(--bg3); border-radius: 100px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .graduation-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--neon), var(--neon2));
+      border-radius: 100px; transition: width 0.4s ease;
+    }
+    .trade-actions {
+      display: flex; flex-direction: column; gap: 0.75rem; margin: 1.5rem 0 1rem;
+    }
+    .btn-trade-primary {
+      display: block; padding: 1rem 1.5rem; border-radius: 10px;
+      background: linear-gradient(135deg, var(--neon), #00c4cc);
+      color: var(--bg); font-weight: 800; font-size: 1rem; text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-trade-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,245,255,0.25); }
+    .btn-trade-secondary {
+      display: block; padding: 0.85rem 1.5rem; border-radius: 10px;
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--muted); font-weight: 700; font-size: 0.9rem; text-decoration: none;
+      cursor: not-allowed; opacity: 0.75;
+    }
+    .btn-trade-secondary.is-live {
+      cursor: pointer; opacity: 1; color: var(--neon2);
+      border-color: rgba(153,69,255,0.35);
+    }
+    .btn-trade-secondary.is-live:hover { background: rgba(153,69,255,0.12); }
+    .ca-copy {
+      display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+      justify-content: center; margin-top: 1rem; font-size: 0.78rem; color: var(--muted);
+    }
+    .ca-copy code {
+      background: var(--bg3); padding: 4px 8px; border-radius: 6px;
+      font-size: 0.72rem; word-break: break-all; color: var(--text);
+    }
+    .ca-copy button {
+      background: transparent; border: 1px solid var(--border); color: var(--neon);
+      padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700;
+      cursor: pointer;
+    }
+    .ca-copy button:hover { border-color: var(--neon); }
+    .price-source { font-size: 0.65rem; color: var(--muted); font-weight: 500; margin-top: 2px; }
+    .verify-proof {
+      margin-top: 1.25rem; padding: 1rem 1.25rem; text-align: left;
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+    }
+    .verify-proof h4 { font-size: 0.85rem; margin-bottom: 0.6rem; color: var(--neon); }
+    .verify-proof ul { list-style: none; font-size: 0.82rem; color: var(--muted); }
+    .verify-proof li { margin: 0.35rem 0; padding-left: 1.2rem; position: relative; }
+    .verify-proof li::before { content: '✓'; position: absolute; left: 0; color: var(--gold); font-weight: 800; }
+    .verify-proof a { color: var(--neon2); font-weight: 600; }
+    .trade-status.is-warning { border-color: rgba(240,185,11,0.35); background: rgba(240,185,11,0.08); }
+    .trade-status.is-warning strong { color: var(--gold); }
+    .btn-trade-verify {
+      display: block; padding: 1rem 1.5rem; border-radius: 10px;
+      background: linear-gradient(135deg, var(--gold), #d4a008);
+      color: var(--bg); font-weight: 800; font-size: 1rem; text-decoration: none;
+    }
+    .btn-trade-verify:hover { filter: brightness(1.05); }
+
+    /* ── SHOP ── */
+    #shop { padding: 6rem 2rem; background: var(--bg2); }
+    .shop-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem; max-width: 1100px; margin: 0 auto;
+    }
+    .shop-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .shop-card:hover { transform: translateY(-4px); border-color: var(--neon2); }
+    .shop-img {
+      width: 100%; height: 180px;
+      background: linear-gradient(135deg, var(--bg3), var(--bg));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem;
+    }
+    .shop-info { padding: 1.25rem; }
+    .shop-info h3 { font-size: 1rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .shop-info p { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.75rem; }
+    .shop-price { font-size: 1rem; font-weight: 900; color: var(--gold); }
+    .shop-price span { font-size: 0.75rem; color: var(--muted); font-weight: 400; }
+    .btn-shop {
+      display: block; width: 100%; margin-top: 0.75rem;
+      background: rgba(153,69,255,0.15); border: 1px solid var(--neon2);
+      color: var(--neon2); font-weight: 700; font-size: 0.85rem;
+      padding: 10px; border-radius: 8px; text-align: center;
+      text-decoration: none; transition: background 0.2s;
+    }
+    .btn-shop:hover { background: rgba(153,69,255,0.3); }
+    .btn-pay-pegd {
+      margin-top: 8px; width: 100%; padding: 10px; border: none; border-radius: 8px;
+      background: linear-gradient(135deg, #9945ff, #7c3aed); color: #fff; font-weight: 800;
+      font-size: 0.82rem; cursor: pointer;
+    }
+    .btn-pay-pegd:disabled { opacity: 0.5; cursor: not-allowed; }
+    .shop-pay-hint {
+      margin-top: 8px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .shop-pay-hint strong { color: var(--neon2); font-weight: 700; }
+    .btn-pay-xumm {
+      margin-top: 6px; width: 100%; padding: 8px; border-radius: 8px;
+      background: transparent; border: 1px solid rgba(0,82,255,0.35);
+      color: var(--muted); font-weight: 600; font-size: 0.75rem; cursor: pointer;
+    }
+    .btn-pay-xumm:hover { border-color: rgba(0,82,255,0.6); color: var(--text); }
+    .btn-pay-xumm:disabled { opacity: 0.5; cursor: not-allowed; }
+    #xrp-pay.xrp-pay-secondary {
+      padding: 3rem 2rem; background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+    #xrp-pay.xrp-pay-secondary h2 { font-size: 1.25rem; color: var(--muted); }
+    #xrp-pay.xrp-pay-secondary .section-sub { font-size: 0.85rem; max-width: 520px; margin: 0 auto 1rem; }
+    .shop-demo-banner {
+      max-width: 1100px; margin: 0 auto 2rem;
+      background: rgba(240,185,11,0.08); border: 1px solid rgba(240,185,11,0.35);
+      border-radius: var(--radius); padding: 1rem 1.25rem;
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .shop-demo-banner p { font-size: 0.85rem; color: var(--text); margin: 0; max-width: 520px; }
+    .shop-demo-badge {
+      display: inline-block; background: rgba(240,185,11,0.2); color: var(--gold);
+      font-size: 0.65rem; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 4px; margin-bottom: 0.5rem;
+    }
+    .shop-card-demo { position: relative; }
+    .shop-card-demo::after {
+      content: 'DEMO'; position: absolute; top: 10px; right: 10px;
+      background: rgba(10,10,26,0.85); border: 1px solid rgba(240,185,11,0.5);
+      color: var(--gold); font-size: 0.6rem; font-weight: 800; letter-spacing: 1px;
+      padding: 3px 7px; border-radius: 4px;
+    }
+    .shop-cta-market {
+      background: var(--neon); color: var(--bg) !important;
+      padding: 10px 20px; border-radius: 8px; font-weight: 700 !important;
+      font-size: 0.85rem !important; text-decoration: none; white-space: nowrap;
+    }
+    .shop-cta-market:hover { background: #00d4e0 !important; }
+    .shop-empty {
+      grid-column: 1 / -1; text-align: center; padding: 2.5rem 1.5rem;
+      background: var(--card); border: 1px dashed rgba(240,185,11,0.35);
+      border-radius: var(--radius);
+    }
+    .shop-empty h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--gold); }
+    .shop-empty p { color: var(--muted); font-size: 0.88rem; max-width: 520px; margin: 0 auto 1rem; }
+    .shop-img-real {
+      height: 140px; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.25); overflow: hidden;
+    }
+    .shop-img-real img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── MEMES ── */
+    #memes { padding: 6rem 2rem; }
+    .meme-header { text-align: center; margin-bottom: 3rem; }
+    .meme-header h2 { color: var(--gold); }
+    .meme-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; max-width: 1100px; margin: 0 auto;
+    }
+    .meme-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      aspect-ratio: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-size: 4rem; gap: 0.5rem;
+      transition: transform 0.2s;
+    }
+    .meme-card:hover { transform: scale(1.04); border-color: var(--gold); }
+    .meme-card span { font-size: 0.75rem; color: var(--muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+
+    /* ── COMMUNITY ── */
+    #community { padding: 6rem 2rem; background: var(--bg2); }
+    .community-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; max-width: 900px; margin: 0 auto;
+    }
+    .social-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.75rem; text-align: center;
+      text-decoration: none; color: var(--text);
+      transition: transform 0.2s, border-color 0.2s;
+      display: block;
+    }
+    .social-card:hover { transform: translateY(-4px); border-color: var(--neon); }
+    .social-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .social-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .social-card p { font-size: 0.8rem; color: var(--muted); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--bg); border-top: 1px solid var(--border);
+      padding: 3rem 2rem 2rem;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr;
+      gap: 2rem; margin-bottom: 2rem;
+    }
+    .footer-brand p { color: var(--muted); font-size: 0.85rem; margin-top: 0.75rem; max-width: 280px; }
+    .footer-col h4 { font-size: 0.8rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--neon); margin-bottom: 1rem; }
+    .footer-col a { display: block; color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 0.5rem; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--text); }
+    .footer-bottom {
+      border-top: 1px solid var(--border); padding-top: 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 1rem;
+      font-size: 0.8rem; color: var(--muted);
+    }
+    .footer-disclaimer { font-size: 0.72rem; color: var(--muted); opacity: 0.6; max-width: 600px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .footer-inner { grid-template-columns: 1fr; }
+      nav { gap: 0.75rem; }
+      .hero-stats { gap: 1.5rem; }
+    }
+    @media (max-width: 480px) {
+      nav a:not(.nav-cta) { display: none; }
+    }
+
+    /* Treasury collapsible styling */
+    .treasury-collapsible {
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 0;
+      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.3s ease;
+    }
+    .treasury-collapsible:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .treasury-collapsible[open] {
+      border-color: rgba(0, 255, 200, 0.3);
+    }
+    .treasury-summary {
+      cursor: pointer;
+      padding: 1.5rem 2rem;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      user-select: none;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+    .treasury-summary:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .treasury-summary::-webkit-details-marker {
+      display: none;
+    }
+    .treasury-summary-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .treasury-summary-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .treasury-summary-hint {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 400;
+      margin-left: auto;
+    }
+    @media (max-width: 768px) {
+      .treasury-summary {
+        flex-wrap: wrap;
+        padding: 1.25rem 1.5rem;
+      }
+      .treasury-summary-hint {
+        margin-left: 0;
+        width: 100%;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "XRPEGGED",
+    "alternateName": "PEGD",
+    "description": "XRPEGGED (PEGD) is treasury-backed on XRP and Solana, with PEGD Market marketplace checkout via direct wallet payments.",
+    "url": "https://xrpegged.com"
+  }
+  </script>
+</head>
+<body>
+  <!-- Ghostly background PEGD price - big, faded, gradient of bg, fixed for scroll, live updating, subtle so you may miss it if not looking -->
+  <div id="bg-pegd-price" aria-hidden="true" class="bg-pegd-price"></div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="nav-inner">
+      <a href="#hero" class="logo">
+        <span class="brand-word">XR<span class="brand-accent">PEGGED</span></span>
+        <div class="logo-badge">PEGD</div>
+      </a>
+      <nav>
+        <a href="#treasury">Treasury</a>
+        <a href="#shop" class="nav-cta">Market</a>
+        <a href="#swap">Get PEGD</a>
+        <a href="#about">About</a>
+        <a href="#governance">Governance</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">NOW LIVE</div>
+      <h1>XRPEGGED</h1>
+      <p class="hero-sub">
+        Buy real items with crypto. USD prices, wallet checkout, XRP-backed treasury you can verify.
+      </p>
+      <p class="public-teaser">Pay with <strong>PEGD</strong>, <strong>XRP</strong>, or <strong>SOL</strong>. No middlemen. Proof on blockchain.</p>
+      <div class="hero-btns">
+        <a href="#shop" class="btn-primary" style="font-size:1.1rem;padding:0.9rem 1.8rem;">🛒 Browse Market</a>
+        <a href="#treasury" class="btn-secondary">🔍 Verify Treasury</a>
+      </div>
+      <p style="text-align:center;margin-top:1rem;font-size:0.9rem;"><a href="#shop" style="color:var(--neon2);text-decoration:none;border-bottom:1px dashed var(--neon2);">↓ Skip to Market</a></p>
+      <p class="public-teaser" style="margin-top:0.5rem;font-size:0.85rem;">Proof of Concept: First USD sale — Metapod $4.99 paid in PEGD (Phantom) to treasury <a href="https://solscan.io/account/fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb" style="color:var(--neon);">fWi4... (Solana tx)</a>. Original card ad with on-chain proof. Cross-chain via Wormhole for real interoperability.</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-val" id="stat-xrp">…</div>
+          <div class="stat-label">XRP in Treasury</div>
+        </div>
+        <div class="stat hero-stat-gated">
+          <div class="stat-val" id="stat-supply">…</div>
+          <div class="stat-label">PEGD in Circulation</div>
+        </div>
+      </div>
+      <!-- hidden for legacy calc compatibility in gated stats -->
+      <span id="stat-ratio" style="display:none"></span>
+    </div>
+  </section>
+
+  <!-- SHOP -->
+  <section id="shop">
+    <div class="section-inner">
+      <p class="section-label">💎 PEGD Market</p>
+      <h2>prove its worth</h2>
+      <p class="section-sub">Everyone can browse and buy. Listings are <strong>USD-priced</strong>. Checkout: <strong>PEGD</strong> (preferred), <strong>XRP via Xaman</strong>, or <strong>SOL</strong> on Phantom.</p>
+      <p style="text-align:center;margin-top:1rem;"><a href="/nft-list.html" style="display:inline-block;padding:0.75rem 1.5rem;background:var(--neon);color:black;text-decoration:none;border-radius:4px;font-weight:600;">📦 List Your NFT</a></p>
+      <div class="shop-demo-banner" id="shop-status-banner">
+        <p id="shop-status-text"><strong style="color:var(--gold);">Order #1 complete.</strong> <span id="shop-pay-instructions">Metapod sold via PEGD/Phantom (first PEGD Market). See remaining listings below or the full market.</span> Need PEGD? <a href="#swap" style="color:var(--neon2);">Get PEGD</a> to start shopping.</p>
+        <a href="https://xrpegged-market.xrpegged.workers.dev/proof" target="_blank" rel="noopener" class="shop-cta-market" id="shop-market-cta">Open PEGD Market →</a>
+      </div>
+      <div class="shop-grid" id="shop-grid">
+        <p style="color:var(--muted);grid-column:1/-1;text-align:center;">Loading market…</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TREASURY -->
+  <section id="treasury">
+    <details class="treasury-collapsible">
+      <summary class="treasury-summary">
+        <span class="treasury-summary-icon">🔍</span>
+        <span class="treasury-summary-text">Verify Treasury (Click to Expand)</span>
+        <span class="treasury-summary-hint">Live XRP + Solana balances • On-chain proof</span>
+      </summary>
+    <div class="section-inner">
+      <p class="section-label">🔐 Proof of Reserves</p>
+      <h2>Transparent Treasury</h2>
+      <p class="section-sub">Our XRP holdings are always public and verifiable. Enter the treasury wallet address below to see live balances on the XRP Ledger.</p>
+      <div class="treasury-card">
+        <div class="wallet-input-group">
+          <label for="wallet-addr">Treasury Wallet Address (XRP Ledger)</label>
+          <input
+            type="text"
+            id="wallet-addr"
+            class="wallet-input"
+            placeholder="rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+            value="rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78"
+            readonly
+          >
+          <p style="margin-top:0.75rem;font-size:0.8rem;color:var(--muted);word-break:break-all;">
+            Solana Treasury: <a href="https://solscan.io/account/fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb" style="color:var(--neon2);">fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb</a><br>
+            PEGD CA: <a href="https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" style="color:var(--neon2);">BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon</a>
+          </p>
+          <button class="btn-verify" id="verify-btn">Verify →</button>
+        </div>
+        <div class="treasury-metrics">
+          <div class="metric-card">
+            <div class="metric-icon">💎</div>
+            <div class="metric-val" id="xrp-balance">—</div>
+            <div class="metric-usd" id="xrp-usd">($—)</div>
+            <div class="metric-label">XRP Balance</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">🪙</div>
+            <div class="metric-val sol" id="pegd-held">—</div>
+            <div class="metric-usd" id="pegd-usd">($—)</div>
+            <div class="metric-label">PEGD in Treasury</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon">🟣</div>
+            <div class="metric-val sol" id="sol-balance">—</div>
+            <div class="metric-usd" id="sol-usd">($—)</div>
+            <div class="metric-label">SOL Balance</div>
+          </div>
+        </div>
+        <div class="pegd-price-callout" style="margin-top:0.75rem;font-size:0.9rem;">
+          PEGD Price (treasury implied): <strong id="treasury-pegd-price">—</strong>
+        </div>
+
+        <!-- Full Solana token portfolio added per request: shows all SPL / meme holdings on treasury wallet via on-chain query -->
+        <div class="treasury-portfolio" style="margin-top:0.75rem; border-top:1px solid var(--border); padding-top:0.5rem;">
+          <div style="font-size:0.72rem; color:var(--muted); margin-bottom:0.25rem; font-weight:600;">Solana Portfolio — All Tokens (meme coins + PEGD etc. on treasury)</div>
+          <div id="sol-portfolio" style="font-size:0.7rem; line-height:1.25; max-height:110px; overflow-y:auto; background:rgba(0,0,0,0.25); padding:4px 6px; border-radius:4px; border:1px solid var(--border);">
+            Loading on-chain holdings...
+          </div>
+          <div style="font-size:0.6rem; color:var(--muted); margin-top:2px;">Live via Solana RPC (getTokenAccountsByOwner). Click mints for Solscan.</div>
+        </div>
+
+        <div class="treasury-note">
+          <strong>🔒 Proof is everything.</strong> Treasury balances are public and verifiable on XRP Ledger and Solana. No hidden wallets — transparent, on-chain reserves you can audit yourself anytime.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Auto-updating Solana token portfolio for treasury (all SPL/meme holdings)
+    // Client-side via /api/solana proxy + getTokenAccountsByOwner. Refreshes every 60s.
+    async function loadTreasuryPortfolio() {
+      const el = document.getElementById('sol-portfolio');
+      if (!el) return;
+      const SOL_TREASURY = 'fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb';
+      const PEGD_MINT = 'BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
+      try {
+        const res = await fetch('/api/solana', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'getTokenAccountsByOwner',
+            params: [
+              SOL_TREASURY,
+              { programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
+              { commitment: 'confirmed', encoding: 'jsonParsed' }
+            ]
+          })
+        });
+        const data = await res.json();
+        const accounts = data?.result?.value || [];
+        if (!accounts.length) {
+          el.innerHTML = 'No additional SPL tokens (native SOL shown above). <span style="font-size:0.55rem;">(auto-updating)</span>';
+          return;
+        }
+        let html = '<ul style="list-style:none;margin:0;padding:0;font-family:monospace;">';
+        accounts.forEach(acc => {
+          const info = acc.account.data.parsed.info;
+          const mint = info.mint;
+          const ta = info.tokenAmount;
+          const raw = ta.amount || '0';
+          if (raw === '0') return; // only positive balances
+          let amt = ta.uiAmountString;
+          if (!amt || amt === '0') {
+            // precise from raw using BigInt for high-decimal memes
+            const dec = ta.decimals || 0;
+            const scale = BigInt(10 ** dec);
+            const int = BigInt(raw) / scale;
+            let frac = (BigInt(raw) % scale).toString().padStart(dec, '0').replace(/0+$/, '');
+            amt = frac ? `${int}.${frac}` : int.toString();
+          }
+          const short = mint.slice(0,4) + '…' + mint.slice(-4);
+          const label = (mint === PEGD_MINT) ? 'PEGD' : short;
+          const href = `https://solscan.io/token/${mint}`;
+          html += `<li style="margin:1px 0;"><a href="${href}" target="_blank" rel="noopener" style="color:var(--neon);">${label}</a> <span style="color:var(--text);">${amt}</span></li>`;
+        });
+        html += '</ul>';
+        html += `<div style="font-size:0.55rem;color:var(--muted);margin-top:3px;">auto-updating every 60s • last: ${new Date().toLocaleTimeString()}</div>`;
+        el.innerHTML = html;
+      } catch (e) {
+        el.innerHTML = 'Failed to load portfolio (will retry). <span style="font-size:0.55rem;">(auto-updating)</span>';
+      }
+    }
+    loadTreasuryPortfolio();
+    setInterval(loadTreasuryPortfolio, 60000);
+  </script>
+    </details>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="section-label">What is XRPEGGED?</p>
+        <h2>PEGD on Solana.<br>PEGD Market.</h2>
+        <p>XRPEGGED ($PEGD) is an SPL token on Solana. We run a marketplace for real items priced in USD. Pay with PEGD (preferred via Phantom), XRP (Xaman), or SOL. Settlement lands directly in treasury — no middlemen, no custom contracts.</p>
+        <p>Our XRP treasury on XRPL is fully public and verifiable. This is the proof layer.</p>
+        <p>PEGD is a payment method for the marketplace. Proof is everything.</p>
+        <div class="chain-badges">
+          <div class="chain-badge sol">🟣 Solana</div>
+          <div class="chain-badge xrp">⚡ XRP Ledger (reserves)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- XRP buyer checkout removed QR-009: XRP = treasury + seller bonds only -->
+
+  <!-- CHAIRMAN SIGN-IN (wallet-gated Officers panel + Command HUD) -->
+  <section id="holders">
+    <div class="section-inner" style="text-align:center;">
+      <p class="section-label">🔐 Chairman Portal</p>
+      <div class="holders-card">
+        <div class="holders-icon">◎</div>
+        <h2>Sign In First</h2>
+        <p>Market is open to everyone — <strong>◎ Officers</strong> public brief (market/treasury/curve) always available from the floating button. Sprint/backlog + full HUD require wallet sign-in (Xaman/Phantom allowlist). Use <strong>/portal.html</strong> for Chairman/holder command.</p>
+        <div class="holders-actions">
+          <button type="button" class="btn-connect xumm" id="connect-xumm-btn">🔵 Sign in with Xaman</button>
+          <p class="holders-divider">or</p>
+          <button type="button" class="btn-connect" id="connect-wallet-btn">🟣 Sign in with Phantom</button>
+        </div>
+        <img class="xumm-qr" id="xumm-qr" alt="Xumm QR code" width="220" height="220">
+        <p class="holders-status" id="holders-status"></p>
+        <p class="holders-wallet" id="holders-wallet"></p>
+      </div>
+    </div>
+  </section>
+
+  <div class="holders-gated">
+
+  <!-- GET PEGD -->
+  <section id="swap">
+    <div class="swap-container">
+      <p class="section-label" style="text-align:center">💰 Get PEGD to Shop</p>
+      <h2>Acquire PEGD for Marketplace Purchases</h2>
+      <p class="section-sub">PEGD is the payment method for <a href="#shop" style="color:var(--neon);">PEGD Market</a>. Swap XRP→PEGD below to get PEGD in your Phantom wallet, then use it to checkout when buying items.</p>
+      <div id="xrp-pegd-swap-root"></div>
+      <div class="swap-card">
+        <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1.5rem;padding:1rem;background:rgba(255,200,0,0.1);border-left:3px solid var(--gold);border-radius:4px;">
+          <strong style="color:var(--text);">Notice:</strong> This swap exchanges XRP for PEGD at the current rate. PEGD is a utility token used as currency in the PEGD Market. Acquire only the amount you need for purchases. There is no promise or expectation of profit.
+        </p>
+        <div class="verify-proof">
+          <h4>Verify PEGD Token</h4>
+          <ul>
+            <li>PEGD is an SPL token on Solana — used for marketplace checkout</li>
+            <li><a href="https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">View on Solscan</a> — see supply, holders, and mint details</li>
+            <li><a href="#treasury">Treasury section</a> — verify XRP + SOL reserves yourself</li>
+            <li>Official site: <a href="https://pegd.org">pegd.org</a> · contact <a href="mailto:xrpegged@proton.me">xrpegged@proton.me</a></li>
+          </ul>
+        </div>
+        <div class="ca-copy">
+          <span>PEGD Contract:</span>
+          <code id="ca-text">BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon</code>
+          <button type="button" id="copy-ca-btn">Copy</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOP — live PEGD Market listings -->
+  <!-- GOVERNANCE -->
+  <section id="governance">
+    <div class="section-inner">
+      <p class="section-label">⚖️ How XRPEGGED Decides</p>
+      <h2>Governance</h2>
+      <p class="section-sub">Transparent process, Chairman-led. We publish <strong>principles</strong> and <strong>on-chain proof</strong> — not internal playbooks.</p>
+      <div class="trade-status" style="margin-top:0;">
+        <p><strong>Chairman (Founder)</strong> holds final authority on treasury, deploys, and strategic direction. Executive input covers strategy, technology, finance, and brand — then the Chairman ratifies.</p>
+        <p style="margin-top:0.75rem;"><strong>Proof-of-reserves</strong> — public XRP and Solana treasuries you can verify anytime. <strong>Proof-of-worth</strong> — real USD-priced listings and completed orders on the <a href="https://xrpegged-market.xrpegged.workers.dev/proof" style="color:var(--neon);">PEGD Market market</a>.</p>
+        <p style="margin-top:0.75rem;"><strong>Decision tiers:</strong> routine site updates (operational), marketplace and payment rails (strategic), treasury moves (critical — Chairman sign-off required).</p>
+        <p style="margin-top:0.75rem;">Questions or governance requests: <a href="mailto:xrpegged@proton.me" style="color:var(--neon);">xrpegged@proton.me</a></p>
+      </div>
+      <div class="trade-status" id="directives-board" style="margin-top:1.25rem;">
+        <p class="section-label" style="margin-bottom:0.5rem;">◎ Officer directives</p>
+        <p style="font-size:0.88rem;color:var(--muted);margin-bottom:1rem;">PEGD holders can <strong style="color:var(--text)">reprioritize sprint and backlog</strong> — officers execute; Chairman ratifies treasury and deploys.</p>
+        <button type="button" class="btn-connect" id="directives-holder-btn" style="max-width:320px;margin-bottom:1rem;">🟣 Sign in to move directives (Phantom · treasury-parity PEGD)</button>
+        <p style="font-size:0.82rem;color:var(--muted);margin-bottom:0.75rem;" data-directives-meta></p>
+        <p style="font-size:0.75rem;color:var(--muted);margin:0 0 6px;">SPRINT</p>
+        <ul data-directives-sprint style="list-style:none;font-size:0.86rem;margin:0 0 1rem;padding:0;"></ul>
+        <p style="font-size:0.75rem;color:var(--muted);margin:0 0 6px;">BACKLOG</p>
+        <ul data-directives-backlog style="list-style:none;font-size:0.86rem;margin:0;padding:0;"></ul>
+      </div>
+    </div>
+  </section>
+
+  </div><!-- /.holders-gated -->
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo" style="font-size:1.2rem;"><span class="brand-word">XR<span class="brand-accent">PEGGED</span></span> <div class="logo-badge">PEGD</div></div>
+        <p>Treasury-backed. PEGD on Solana. PEGD Market checkout is direct wallet pay. Built by the community.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigate</h4>
+        <a href="#treasury">Treasury</a>
+        <a href="#about">About</a>
+        <a href="#shop">Market</a>
+        <a href="#governance">Governance</a>
+        <a href="#holders">Sign In</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:xrpegged@proton.me">xrpegged@proton.me</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 XRPEGGED. All rights reserved.</span>
+      <span class="footer-disclaimer">Not financial advice. PEGD is a community token. Always DYOR. 🐸</span>
+    </div>
+  </footer>
+
+<script src="/js/pegd-checkout.js"></script>
+<script src="/js/xrp-pegd-swap.js"></script>
+
+<script>
+  const XRP_TREASURY = 'rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78';
+  const SOL_TREASURY = 'fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb';
+  const PEGD_MINT = 'BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
+  const PEGD_TOTAL_SUPPLY = 1_000_000_000; // fixed at mint creation (standard Moonshot 1B supply; authority revoked)
+
+
+  const verifyBtn = document.getElementById('verify-btn');
+  const xrpBalance = document.getElementById('xrp-balance');
+  const pegdHeld = document.getElementById('pegd-held');
+  const solBalance = document.getElementById('sol-balance');
+  const statXrp = document.getElementById('stat-xrp');
+  const statSupply = document.getElementById('stat-supply');
+  const MOONIT_URL = 'https://moon.it/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
+  const JUPITER_URL = 'https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
+  const SOLSCAN_URL = 'https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
+
+  let pegdMeta = null;
+  let holderWallet = null;
+
+  const connectBtn = document.getElementById('connect-wallet-btn');
+  const connectXummBtn = document.getElementById('connect-xumm-btn');
+  const xummQrEl = document.getElementById('xumm-qr');
+  const holdersStatus = document.getElementById('holders-status');
+  const holdersWalletEl = document.getElementById('holders-wallet');
+  const HOLDER_KEY = 'pegd_holder_wallet';
+  const HOLDER_RAIL_KEY = 'pegd_holder_rail';
+
+  const fmt = (n, d = 2) => {
+    const num = Number(n);
+    if (!Number.isFinite(num)) return '—';
+    return num.toLocaleString(undefined, { maximumFractionDigits: d });
+  };
+  const fmtUsd = (n) => {
+    const num = Number(n);
+    if (!Number.isFinite(num)) return '—';
+    return '$' + (num < 0.000001 ? num.toFixed(12).replace(/\.?0+$/, '') : fmt(num, num >= 1 ? 2 : 9));
+  };
+  const fmtSupply = (n) => {
+    if (n === PEGD_TOTAL_SUPPLY) return '1B';
+    if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+    if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+    return fmt(n, 0);
+  };
+
+  async function xrplAccount(addr) {
+    const res = await fetch('https://xrplcluster.com/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ method: 'account_info', params: [{ account: addr, ledger_index: 'current' }] })
+    });
+    const data = await res.json();
+    if (!data.result?.account_data) return null;
+    return parseInt(data.result.account_data.Balance, 10) / 1_000_000;
+  }
+
+  async function solanaRpc(method, params) {
+    const res = await fetch('/api/solana', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params })
+    });
+    const data = await res.json();
+    return data.result ?? null;
+  }
+
+  async function solTreasuryPegd() {
+    const result = await solanaRpc('getTokenAccountsByOwner', [
+      SOL_TREASURY,
+      { mint: PEGD_MINT },
+      { encoding: 'jsonParsed' }
+    ]);
+    const accounts = result?.value ?? [];
+    for (const acct of accounts) {
+      const ta = acct.account?.data?.parsed?.info?.tokenAmount;
+      if (ta && ta.uiAmountString) {
+        return ta.uiAmountString;
+      }
+    }
+    return '0';
+  }
+
+  async function solTreasurySol() {
+    const result = await solanaRpc('getBalance', [SOL_TREASURY]);
+    const lamports = typeof result === 'number' ? result : result?.value;
+    return lamports != null && Number.isFinite(lamports) ? lamports / 1e9 : null;
+  }
+
+  async function geckoPegdMeta() {
+    const res = await fetch('https://api.geckoterminal.com/api/v2/networks/solana/tokens/' + PEGD_MINT);
+    const data = await res.json();
+    const attrs = data?.data?.attributes;
+    if (!attrs) return { price: null, meta: null };
+
+    const graduation = attrs.launchpad_details?.graduation_percentage ?? null;
+    const graduated = attrs.launchpad_details?.completed === true;
+    const reserve = parseFloat(attrs.total_reserve_in_usd);
+    const spot = attrs.price_usd != null ? parseFloat(attrs.price_usd) : null;
+
+    let price = spot;
+    let source = spot != null ? 'market' : null;
+    if (price == null && reserve > 0) {
+      // Use known fixed total supply (Gecko normalized_total_supply is often null/misleading for pre-grad curve tokens)
+      price = reserve / PEGD_TOTAL_SUPPLY;
+      source = 'curve';
+    }
+
+    return {
+      price: Number.isFinite(price) ? price : null,
+      meta: {
+        source,
+        graduated,
+        graduationPct: graduation,
+        reserveUsd: Number.isFinite(reserve) ? reserve : null,
+      },
+    };
+  }
+
+  async function fetchPrices() {
+    const prices = { XRP: null, SOL: null, PEGD: null };
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/market/prices`);
+      const data = await res.json();
+      if (data?.pricesUsd) Object.assign(prices, data.pricesUsd);
+      if (data?.pegdMeta) pegdMeta = data.pegdMeta;
+    } catch { /* fallback below */ }
+    if (prices.XRP == null || prices.SOL == null) {
+      try {
+        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ripple,solana&vs_currencies=usd');
+        const data = await res.json();
+        prices.XRP = prices.XRP ?? data.ripple?.usd ?? null;
+        prices.SOL = prices.SOL ?? data.solana?.usd ?? null;
+      } catch { /* ignore */ }
+    }
+    if (prices.PEGD == null) {
+      try {
+        const res = await fetch('https://api.dexscreener.com/latest/dex/tokens/' + PEGD_MINT);
+        const data = await res.json();
+        const p = data.pairs?.[0]?.priceUsd;
+        if (p) prices.PEGD = parseFloat(p);
+      } catch { /* ignore */ }
+    }
+    if (prices.PEGD == null || pegdMeta == null) {
+      try {
+        const gecko = await geckoPegdMeta();
+        if (prices.PEGD == null && gecko.price != null) prices.PEGD = gecko.price;
+        if (gecko.meta) pegdMeta = gecko.meta;
+      } catch { /* ignore */ }
+    }
+    return prices;
+  }
+
+  function priceSourceLabel(meta) {
+    if (!meta) return '';
+    if (meta.graduated) return 'DEX price';
+    if (meta.source === 'curve') return 'bonding curve';
+    if (meta.source === 'market') return 'market';
+    return '';
+  }
+
+  async function moonitIndexed() {
+    try {
+      const res = await fetch('https://api.mintlp.io/v1/fun/by-mint/' + PEGD_MINT);
+      if (res.ok) return true;
+      const list = await fetch('https://api.mintlp.io/v1/fun?page=1&pageSize=500&sortBy=MARKET_CAP&state=NOT_GRADUATED&vanityExtension=moon&blockchainSymbol=SOL');
+      if (!list.ok) return false;
+      const data = await list.json();
+      return (data.data || []).some((t) => t.mintAddress === PEGD_MINT);
+    } catch {
+      return null;
+    }
+  }
+
+  function updateTradeUi(meta, indexed) {
+    tradeStatus.classList.add('is-warning');
+
+    if (meta?.reserveUsd != null && curveReserve) {
+      curveReserve.textContent = fmtUsd(meta.reserveUsd);
+    }
+
+    const pct = meta?.graduationPct;
+    if (pct != null && Number.isFinite(pct)) {
+      const clamped = Math.min(Math.max(pct, 0), 100);
+      gradPct.textContent = clamped.toFixed(2) + '%';
+      gradFill.style.width = clamped + '%';
+    } else {
+      gradPct.textContent = '—';
+      gradFill.style.width = '0%';
+    }
+
+    if (!meta) {
+      tradeStatus.innerHTML = '<strong>Verify on-chain first.</strong> PEGD exists on Solana. Check Solscan and our treasury before trading anywhere.';
+    } else if (meta.graduated) {
+      tradeStatus.classList.remove('is-warning');
+      tradeStatus.innerHTML = '<strong>Graduated.</strong> PEGD completed the bonding curve. Trade on Jupiter or Moonit with your Solana wallet.';
+      moonitTradeBtn.textContent = '🚀 Trade on Moonit';
+    } else {
+      const pctText = pct != null ? pct.toFixed(2) + '%' : 'early';
+      tradeStatus.innerHTML = '<strong>On bonding curve (' + pctText + ').</strong> Curve reserve is live on-chain. Verify on Solscan and trade on Moonit with your Solana wallet.';
+      moonitTradeBtn.textContent = '🚀 Trade SOL ↔ PEGD on Moonit';
+    }
+
+    if (meta?.graduated) {
+      jupiterTradeBtn.textContent = '🟣 Swap on Jupiter';
+      jupiterTradeBtn.classList.add('is-live');
+      jupiterTradeBtn.removeAttribute('aria-disabled');
+      jupiterTradeBtn.removeAttribute('tabindex');
+      jupiterTradeBtn.href = JUPITER_URL;
+    } else {
+      jupiterTradeBtn.textContent = '🟣 Jupiter — unlocks after graduation';
+      jupiterTradeBtn.classList.remove('is-live');
+      jupiterTradeBtn.setAttribute('aria-disabled', 'true');
+      jupiterTradeBtn.setAttribute('tabindex', '-1');
+    }
+  }
+
+  function impliedPegdPrice(liquidUsd, totalSupply, treasuryPegd) {
+    if (!liquidUsd || !totalSupply || totalSupply <= 0) return null;
+    const circulating = Math.max(totalSupply - (treasuryPegd || 0), 1);
+    return liquidUsd / circulating;
+  }
+
+  async function xrplXrpBalance(account) {
+    const res = await fetch('https://xrplcluster.com/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        method: 'account_info',
+        params: [{ account, ledger_index: 'current' }],
+      }),
+    });
+    const data = await res.json();
+    const drops = data.result?.account_data?.Balance;
+    return drops != null ? parseInt(drops, 10) / 1_000_000 : null;
+  }
+
+  async function walletPegdBalance(pubkey) {
+    const result = await solanaRpc('getTokenAccountsByOwner', [
+      pubkey,
+      { mint: PEGD_MINT },
+      { encoding: 'jsonParsed' },
+    ]);
+    return (result?.value ?? []).reduce((sum, acct) => {
+      return sum + (acct.account?.data?.parsed?.info?.tokenAmount?.uiAmount ?? 0);
+    }, 0);
+  }
+
+  function chairmanLabel(rail, wallet) {
+    const name = window.XrpegPortal?.railLabel(rail === 'xumm' ? 'xrpl' : 'solana') || rail;
+    const addr = window.XrpegPortal?.shortAddr(wallet) || wallet;
+    return 'Chairman mode — ' + name + ' · ' + addr;
+  }
+
+  function persistHolderWallet(wallet, rail) {
+    localStorage.setItem(HOLDER_KEY, wallet);
+    localStorage.setItem(HOLDER_RAIL_KEY, rail || 'xumm');
+    sessionStorage.setItem(HOLDER_KEY, wallet);
+    sessionStorage.setItem(HOLDER_RAIL_KEY, rail || 'xumm');
+  }
+
+  function clearHolderWallet() {
+    localStorage.removeItem(HOLDER_KEY);
+    localStorage.removeItem(HOLDER_RAIL_KEY);
+    sessionStorage.removeItem(HOLDER_KEY);
+    sessionStorage.removeItem(HOLDER_RAIL_KEY);
+  }
+
+  function setHolderUnlocked(wallet, label, rail) {
+    holderWallet = wallet;
+    document.body.classList.add('holders-unlocked');
+    persistHolderWallet(wallet, rail || 'xumm');
+    holdersStatus.textContent = label || chairmanLabel(rail, wallet);
+    holdersStatus.className = 'holders-status ok';
+    holdersWalletEl.textContent = wallet;
+    connectBtn.textContent = '🟣 Sign out';
+    connectXummBtn.textContent = '🔵 Sign out';
+    xummQrEl.classList.remove('visible');
+    window.XrpegPortal?.updateBadge();
+    loadGatedContent();
+  }
+
+  async function setHolderLocked(msg, isErr) {
+    holderWallet = null;
+    document.body.classList.remove('holders-unlocked');
+    clearHolderWallet();
+    if (window.XrpegPortal) await window.XrpegPortal.logout();
+    holdersStatus.textContent = msg || '';
+    holdersStatus.className = 'holders-status' + (isErr ? ' err' : '');
+    holdersWalletEl.textContent = '';
+    connectBtn.textContent = '🟣 Sign in with Phantom';
+    connectXummBtn.textContent = '🔵 Sign in with Xaman';
+    xummQrEl.classList.remove('visible');
+    xummQrEl.removeAttribute('src');
+  }
+
+  async function connectHolderWallet() {
+    if (document.body.classList.contains('holders-unlocked')) {
+      await setHolderLocked('');
+      return;
+    }
+    holdersStatus.textContent = 'Sign message in Phantom…';
+    holdersStatus.className = 'holders-status';
+    try {
+      const session = await window.XrpegPortal.verifyPhantom();
+      setHolderUnlocked(session.address, chairmanLabel('phantom', session.address), 'phantom');
+    } catch (err) {
+      setHolderLocked(err instanceof Error ? err.message : 'Phantom sign-in failed', true);
+    }
+  }
+
+  async function pollXumm(payloadId) {
+    for (let i = 0; i < 90; i++) {
+      const res = await fetch(`/api/xumm/poll`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payloadId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || 'Xumm poll failed');
+      if (data.pending) {
+        await new Promise((r) => setTimeout(r, 2000));
+        continue;
+      }
+      if (data.signed && data.account) return data.account;
+      throw new Error('Xumm sign-in cancelled');
+    }
+    throw new Error('Xumm timed out');
+  }
+
+  async function connectXumm() {
+    if (document.body.classList.contains('holders-unlocked')) {
+      await setHolderLocked('');
+      return;
+    }
+    holdersStatus.textContent = 'Opening Xumm…';
+    holdersStatus.className = 'holders-status';
+    connectXummBtn.disabled = true;
+    try {
+      const res = await fetch(`/api/xumm/auth`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok || !data?.success) throw new Error(data?.error || 'Xumm auth failed');
+      if (data.qr) {
+        xummQrEl.src = data.qr;
+        xummQrEl.classList.add('visible');
+      }
+      if (data.deeplink) window.open(data.deeplink, '_blank', 'noopener');
+      holdersStatus.textContent = 'Scan QR or approve in Xumm…';
+      const account = await pollXumm(data.uuid);
+      let label = 'Connected — Xaman · ' + shortAddr(account);
+      try {
+        await window.XrpegPortal.verifyXumm(data.uuid);
+        label = chairmanLabel('xumm', account);
+      } catch (portalErr) {
+        /* Buyer identity OK — Chairman portal cookie optional for checkout */
+        const msg = portalErr instanceof Error ? portalErr.message : '';
+        if (msg && !msg.includes('not configured') && !msg.includes('allowlist')) {
+          throw portalErr;
+        }
+      }
+      setHolderUnlocked(account, label, 'xumm');
+    } catch (err) {
+      setHolderLocked(err instanceof Error ? err.message : 'Xumm connect failed', true);
+    } finally {
+      connectXummBtn.disabled = false;
+    }
+  }
+
+  const shortAddr = (value) => value.length > 12 ? value.slice(0, 6) + '…' + value.slice(-4) : value;
+
+  async function restoreHolderSession() {
+    try {
+      const session = await window.XrpegPortal.checkSession();
+      if (session) {
+        const rail = session.rail === 'xrpl' ? 'xumm' : 'phantom';
+        setHolderUnlocked(session.address, chairmanLabel(rail, session.address), rail);
+        return;
+      }
+    } catch {
+      /* ignore */
+    }
+    const wallet = localStorage.getItem(HOLDER_KEY) || sessionStorage.getItem(HOLDER_KEY);
+    const rail = localStorage.getItem(HOLDER_RAIL_KEY) || sessionStorage.getItem(HOLDER_RAIL_KEY);
+    if (wallet && (rail === 'xumm' || rail === 'phantom')) {
+      const label =
+        rail === 'xumm'
+          ? 'Connected — Xaman · ' + shortAddr(wallet)
+          : chairmanLabel(rail, wallet);
+      setHolderUnlocked(wallet, label, rail);
+    }
+  }
+
+  window.addEventListener('xrpeg-buyer-connected', (e) => {
+    const { address, rail } = e.detail || {};
+    if (!address) return;
+    setHolderUnlocked(
+      address,
+      'Connected — Xaman · ' + shortAddr(address),
+      rail || 'xumm'
+    );
+  });
+
+  async function loadPublicStats() {
+    verifyBtn.textContent = 'Refreshing…';
+    verifyBtn.disabled = true;
+    try {
+      const [xrp, pegdTreasury, sol, prices] = await Promise.all([
+        xrplAccount(XRP_TREASURY),
+        solTreasuryPegd(),
+        solTreasurySol(),
+        fetchPrices(),
+      ]);
+
+      const xrpUsd = xrp != null && prices.XRP ? xrp * prices.XRP : null;
+      const solUsd = sol != null && prices.SOL ? sol * prices.SOL : null;
+      const liquidUsd = [xrpUsd, solUsd]
+        .filter((v) => v != null && Number.isFinite(v))
+        .reduce((a, b) => a + b, 0);
+
+      if (xrp != null) {
+        xrpBalance.textContent = fmt(xrp);
+        const xrpUsdEl = document.getElementById('xrp-usd');
+        if (xrpUsdEl) xrpUsdEl.textContent = xrpUsd != null ? '(' + fmtUsd(xrpUsd) + ')' : '($—)';
+        statXrp.textContent = fmt(xrp);
+      } else {
+        xrpBalance.textContent = 'Not found';
+        statXrp.textContent = '—';
+      }
+
+      let pegdDisplay = '—';
+      if (pegdTreasury != null) {
+        const pegdNum = parseFloat(pegdTreasury);
+        if (pegdNum < 1) {
+          pegdDisplay = pegdTreasury + ' PEGD';
+        } else {
+          pegdDisplay = fmtSupply(pegdNum) + ' PEGD';
+        }
+      }
+      pegdHeld.textContent = pegdDisplay;
+
+      if (sol != null) {
+        solBalance.textContent = fmt(sol, 4);
+        const solUsdEl = document.getElementById('sol-usd');
+        if (solUsdEl) solUsdEl.textContent = solUsd != null ? '(' + fmtUsd(solUsd) + ')' : '($—)';
+      } else {
+        solBalance.textContent = '—';
+      }
+
+      if (Number.isFinite(liquidUsd) && liquidUsd > 0) {
+        // legacy for gated calc + display
+        if (statRatio) statRatio.textContent = fmtUsd(liquidUsd);
+      } else {
+        if (statRatio) statRatio.textContent = '—';
+      }
+
+      await loadGatedStats();
+    } catch {
+      xrpBalance.textContent = 'Error';
+      statXrp.textContent = '—';
+    }
+    verifyBtn.textContent = 'Refresh →';
+    verifyBtn.disabled = false;
+  }
+
+  async function loadGatedStats() {
+    try {
+      const [supplyRes, indexed] = await Promise.all([
+        solanaRpc('getTokenSupply', [PEGD_MINT]),
+        moonitIndexed(),
+      ]);
+      const prices = await fetchPrices();
+      const onchainSupply = supplyRes?.value?.uiAmount ?? null;
+      // Always show the fixed known total supply for PEGD (1B). The on-chain getTokenSupply via proxy or Gecko normalized_total_supply often returns null/NaN for pre-graduation bonding curve tokens.
+      statSupply.textContent = fmtSupply(PEGD_TOTAL_SUPPLY);
+      if (onchainSupply != null && onchainSupply !== PEGD_TOTAL_SUPPLY) {
+        console.warn('PEGD on-chain supply mismatch (expected fixed 1B):', onchainSupply);
+      }
+
+      const xrp = parseFloat(String(statXrp.textContent).replace(/,/g, '')) || null;
+      const liquidTxt = statRatio.textContent.replace(/[$,]/g, '');
+      const liquidUsd = parseFloat(liquidTxt) || null;
+      const pegdTreasuryTxt = pegdHeld.textContent;
+      const pegdTreasury = pegdTreasuryTxt.includes('M') ? parseFloat(pegdTreasuryTxt) * 1e6
+        : pegdTreasuryTxt.includes('B') ? parseFloat(pegdTreasuryTxt) * 1e9
+        : parseFloat(pegdTreasuryTxt) || 0;
+      const implied = impliedPegdPrice(liquidUsd, PEGD_TOTAL_SUPPLY, pegdTreasury);
+
+      // Always prioritize the treasury-implied calc (treating treasury PEGD as burned per your spec)
+      // Price display removed - PEGD is a utility token for marketplace, not a speculative investment
+    } catch { /* ignore */ }
+  }
+
+  function loadGatedContent() {
+    loadGatedStats();
+    loadShop();
+  }
+
+  // Live ghostly background PEGD price (big faded gradient of the dark bg with subtle neon tint, fixed so always visible on scroll, low opacity so it's "ghostly" / easy to miss if not paying attention, live updating)
+  (function startBgPriceLive() {
+    const el = document.getElementById('bg-pegd-price');
+    if (!el) return;
+    async function tick() {
+      try {
+        const res = await fetch('https://api.geckoterminal.com/api/v2/networks/solana/tokens/' + PEGD_MINT);
+        const data = await res.json();
+        const p = data?.data?.attributes?.price_usd;
+        if (p != null) {
+          const formatted = fmtUsd(parseFloat(p));
+          el.textContent = formatted.replace('$', '');
+        }
+      } catch (_) {}
+    }
+    tick(); // initial
+    setInterval(tick, 18500); // ~live updates, low cost
+  })();
+
+  async function loadStats() {
+    await loadPublicStats();
+  }
+
+  document.getElementById('copy-ca-btn')?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(PEGD_MINT);
+      const btn = document.getElementById('copy-ca-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+    } catch { /* ignore */ }
+  });
+
+  jupiterTradeBtn?.addEventListener('click', (e) => {
+    if (pegdMeta && !pegdMeta.graduated) e.preventDefault();
+  });
+
+  connectBtn?.addEventListener('click', connectHolderWallet);
+  connectXummBtn?.addEventListener('click', connectXumm);
+
+  // Sync holder UI when wallet indicator is clicked to disconnect
+  window.addEventListener('xrpeg-portal-logout', () => {
+    if (holderWallet) {
+      setHolderLocked('');
+    }
+  });
+
+  verifyBtn.addEventListener('click', loadStats);
+  loadStats();
+  loadShop();
+  restoreHolderSession();
+
+  // Sticky creative treasury metrics on scroll (unobtrusive, shrinks + lifts with smooth morph when past the section)
+  (function initTreasurySticky() {
+    const metrics = document.querySelector('.treasury-metrics');
+    const section = document.getElementById('treasury');
+    if (!metrics || !section) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.boundingClientRect.top < 0 && !entry.isIntersecting) {
+          metrics.classList.add('is-sticky');
+        } else {
+          metrics.classList.remove('is-sticky');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    observer.observe(section);
+
+    // Optional: click the sticky to scroll back to treasury
+    metrics.addEventListener('click', () => {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  })();
+
+  // Metapod PoC (a0c775db-...) sold as Order #1 via PEGD/Phantom.
+  // Hardcoded hero buy removed (button now disabled/sold indicator above).
+  // startShopPay kept only if used by dynamic shop cards; hero listener removed to prevent purchase.
+  function startShopPay(listingId, title) {
+    if (window.XrpegCheckout?.hasRealPhantom?.()) {
+      window.XrpegCheckout.payListing({ id: listingId, title });
+      return;
+    }
+    if (isMobileShop() && window.XrpegCheckout?.redirectToPhantom) {
+      window.XrpegCheckout.redirectToPhantom(listingId);
+      return;
+    }
+    window.XrpegCheckout?.openInPhantom?.(listingId);
+  }
+
+  // hero-buy-now listener removed (button is now non-purchase per sold PoC)
+
+  const MARKET_URL = 'https://xrpegged-market.xrpegged.workers.dev/proof';
+  const API_BASE_URL = 'https://xrpegged-market.xrpegged.workers.dev';
+  const shopMarketCta = document.getElementById('shop-market-cta');
+  if (shopMarketCta) shopMarketCta.href = MARKET_URL;
+
+  function isMobileShop() {
+    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || navigator.maxTouchPoints > 1;
+  }
+
+  function updateShopPayInstructions() {
+    const el = document.getElementById('shop-pay-instructions');
+    if (!el) return;
+    if (isMobileShop()) {
+      el.innerHTML = 'On phone: tap <strong>Pay with PEGD</strong> → Phantom app → approve. Red “new site” warnings are normal for pegd.org — verify PEGD amount + treasury address.';
+    } else {
+      el.innerHTML = 'Tap <strong>Pay with PEGD</strong> — Phantom extension approves in-browser. Then submit <strong>secure shipping</strong>.';
+    }
+  }
+  updateShopPayInstructions();
+
+  async function loadShop() {
+    const grid = document.getElementById('shop-grid');
+    const statusText = document.getElementById('shop-status-text');
+    if (!grid) return;
+    const listCta = `
+        <div class="shop-card">
+          <div class="shop-img">🎯</div>
+          <div class="shop-info">
+            <h3>List the first real item</h3>
+            <p>Collectibles, merch, digital goods — USD-priced. Add a photo so buyers know it is real.</p>
+            <div class="shop-price">Free to list</div>
+            <a href="${MARKET_URL}?create=1" target="_blank" rel="noopener" class="btn-shop">Post on PEGD Market</a>
+          </div>
+        </div>`;
+    async function fetchShopListings() {
+      const urls = [
+        '/api/market/listings',
+        'https://pegd.pages.dev/api/market/listings',
+      ];
+      for (const url of urls) {
+        try {
+          const res = await fetch(url);
+          const text = await res.text();
+          const data = JSON.parse(text);
+          if (data?.success && Array.isArray(data.listings)) return data;
+        } catch {
+          /* pegd.org /api may 301 to HTML — try pages.dev */
+        }
+      }
+      throw new Error('Market API unavailable');
+    }
+
+    try {
+      const data = await fetchShopListings();
+      const listings = data.listings || [];
+      const fmtUsd = (n) => '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      if (data.demoCount > 0 && statusText) {
+        statusText.innerHTML = '<strong style="color:var(--gold);">No real inventory yet.</strong> ' +
+          data.demoCount + ' placeholder listing' + (data.demoCount === 1 ? '' : 's') +
+          ' exist in the database for layout testing — hidden here until photos are added.';
+      }
+
+      if (!data.success || !listings.length) {
+        grid.innerHTML = `
+          <div class="shop-empty">
+            <span class="shop-demo-badge">Awaiting first listing</span>
+            <h3>Nothing for sale yet</h3>
+            <p>PEGD Market is live, but we are not showing seed placeholder ads. List something real with a photo — that becomes the hero proof.</p>
+            <a href="${MARKET_URL}?create=1" target="_blank" rel="noopener" class="shop-cta-market">List on PEGD Market →</a>
+          </div>` + listCta;
+        return;
+      }
+
+      grid.innerHTML = listings.map(item => {
+        const isNFT = item.itemType && item.itemType.startsWith('nft_');
+        const nftBadge = isNFT ? `<span class="nft-badge" style="background:var(--neon);color:black;padding:0.25rem 0.5rem;border-radius:3px;font-size:0.75rem;font-weight:bold;">${item.itemType === 'nft_xrpl' ? 'XRPL NFT' : 'SOLANA NFT'}</span>` : '';
+
+        const img = item.nftImageUrl
+          ? `<div class="shop-img-real"><img src="${item.nftImageUrl}" alt=""></div>`
+          : item.mediaUri
+          ? `<div class="shop-img-real"><img src="${item.mediaUri}" alt=""></div>`
+          : `<div class="shop-img">${item.emoji || (isNFT ? '🎨' : '📦')}</div>`;
+
+        return `
+        <div class="shop-card">
+          ${img}
+          <div class="shop-info">
+            <h3>${item.title} ${nftBadge}</h3>
+            <p>${item.description || ''}</p>
+            ${item.nftCollection ? `<p style="font-size:0.85rem;color:var(--neon2);">Collection: ${item.nftCollection}</p>` : ''}
+            <div class="shop-price">${fmtUsd(item.priceUsd)} <span>${item.quotes ? '· ' + item.quotes : ''}</span></div>
+            <a href="${MARKET_URL}" target="_blank" rel="noopener" class="btn-shop">View in Market</a>
+            <button type="button" class="btn-pay-pegd" data-listing-id="${item.id}" data-listing-title="${item.title.replace(/"/g, '&quot;')}">${isMobileShop() ? '🟣 Pay with PEGD (Phantom)' : '🟣 Pay with PEGD'}</button>
+            <p class="shop-pay-hint">${isMobileShop()
+              ? '<strong>Phone:</strong> Phantom app only. Need <strong>~' + Math.ceil(item.priceUsd / 0.000005108).toLocaleString() + ' PEGD</strong> + <strong>0.002 SOL</strong> for fees.'
+              : '<strong>Desktop:</strong> Phantom only. Need <strong>~' + Math.ceil(item.priceUsd / 0.000005108).toLocaleString() + ' PEGD</strong> + <strong>0.002 SOL</strong> for fees.'}</p>
+          </div>
+        </div>`;
+      }).join('') + listCta;
+      grid.querySelectorAll('.btn-pay-pegd').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          startShopPay(btn.dataset.listingId, btn.dataset.listingTitle);
+        });
+      });
+    } catch {
+      grid.innerHTML = `<p style="color:var(--muted);grid-column:1/-1;text-align:center;">Market syncing… <a href="${MARKET_URL}" style="color:var(--neon);">Open PEGD Market</a></p>`;
+    }
+  }
+  // Sticky nav active state
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a[href^="#"]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--neon)' : '';
+    });
+  });
+</script>
+<script src="/js/directives-board.js"></script>
+<script>
+  (function () {
+    const board = document.getElementById('directives-board');
+    const btn = document.getElementById('directives-holder-btn');
+    if (!board || !window.XrpegDirectives) return;
+
+    const refresh = () => window.XrpegDirectives.mount(board).catch(() => {});
+    refresh();
+
+    btn?.addEventListener('click', async () => {
+      const session = window.XrpegPortal?.getSession?.();
+      if (session?.role === 'holder' || session?.role === 'chairman') {
+        await window.XrpegPortal?.logout?.();
+        btn.textContent = '🟣 Sign in to move directives (Phantom + PEGD)';
+        refresh();
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Connect Phantom…';
+      try {
+        await window.XrpegPortal.verifyHolderPhantom();
+        btn.textContent = 'Sign out';
+        refresh();
+      } catch (err) {
+        btn.textContent = err instanceof Error ? err.message : 'Sign-in failed';
+        setTimeout(() => {
+          btn.textContent = '🟣 Sign in to move directives (Phantom + PEGD)';
+        }, 4000);
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    window.addEventListener('xrpeg-portal-auth', (e) => {
+      if (e.detail?.role === 'holder' || e.detail?.role === 'chairman') {
+        btn.textContent = 'Sign out';
+      }
+      refresh();
+    });
+    window.addEventListener('xrpeg-portal-logout', () => {
+      btn.textContent = '🟣 Sign in to move directives (Phantom + PEGD)';
+      refresh();
+    });
+  })();
+</script>
+<script src="/js/officer-sidecar.js" defer></script>
+</body>
+</html>
+

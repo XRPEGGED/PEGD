@@ -1,0 +1,42 @@
+# Cloudflare Workers Configuration for PEGD Bridge
+# Durable Objects for stateful bridge services
+
+name = "pegd-bridge"
+main = "functions/api/bridge/monitor.ts"
+compatibility_date = "2024-01-01"
+
+# Durable Object bindings
+[[durable_objects.bindings]]
+name = "XRPL_MONITOR"
+class_name = "XRPLMonitor"
+script_name = "pegd-bridge"
+
+[[durable_objects.bindings]]
+name = "GUARDIAN"
+class_name = "Guardian"
+script_name = "pegd-bridge"
+
+[[durable_objects.bindings]]
+name = "RELAYER"
+class_name = "Relayer"
+script_name = "pegd-bridge"
+
+# Environment variables
+[vars]
+BRIDGE_XRPL_ADDRESS = "rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78"
+BRIDGE_DESTINATION_TAG = "999"
+SOLANA_RPC_URL = "https://api.mainnet-beta.solana.com"
+
+# Secrets (set with: wrangler secret put SECRET_NAME)
+# GUARDIAN_SECRET_KEY
+# RELAYER_SOLANA_KEY
+# RELAYER_XRPL_SEED
+
+# Cron trigger to keep services alive
+[triggers]
+crons = ["*/5 * * * *"]  # Every 5 minutes
+
+# Routes (if deploying as worker, not Pages Functions)
+# routes = [
+#   { pattern = "pegd.org/api/bridge/*", zone_name = "pegd.org" }
+# ]

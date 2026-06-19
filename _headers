@@ -1,0 +1,18 @@
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cross-Origin-Opener-Policy: same-origin
+
+/portal.html
+  X-Robots-Tag: noindex, nofollow
+
+/command.html
+  X-Robots-Tag: noindex, nofollow
+
+/command
+  X-Robots-Tag: noindex, nofollow
+
+/api/*
+  Cache-Control: no-store

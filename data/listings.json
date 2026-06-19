@@ -1,0 +1,36 @@
+{
+  "listings": [
+    {
+      "id": "card-charizard",
+      "title": "Charizard Holo — Base Set",
+      "description": "Classic holo. NM condition. USD-priced; pay XRP, SOL, or PEGD.",
+      "priceUsd": 450,
+      "category": "pokemon",
+      "emoji": "🔥"
+    },
+    {
+      "id": "card-blastoise",
+      "title": "Blastoise — Base Set Unlimited",
+      "description": "Unlimited print. Lightly played.",
+      "priceUsd": 185,
+      "category": "pokemon",
+      "emoji": "💧"
+    },
+    {
+      "id": "card-pikachu",
+      "title": "PIKACHU Illustrator Promo (Replica Display)",
+      "description": "Display replica for the collection wall. Not graded.",
+      "priceUsd": 120,
+      "category": "pokemon",
+      "emoji": "⚡"
+    },
+    {
+      "id": "card-booster",
+      "title": "Pokemon Booster Pack — Sealed",
+      "description": "Sealed vintage-style booster. Ships worldwide.",
+      "priceUsd": 89,
+      "category": "pokemon",
+      "emoji": "📦"
+    }
+  ]
+}

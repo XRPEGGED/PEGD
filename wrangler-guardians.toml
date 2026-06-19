@@ -1,0 +1,39 @@
+name = "pegd-guardians"
+main = "functions/api/bridge/guardian.ts"
+compatibility_date = "2024-01-01"
+node_compat = true
+
+# Guardian 1 Durable Object
+[[durable_objects.bindings]]
+name = "GUARDIAN1"
+class_name = "Guardian1"
+script_name = "pegd-guardians"
+
+# Guardian 2 Durable Object
+[[durable_objects.bindings]]
+name = "GUARDIAN2"
+class_name = "Guardian2"
+script_name = "pegd-guardians"
+
+# Guardian 3 Durable Object
+[[durable_objects.bindings]]
+name = "GUARDIAN3"
+class_name = "Guardian3"
+script_name = "pegd-guardians"
+
+# Migrations for Durable Objects
+[[migrations]]
+tag = "v1"
+new_classes = ["Guardian1", "Guardian2", "Guardian3"]
+
+[vars]
+BRIDGE_XRPL_ADDRESS = "rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78"
+RELAYER_URL = "https://pegd.org/api/bridge/relayer"
+
+# Environment-specific configs
+[env.production]
+name = "pegd-guardians"
+route = "pegd.org/api/bridge/guardian*"
+
+[env.development]
+name = "pegd-guardians-dev"

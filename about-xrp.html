@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About XRP — Proof Oracle | XRPEGGED</title>
+  <meta name="description" content="Live XRPL intelligence dashboard — network stats, ledger activity, and XRP context from the XRPEGGED Proof Oracle.">
+  <meta name="robots" content="index, follow">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230a0a1a' stroke='%2300f5ff' stroke-width='4'/%3E%3Ctext x='50' y='62' font-family='Arial' font-weight='bold' font-size='36' fill='%2300f5ff' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #0a0a1a;
+      --neon: #00f5ff;
+      --muted: #7070a0;
+      --border: rgba(0,245,255,0.15);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: #e0e0ff;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+    .topbar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0 1.25rem;
+      height: 52px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,26,0.95);
+      backdrop-filter: blur(10px);
+    }
+    .topbar a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+    .topbar a:hover { color: var(--neon); }
+    .topbar .brand { color: var(--neon); font-weight: 800; }
+    .topbar .label { font-size: 0.82rem; color: var(--muted); }
+    .oracle-frame {
+      flex: 1;
+      width: 100%;
+      border: 0;
+      display: block;
+      min-height: calc(100dvh - 52px);
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="/" class="brand">← XRPEGGED</a>
+    <span class="label">About XRP · Proof Oracle</span>
+    <a href="/proof-oracle" target="_blank" rel="noopener">Open full page ↗</a>
+  </header>
+  <iframe
+    class="oracle-frame"
+    src="/proof-oracle"
+    title="Proof Oracle — XRPL Intelligence Dashboard"
+    loading="lazy"
+  ></iframe>
+</body>
+</html>

@@ -1,0 +1,24 @@
+# Guardian keys (sensitive!)
+.guardian-keys/
+*.json
+
+# Wrangler cache
+.wrangler/
+wrangler.toml.backup
+
+# Node
+node_modules/
+.env
+.env.local
+
+# Build
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

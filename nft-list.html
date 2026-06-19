@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List NFT - PEGD Market</title>
+  <link rel="stylesheet" href="/css/market.css">
+  <style>
+    .list-container {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--neon);
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 0.75rem;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--neon2);
+      border-radius: 4px;
+      color: white;
+      font-size: 1rem;
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .blockchain-toggle {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .blockchain-toggle button {
+      flex: 1;
+      padding: 0.75rem;
+      background: rgba(0,0,0,0.3);
+      border: 2px solid var(--neon2);
+      color: var(--neon2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .blockchain-toggle button.active {
+      background: var(--neon);
+      border-color: var(--neon);
+      color: black;
+    }
+
+    .nft-fields {
+      display: none;
+    }
+
+    .nft-fields.active {
+      display: block;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--neon);
+      border: none;
+      color: black;
+      font-weight: bold;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .submit-btn:hover {
+      background: var(--neon2);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .success-message {
+      padding: 1rem;
+      background: rgba(0, 255, 0, 0.1);
+      border: 1px solid lime;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .success-message.show {
+      display: block;
+    }
+
+    .error-message {
+      padding: 1rem;
+      background: rgba(255, 0, 0, 0.1);
+      border: 1px solid red;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="list-container">
+    <h1>List Your NFT</h1>
+    <p style="margin-bottom: 2rem;">Sell your XRPL or Solana NFT for PEGD, XRP, or SOL</p>
+
+    <div id="success-message" class="success-message">
+      <strong>✅ NFT Listed!</strong>
+      <p>Your NFT has been listed on the marketplace.</p>
+      <a href="/#shop" style="color: var(--neon);">View Marketplace</a>
+    </div>
+
+    <div id="error-message" class="error-message"></div>
+
+    <form id="nft-form">
+      <!-- Blockchain Selection -->
+      <div class="form-group">
+        <label>Blockchain</label>
+        <div class="blockchain-toggle">
+          <button type="button" class="active" data-blockchain="xrpl">XRPL NFT</button>
+          <button type="button" data-blockchain="solana">Solana NFT</button>
+        </div>
+      </div>
+
+      <!-- XRPL NFT Fields -->
+      <div id="xrpl-fields" class="nft-fields active">
+        <div class="form-group">
+          <label>NFT Token ID *</label>
+          <input type="text" id="xrpl-token-id" placeholder="000B0539FB51E8D8..." />
+          <small style="color: #888;">Find this in your Xaman wallet or XRPL explorer</small>
+        </div>
+
+        <div class="form-group">
+          <label>Issuer Address</label>
+          <input type="text" id="xrpl-issuer" placeholder="rNCFjv8Ek5oDrNiMJ3pw6eLLFtMjZLJnf2" />
+        </div>
+      </div>
+
+      <!-- Solana NFT Fields -->
+      <div id="solana-fields" class="nft-fields">
+        <div class="form-group">
+          <label>NFT Mint Address *</label>
+          <input type="text" id="solana-mint" placeholder="7ZWj7a1f8tWkjBESHKgrLmXshuXxqeY9..." />
+          <small style="color: #888;">Find this in your Phantom wallet</small>
+        </div>
+      </div>
+
+      <!-- Common Fields -->
+      <div class="form-group">
+        <label>Your Wallet Address *</label>
+        <input type="text" id="seller-wallet" placeholder="rXXX... or 5ZWj..." required />
+        <small style="color: #888;">Where you'll receive payment</small>
+      </div>
+
+      <div class="form-group">
+        <label>Listing Title *</label>
+        <input type="text" id="title" placeholder="Cool NFT #1234" required />
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="description" placeholder="Describe your NFT..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Price (USD) *</label>
+        <input type="number" id="price" step="0.01" min="0.01" placeholder="99.99" required />
+        <small style="color: #888;">Buyers can pay with PEGD, XRP, or SOL</small>
+      </div>
+
+      <div class="form-group">
+        <label>Image URL</label>
+        <input type="url" id="image-url" placeholder="https://..." />
+        <small style="color: #888;">Direct link to NFT image (optional)</small>
+      </div>
+
+      <div class="form-group">
+        <label>Collection Name</label>
+        <input type="text" id="collection" placeholder="XRP Punks" />
+      </div>
+
+      <button type="submit" class="submit-btn">List NFT</button>
+    </form>
+
+    <p style="margin-top: 2rem; text-align: center;">
+      <a href="/#shop" style="color: var(--neon2);">← Back to Marketplace</a>
+    </p>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id)
+
+    // Blockchain toggle
+    document.querySelectorAll('.blockchain-toggle button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.blockchain-toggle button').forEach(b => b.classList.remove('active'))
+        btn.classList.add('active')
+
+        const blockchain = btn.dataset.blockchain
+        document.querySelectorAll('.nft-fields').forEach(f => f.classList.remove('active'))
+        $(`${blockchain}-fields`).classList.add('active')
+      })
+    })
+
+    // Form submission
+    $('nft-form').addEventListener('submit', async (e) => {
+      e.preventDefault()
+
+      const blockchain = document.querySelector('.blockchain-toggle button.active').dataset.blockchain
+      const submitBtn = document.querySelector('.submit-btn')
+
+      submitBtn.disabled = true
+      submitBtn.textContent = 'Listing NFT...'
+
+      $('error-message').classList.remove('show')
+      $('success-message').classList.remove('show')
+
+      try {
+        const data = {
+          itemType: `nft_${blockchain}`,
+          sellerWallet: $('seller-wallet').value,
+          title: $('title').value,
+          description: $('description').value || '',
+          priceUsd: parseFloat($('price').value),
+          nftImageUrl: $('image-url').value || null,
+          nftCollection: $('collection').value || null,
+          nftBlockchain: blockchain
+        }
+
+        if (blockchain === 'xrpl') {
+          data.nftTokenId = $('xrpl-token-id').value
+          data.nftIssuer = $('xrpl-issuer').value || null
+        } else {
+          data.nftMintAddress = $('solana-mint').value
+        }
+
+        const response = await fetch('/api/nft/list', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+
+        const result = await response.json()
+
+        if (result.success) {
+          $('success-message').classList.add('show')
+          $('nft-form').reset()
+          window.scrollTo(0, 0)
+        } else {
+          throw new Error(result.error || 'Failed to list NFT')
+        }
+
+      } catch (err) {
+        $('error-message').textContent = '❌ ' + err.message
+        $('error-message').classList.add('show')
+      } finally {
+        submitBtn.disabled = false
+        submitBtn.textContent = 'List NFT'
+      }
+    })
+  </script>
+</body>
+</html>

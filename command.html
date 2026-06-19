@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a1a">
+  <meta name="robots" content="noindex, nofollow">
+  <title>XRPEGGED Command — Chairman</title>
+  <style>
+    :root {
+      --bg: #070712; --panel: #101028; --card: #151536; --neon: #00f5ff; --neon2: #9945ff;
+      --gold: #f0b90b; --text: #e8e8ff; --muted: #6e6e98; --border: rgba(0,245,255,0.16);
+      --ok: #34d399; --warn: #fbbf24; --err: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif; background: var(--bg); color: var(--text);
+      min-height: 100dvh; display: flex; flex-direction: column;
+    }
+    .hidden { display: none !important; }
+    #gate { padding: 24px 16px; max-width: 420px; margin: auto; }
+    h1 { font-size: 1.15rem; color: var(--neon); }
+    .sub { color: var(--muted); font-size: 0.8rem; margin: 6px 0 14px; line-height: 1.4; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+    .btn {
+      display: block; width: 100%; margin-top: 8px; padding: 13px; border: none; border-radius: 10px;
+      font-weight: 800; font-size: 0.88rem; cursor: pointer;
+    }
+    .btn-xumm { background: linear-gradient(135deg, #0052ff, #0039b3); color: #fff; }
+    .btn-phantom { background: linear-gradient(135deg, var(--neon2), #7c3aed); color: #fff; }
+    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+    .btn-sm { width: auto; padding: 8px 12px; font-size: 0.78rem; margin: 0; }
+    .err { color: var(--err); font-size: 0.82rem; margin-top: 8px; }
+    #app { display: none; flex: 1; min-height: 0; }
+    #app.open { display: grid; grid-template-columns: 1fr; }
+    @media (min-width: 960px) {
+      #app.open { grid-template-columns: 1fr 320px; }
+    }
+    header.bar {
+      grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--panel);
+    }
+    header.bar h1 { font-size: 0.95rem; flex: 1; }
+    .pill { font-size: 0.65rem; font-weight: 800; padding: 4px 8px; border-radius: 999px; background: rgba(0,245,255,0.12); color: var(--neon); }
+    .pill.warn { background: rgba(251,191,36,0.15); color: var(--warn); }
+    nav.tabs { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 14px 0; grid-column: 1; }
+    .tab {
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      padding: 8px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; cursor: pointer;
+    }
+    .tab.active { background: rgba(0,245,255,0.12); color: var(--neon); border-color: rgba(0,245,255,0.35); }
+    main.workspace { padding: 12px 14px 24px; overflow: auto; grid-column: 1; }
+    aside.cto {
+      border-top: 1px solid var(--border); background: var(--panel); padding: 14px;
+      display: flex; flex-direction: column; min-height: 280px; grid-column: 1;
+    }
+    @media (min-width: 960px) {
+      aside.cto { border-top: none; border-left: 1px solid var(--border); grid-column: 2; grid-row: 2 / 4; }
+      nav.tabs { grid-row: 2; }
+      main.workspace { grid-row: 3; }
+    }
+    aside.cto h2 { font-size: 0.85rem; color: var(--neon2); margin-bottom: 8px; }
+    .cto-box {
+      flex: 1; overflow-y: auto; font-size: 0.82rem; line-height: 1.45; color: var(--text);
+      background: rgba(0,0,0,0.25); border-radius: 10px; padding: 10px; margin-bottom: 8px;
+    }
+    .cto-box .head { color: var(--gold); font-weight: 800; margin-bottom: 6px; }
+    .cto-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .cto-chip {
+      font-size: 0.7rem; padding: 5px 8px; border-radius: 999px; border: 1px solid var(--border);
+      background: rgba(153,69,255,0.1); color: var(--text); cursor: pointer;
+    }
+    .cto-form { display: flex; gap: 6px; margin-top: 8px; }
+    .cto-form input {
+      flex: 1; border-radius: 8px; border: 1px solid var(--border); background: var(--bg);
+      color: var(--text); padding: 8px; font-size: 0.82rem;
+    }
+    .metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    @media (min-width: 640px) { .metric-grid { grid-template-columns: repeat(4, 1fr); } }
+    .metric { background: rgba(0,0,0,0.28); border-radius: 10px; padding: 10px; }
+    .metric .l { font-size: 0.65rem; color: var(--muted); }
+    .metric .v { font-size: 0.95rem; font-weight: 800; margin-top: 2px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: top; }
+    th { color: var(--muted); font-weight: 700; font-size: 0.68rem; text-transform: uppercase; }
+    .status { font-size: 0.68rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
+    .status.active { background: rgba(52,211,153,0.15); color: var(--ok); }
+    .status.pending { background: rgba(251,191,36,0.15); color: var(--warn); }
+    .status.archived { background: rgba(110,110,152,0.2); color: var(--muted); }
+    input, textarea, select {
+      width: 100%; border-radius: 8px; border: 1px solid var(--border); background: var(--bg);
+      color: var(--text); padding: 8px; font-size: 0.82rem; margin-top: 4px;
+    }
+    label { font-size: 0.72rem; color: var(--muted); display: block; margin-top: 10px; }
+    .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    a { color: var(--neon); }
+    #xumm-qr { max-width: 200px; margin: 10px auto; display: block; border-radius: 8px; }
+    .thumb { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; background: #222; }
+    #directives-board .dir-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    #directives-board .dir-controls { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+    #directives-board .dir-btn {
+      border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: var(--text);
+      border-radius: 6px; width: 28px; height: 24px; cursor: pointer; font-size: 0.75rem; padding: 0;
+    }
+    #directives-board .dir-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    #directives-board .dir-label { flex: 1; line-height: 1.35; }
+  </style>
+</head>
+<body>
+  <div id="gate">
+    <h1>XRPEGGED Command</h1>
+    <p class="sub">Private Chairman portal · not indexed · wallet allowlist only<br>Edit listings, orders, directives — with CTO guidance.</p>
+    <div class="card">
+      <button type="button" class="btn btn-xumm" id="gate-xumm">Sign in with Xaman</button>
+      <button type="button" class="btn btn-phantom" id="gate-phantom">Sign in with Phantom</button>
+      <img id="xumm-qr" class="hidden" alt="Xumm QR">
+      <p id="gate-msg" class="err hidden"></p>
+    </div>
+    <p class="sub">Public site may be paused — Command works when you're signed in.<br><a href="/portal.html">← lighter portal</a></p>
+  </div>
+
+  <div id="app">
+    <header class="bar">
+      <h1>Command Portal</h1>
+      <span class="pill" id="who-pill">—</span>
+      <span class="pill warn hidden" id="pause-pill">Site paused</span>
+      <button type="button" class="btn btn-ghost btn-sm" id="logout-btn">Sign out</button>
+    </header>
+
+    <nav class="tabs" id="tabs">
+      <button type="button" class="tab active" data-tab="overview">Overview</button>
+      <button type="button" class="tab" data-tab="listings">Listings</button>
+      <button type="button" class="tab" data-tab="orders">Orders</button>
+      <button type="button" class="tab" data-tab="directives">Directives</button>
+      <button type="button" class="tab" data-tab="editor">+ New SKU</button>
+    </nav>
+
+    <main class="workspace">
+      <section id="panel-overview" class="panel">
+        <!-- Metapod PoC One-Click Fulfill (CEO simplification for Chairman) -->
+        <div class="card" id="metapod-fulfill-card" style="border:2px solid var(--gold); margin-bottom:16px;">
+          <h2 style="font-size:0.95rem;color:var(--gold);margin-bottom:4px;">Metapod Order #1 — PoC Fulfill (close the KPI)</h2>
+          <p class="sub" style="margin-bottom:8px;">This is your only remaining Chairman action for Order #1. Digital side collapsed to 2 clicks. Physical is the card you have.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+            <button type="button" class="btn btn-ghost btn-sm" id="metapod-decrypt-btn" style="flex:1;min-width:140px;">1. Decrypt shipping (shows once)</button>
+            <button type="button" class="btn btn-phantom" id="metapod-ship-btn" style="flex:2;min-width:200px;font-size:0.95rem;">2. Mark SHIPPED + DELIVERED (PoC complete)</button>
+          </div>
+          <div id="metapod-instructions" class="sub" style="font-size:0.72rem;line-height:1.3;background:rgba(0,0,0,0.2);padding:8px;border-radius:6px;">
+            Physical (60 sec): Card = Pokémon Metapod JTG EN 002/159. Optional: sticker/etch QR to rmetapod1GUWECKJdcQQNLVuqNbx895xV + your order-status link. Put in envelope. Drop it. Then click button 2.
+          </div>
+          <p id="metapod-msg" class="sub" style="margin-top:6px;color:var(--ok);font-size:0.7rem;"></p>
+        </div>
+
+        <div class="metric-grid" id="metrics"></div>
+        <p class="sub" id="overview-meta" style="margin-top:12px;"></p>
+      </section>
+
+      <section id="panel-listings" class="panel hidden">
+        <div class="card" style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr><th>Photo</th><th>Title</th><th>Price</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="listings-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="panel-orders" class="panel hidden">
+        <div class="card" style="overflow-x:auto;">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Listing</th><th>Buyer</th><th>Status</th><th>Fulfillment</th><th>Tracking</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="orders-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="panel-directives" class="panel hidden">
+        <div class="card" id="directives-board">
+          <p class="sub" style="margin:0 0 8px;">SPRINT · HOLDERS CAN REORDER</p>
+          <p id="phase" style="color:var(--gold);font-weight:700;"></p>
+          <ul data-directives-sprint id="sprint"></ul>
+          <p class="sub" style="margin:12px 0 8px;">BACKLOG</p>
+          <ul data-directives-backlog id="backlog"></ul>
+          <p class="sub" data-directives-meta id="directives-meta" style="margin-top:10px;"></p>
+        </div>
+      </section>
+
+      <section id="panel-editor" class="panel hidden">
+        <div class="card">
+          <h2 style="font-size:0.9rem;color:var(--neon);margin-bottom:8px;">New treasury listing</h2>
+          <label>Title<input id="new-title" maxlength="120"></label>
+          <label>Description<textarea id="new-desc" rows="3" maxlength="1000"></textarea></label>
+          <label>Price (USD)<input id="new-price" type="number" step="0.01" min="0.01" placeholder="4.99"></label>
+          <label>Category
+            <select id="new-cat">
+              <option value="pokemon">pokemon</option>
+              <option value="collectibles">collectibles</option>
+              <option value="merch">merch</option>
+              <option value="other">other</option>
+            </select>
+          </label>
+          <label>Photo URL<input id="new-media" placeholder="https://… or upload below"></label>
+          <label>Upload photo<input id="new-file" type="file" accept="image/*"></label>
+          <button type="button" class="btn btn-phantom" id="new-save" style="margin-top:14px;">Create active listing</button>
+          <p id="editor-msg" class="err hidden"></p>
+        </div>
+        <div class="card hidden" id="edit-card">
+          <h2 style="font-size:0.9rem;color:var(--neon);">Edit listing</h2>
+          <input type="hidden" id="edit-id">
+          <label>Title<input id="edit-title"></label>
+          <label>Price USD<input id="edit-price" type="number" step="0.01"></label>
+          <label>Status
+            <select id="edit-status">
+              <option value="active">active</option>
+              <option value="pending">pending</option>
+              <option value="archived">archived</option>
+            </select>
+          </label>
+          <label>Photo URL<input id="edit-media"></label>
+          <div class="row-actions" style="margin-top:12px;">
+            <button type="button" class="btn btn-phantom btn-sm" id="edit-save">Save</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="edit-archive">Archive</button>
+          </div>
+          <p id="edit-msg" class="err hidden"></p>
+        </div>
+      </section>
+    </main>
+
+    <aside class="cto">
+      <h2>CTO Guide</h2>
+      <div class="cto-box" id="cto-box">
+        <div class="head">Loading…</div>
+        <div>Sign in to load Chairman guidance.</div>
+      </div>
+      <div class="cto-actions" id="cto-chips"></div>
+      <form class="cto-form" id="cto-form">
+        <input type="text" placeholder="Ask CTO…" maxlength="500" autocomplete="off">
+        <button type="submit" class="btn btn-sm btn-phantom">Ask</button>
+      </form>
+    </aside>
+  </div>
+
+  <script src="/js/portal-auth.js"></script>
+  <script src="/js/directives-board.js"></script>
+  <script src="/js/command-portal.js" defer></script>
+</body>
+</html>

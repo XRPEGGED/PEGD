@@ -1,0 +1,43 @@
+{
+  "name": "Pokémon Metapod — JTG EN 002/159",
+  "description": "Physical trading card. Proof of Worth Order #1 — first USD sale on the XRPEGGED marketplace via PEGD/Phantom.",
+  "image": "https://via.placeholder.com/600x400.png?text=Replace+with+actual+Metapod+photo+URL+from+listing",
+  "animation_url": "https://via.placeholder.com/600x400.png?text=GLB+Pending+-+update+this+JSON+when+Tier-1+GLB+ready",
+  "external_url": "https://pegd.org/#shop",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "pokemon"
+    },
+    {
+      "trait_type": "Set",
+      "value": "JTG EN"
+    },
+    {
+      "trait_type": "Card Number",
+      "value": "002/159"
+    },
+    {
+      "trait_type": "Proof",
+      "value": "Order #1"
+    },
+    {
+      "trait_type": "Media",
+      "value": "photo + glb (pending)"
+    }
+  ],
+  "properties": {
+    "v": "1.1",
+    "creator": "rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78",
+    "listing_id": "a0c775db-0bee-43d6-86af-bd6ae6504a3b",
+    "currency": "USD",
+    "price": 4.99,
+    "createdAt": "2026-06-11T00:00:00Z",
+    "physical_fulfilled": false,
+    "physical_provenance": {
+      "type": "etched_qr",
+      "address": "rmetapod1GUWECKJdcQQNLVuqNbx895xV",
+      "link": "https://pegd.pages.dev/order-status.html?listing=a0c775db-0bee-43d6-86af-bd6ae6504a3b"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+name = "pegd"
+pages_build_output_dir = "."
+
+[vars]
+SITE_PAUSED = "false"
+MAINTENANCE_UNTIL = "2026-06-13T13:00:00Z"
+# Comma-separated extra allowed origins for API CORS (optional)
+# PORTAL_ORIGINS = "https://market.pegd.org"
+
+[[kv_namespaces]]
+binding = "DIRECTIVES_KV"
+id = "2eacc10a682d4b0c9b1e051694ab8cd9"

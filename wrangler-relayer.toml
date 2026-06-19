@@ -1,0 +1,35 @@
+name = "pegd-relayer"
+main = "functions/api/bridge/relayer-multisig.ts"
+compatibility_date = "2024-01-01"
+node_compat = true
+
+# Multi-Sig Relayer Durable Object
+[[durable_objects.bindings]]
+name = "MULTISIG_RELAYER"
+class_name = "MultiSigRelayer"
+script_name = "pegd-relayer"
+
+# Migrations
+[[migrations]]
+tag = "v1"
+new_classes = ["MultiSigRelayer"]
+
+[vars]
+BRIDGE_XRPL_ADDRESS = "rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78"
+SOLANA_BRIDGE_PROGRAM_ID = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+SOLANA_RPC_URL = "https://api.devnet.solana.com"
+
+# Secrets (set via: npx wrangler secret put SECRET_NAME)
+# RELAYER_KEYPAIR - Solana relayer private key
+# BRIDGE_PEGD_ACCOUNT - Bridge's PEGD token account
+# BRIDGE_PDA - Bridge program derived address
+
+[env.production]
+name = "pegd-relayer"
+route = "pegd.org/api/bridge/relayer*"
+
+[env.production.vars]
+SOLANA_RPC_URL = "https://api.mainnet-beta.solana.com"
+
+[env.development]
+name = "pegd-relayer-dev"

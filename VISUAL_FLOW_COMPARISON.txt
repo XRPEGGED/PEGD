@@ -1,0 +1,80 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    PEGD SITE REORGANIZATION - FLOW COMPARISON                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────┬──────────────────────────────────────────┐
+│         BEFORE (Old Flow)       │         AFTER (Newcomer Flow)            │
+├─────────────────────────────────┼──────────────────────────────────────────┤
+│                                 │                                          │
+│  1. 🏠 HERO                     │  1. 🏠 HERO (SIMPLIFIED)                │
+│     ├─ Complex stats            │     ├─ 1 headline                       │
+│     ├─ Multiple paragraphs      │     ├─ 1 sentence                       │
+│     ├─ 2 CTAs                   │     └─ 1 PRIMARY CTA → Shop             │
+│     └─ Proof text               │                                          │
+│                                 │                                          │
+│  2. 🔐 TREASURY                 │  2. 🛒 SHOP ⬆ MOVED UP!                │
+│     └─ Wallet verification      │     ├─ Marketplace grid                 │
+│                                 │     ├─ USD-priced items                 │
+│  3. 📖 ABOUT                    │     └─ PEGD checkout                    │
+│     └─ Technical explanation    │                                          │
+│                                 │  3. ℹ️  HOW IT WORKS ⭐ NEW!            │
+│  4. 🔐 HOLDERS                  │     ├─ Step 1: Browse Listings          │
+│     └─ Sign-in section          │     ├─ Step 2: Choose Payment           │
+│                                 │     └─ Step 3: Get Your Item            │
+│  5. ⚙️  FEATURES                │                                          │
+│     └─ Token mechanics          │  4. 🔐 TREASURY (COLLAPSIBLE) ⬇        │
+│                                 │     └─ Click to expand verification     │
+│  6. 🔄 SWAP                     │                                          │
+│     └─ Trading/bonding curve    │  5. 🔄 SWAP                             │
+│                                 │     └─ Trading UI                       │
+│  7. 🛒 SHOP                     │                                          │
+│     └─ Marketplace              │  6. 🐸 CULTURE                          │
+│                                 │     └─ Memes/community                  │
+│  8. 🐸 CULTURE                  │                                          │
+│     └─ Memes                    │  7. ⚖️  GOVERNANCE                      │
+│                                 │     └─ Directives/voting                │
+│  9. ⚖️  GOVERNANCE              │                                          │
+│     └─ Directives               │  8. 📖 ABOUT ⬇                         │
+│                                 │     └─ Technical explanation            │
+│                                 │                                          │
+│                                 │  9. ⚙️  FEATURES ⬇                      │
+│                                 │     └─ Token mechanics                  │
+│                                 │                                          │
+│                                 │ 10. 🔐 HOLDERS                          │
+│                                 │     └─ Sign-in (gated div)              │
+│                                 │                                          │
+└─────────────────────────────────┴──────────────────────────────────────────┘
+
+KEY IMPROVEMENTS FOR NEWCOMERS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ SIMPLIFIED HERO: From complex stats → One clear action
+✓ SHOP FIRST: Marketplace visible immediately after hero
+✓ CLEAR PATH: 3-step guide shows exactly how it works
+✓ PROGRESSIVE DISCLOSURE: Treasury details hidden until clicked
+✓ TECHNICAL LAST: About/Features at bottom for deep dive
+
+VISITOR JOURNEY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Landing → "Browse Market" → See Products → Learn How (3 steps) → 
+  → Trade/Swap → Culture → Governance → Deep Dive (About/Features)
+
+PRESERVED:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ All IDs (stat-xrp, stat-price, etc.) - hidden with display:none
+✓ All classes unchanged
+✓ All scripts functional
+✓ Treasury auto-update
+✓ Directives board
+✓ All external links
+
+FILES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📄 index-v2.html              - Reorganized (1996 lines)
+📄 index-v2.html.backup       - Original backup (1987 lines)  
+📄 REORGANIZATION_SUMMARY.md  - Detailed changes
+📄 VISUAL_FLOW_COMPARISON.txt - This file
+
