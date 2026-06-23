@@ -675,6 +675,11 @@
       font-size: 0.8rem; color: var(--muted);
     }
     .footer-disclaimer { font-size: 0.72rem; color: var(--muted); opacity: 0.6; max-width: 600px; }
+    .link-accent2 { color: var(--neon2); }
+    .completed-orders { width: 100%; border-collapse: collapse; margin-top: 1.25rem; font-size: 0.88rem; }
+    .completed-orders th { color: var(--muted); font-weight: 600; text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
+    .completed-orders td { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text); }
+    .completed-orders a { color: var(--neon); }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
@@ -830,14 +835,28 @@
   <!-- SHOP -->
   <section id="shop">
     <div class="section-inner">
-      <p class="section-label">💎 PEGD Market</p>
+      <p class="section-label">PEGD Market</p>
       <h2>prove its worth</h2>
       <p class="section-sub">Everyone can browse and buy. Listings are <strong>USD-priced</strong>. Checkout: <strong>PEGD</strong> (preferred), <strong>XRP via Xaman</strong>, or <strong>SOL</strong> on Phantom.</p>
       <p style="text-align:center;margin-top:1rem;"><a href="/nft-list.html" style="display:inline-block;padding:0.75rem 1.5rem;background:var(--neon);color:black;text-decoration:none;border-radius:4px;font-weight:600;">📦 List Your NFT</a></p>
       <div class="shop-demo-banner" id="shop-status-banner">
-        <p id="shop-status-text"><strong style="color:var(--gold);">Order #1 complete.</strong> <span id="shop-pay-instructions">Metapod sold via PEGD/Phantom (first PEGD Market). See remaining listings below or the full market.</span> Need PEGD? <a href="#swap" style="color:var(--neon2);">Get PEGD</a> to start shopping.</p>
+        <p id="shop-status-text"><span id="shop-pay-instructions">Verified sales below. Need PEGD? <a href="#swap" class="link-accent2">Get PEGD</a> to start shopping.</span></p>
         <a href="#" class="shop-cta-market" id="shop-market-cta" style="opacity:0.55;cursor:default;" onclick="return false;" title="Full marketplace coming soon">Marketplace — Coming Soon</a>
       </div>
+      <table class="completed-orders">
+        <thead>
+          <tr><th>#</th><th>Item</th><th>Price</th><th>Payment</th><th>Verified</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Metapod (Pokemon card)</td>
+            <td>$1.00</td>
+            <td>PEGD / Phantom</td>
+            <td><a href="https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">On-chain</a></td>
+          </tr>
+        </tbody>
+      </table>
       <div class="shop-grid" id="shop-grid">
         <p style="color:var(--muted);grid-column:1/-1;text-align:center;">Loading market…</p>
       </div>
@@ -847,7 +866,7 @@
   <!-- GET PEGD -->
   <section id="swap">
     <div class="swap-container">
-      <p class="section-label" style="text-align:center">💰 Get PEGD to Shop</p>
+      <p class="section-label" style="text-align:center">Get PEGD</p>
       <h2>Acquire PEGD for Marketplace Purchases</h2>
       <p class="section-sub">PEGD is the payment method for <a href="#shop" style="color:var(--neon);">PEGD Market</a>. Use either route below to get PEGD into your Phantom wallet.</p>
       <div class="swap-card" style="margin-bottom:1rem;">
@@ -895,7 +914,7 @@
   <!-- COMPUTE POOL TEASER -->
   <section id="mine" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
     <div class="section-inner" style="text-align:center;padding:3rem 1rem;">
-      <p class="section-label">⛏️ PEGD Compute Pool</p>
+      <p class="section-label">PEGD Compute Pool</p>
       <h2>Mine to Earn PEGD</h2>
       <p class="section-sub">Run the worker on any machine — NVIDIA GPU, AMD GPU, or CPU. The pool picks the most profitable coin automatically and pays out in PEGD every 3 hours.</p>
       <div style="margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
@@ -914,7 +933,7 @@
         <span class="treasury-summary-hint">Live XRP + Solana balances • On-chain proof</span>
       </summary>
     <div class="section-inner">
-      <p class="section-label">🔐 Proof of Reserves</p>
+      <p class="section-label">Proof of Reserves</p>
       <h2>Transparent Treasury</h2>
       <p class="section-sub">Our XRP holdings are always public and verifiable. Enter the treasury wallet address below to see live balances on the XRP Ledger.</p>
       <div class="treasury-card">
@@ -969,7 +988,7 @@
         </div>
 
         <div class="treasury-note">
-          <strong>🔒 Proof is everything.</strong> Treasury balances are public and verifiable on XRP Ledger and Solana. No hidden wallets — transparent, on-chain reserves you can audit yourself anytime.
+          <strong>Proof is everything.</strong> Treasury balances are public and verifiable on XRP Ledger and Solana. No hidden wallets — transparent, on-chain reserves you can audit yourself anytime.
         </div>
       </div>
     </div>
@@ -1052,7 +1071,7 @@
   <!-- GOVERNANCE -->
   <section id="governance">
     <div class="section-inner">
-      <p class="section-label">⚖️ How XRPEGGED Decides</p>
+      <p class="section-label">How XRPEGGED Decides</p>
       <h2>Governance</h2>
       <p class="section-sub">Transparent process, Chairman-led. We publish <strong>principles</strong> and <strong>on-chain proof</strong> — not internal playbooks.</p>
       <div class="trade-status" style="margin-top:0;">
@@ -1112,6 +1131,7 @@
       </div>
       <div class="footer-col">
         <h4>Legal</h4>
+        <a href="/faq.html">FAQ</a>
         <a href="/disclaimer.html">Disclaimer</a>
         <a href="/terms.html">Terms of Use</a>
         <a href="/privacy.html">Privacy Policy</a>
@@ -1132,8 +1152,8 @@
   const SOL_TREASURY_2 = '4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9'; // compute pool
   const PEGD_MINT = 'BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
   const PEGD_TOTAL_SUPPLY = 1_000_000_000; // fixed at mint creation (standard Moonshot 1B supply; authority revoked)
-  const MARKET_URL = 'https://xrpegged-market.xrpegged.workers.dev/proof';
-  const API_BASE_URL = 'https://xrpegged-market.xrpegged.workers.dev';
+  const MARKET_URL = 'https://market.pegd.org/proof';
+  const API_BASE_URL = 'https://market.pegd.org';
 
 
   const verifyBtn = document.getElementById('verify-btn');
