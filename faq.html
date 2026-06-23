@@ -41,6 +41,9 @@
 
   <h2>Are there buyer protections?</h2>
   <p>On-chain payments are irreversible by design. XRPEGGED does not offer a chargeback mechanism. We publish completed order records publicly so you can assess seller reliability before purchasing. We recommend treating PEGD Market purchases like any peer-to-peer marketplace transaction — exercise normal caution.</p>
+
+  <h2>What is Proof of Worth?</h2>
+  <p>Proof of Worth is our public record of completed marketplace orders. Every fulfilled transaction is listed at <a href="https://market.pegd.org/proof" target="_blank" rel="noopener">market.pegd.org/proof</a> so anyone can verify that real goods have changed hands on the platform. Check a seller's order history there before buying — no account required.</p>
 </div>
 
 <div class="section-group">
@@ -54,7 +57,8 @@
 
   <h2>How do I get PEGD?</h2>
   <ul>
-    <li>Connect your Phantom wallet on <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">Jupiter</a> and swap any Solana token for PEGD instantly.</li>
+    <li><strong>Buy:</strong> Connect your Phantom wallet on <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">Jupiter</a> and swap any Solana token for PEGD instantly.</li>
+    <li><strong>Earn by mining:</strong> Run the PEGD worker on any GPU or CPU. Your hashrate earns a share of the compute pool, paid out in PEGD every 3 hours. See the <a href="/mine.html">Mine page</a> to get started.</li>
   </ul>
 
   <h2>What is the PEGD contract address?</h2>
@@ -83,10 +87,17 @@
   <p class="section-group-title">Mining / Compute Pool</p>
 
   <h2>How does the compute pool work?</h2>
-  <p>Run the PEGD worker on any machine with a GPU or CPU. The pool automatically mines the most profitable coin and pays out in PEGD every 3 hours, proportional to your contributed hashrate. Download the worker from the <a href="/mine.html">Mine page</a>.</p>
+  <p>Run the PEGD worker on any machine with a GPU or CPU. Your machine mines through <a href="https://unmineable.com" target="_blank" rel="noopener">Unmineable</a> under the PEGD pool — Unmineable tracks your hashrate and share of the total work contributed. Every 3 hours the PEGD treasury collects the pool earnings and distributes PEGD tokens back to each worker proportional to their share. Download the worker from the <a href="/mine.html">Mine page</a>.</p>
+
+  <h2>What algorithm should I mine with?</h2>
+  <p>The worker selects the most profitable algorithm automatically. If you are configuring manually: NVIDIA and AMD GPUs work best with KawPow or Ethash; CPU-only machines should use RandomX. All algorithms pay out to the same PEGD pool.</p>
 
   <h2>Is mining payout guaranteed?</h2>
   <p>No. Payouts depend on contributed hashrate, network conditions, and the current profitability of the assigned coin. Mining rewards are variable. Always review the worker source code before running it on your hardware.</p>
+
+  <h2>Why didn't I receive my first payout?</h2>
+  <p>PEGD is a Solana token. Before any Solana token can land in your wallet, that wallet must have an Associated Token Account (ATA) for PEGD — a small on-chain account that holds your balance. If you have never received PEGD before, your ATA may not exist yet, which causes the first payout transfer to be skipped.</p>
+  <p>To create your PEGD token account: open Phantom, go to <strong>Manage token list</strong>, search for PEGD (mint <code>BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon</code>), and add it. Alternatively, swap any amount of SOL for PEGD on <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">Jupiter</a> — this creates the account automatically. Your accumulated earnings will arrive on the next 3-hour cycle.</p>
 </div>
 
 <hr>
