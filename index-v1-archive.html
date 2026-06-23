@@ -79,50 +79,6 @@
     }
     .nav-cta:hover { background: #00d4e0 !important; color: var(--bg) !important; }
     .nav-unlock { display: none; }
-    .portal-badge {
-      font-size: 0.62rem; font-weight: 800; padding: 4px 10px; border-radius: 999px;
-      background: linear-gradient(135deg, var(--neon), var(--neon2)); color: var(--bg);
-      margin-left: 6px; vertical-align: middle; display: none;
-    }
-    body.portal-authenticated .portal-badge { display: inline-block; }
-    .portal-badge.hidden { display: none !important; }
-
-    /* ── WALLET IDENTICON ── */
-    .wallet-indicator {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      border-radius: 8px;
-      border: 1px solid rgba(0,245,255,0.3);
-      background: rgba(0,245,255,0.05);
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-left: 12px;
-    }
-    .wallet-indicator:hover {
-      border-color: rgba(0,245,255,0.5);
-      background: rgba(0,245,255,0.1);
-    }
-    body.portal-authenticated .wallet-indicator { display: flex; }
-    .wallet-identicon {
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
-      object-fit: cover;
-    }
-    .wallet-emoji {
-      font-size: 20px;
-      line-height: 1;
-    }
-    .wallet-address {
-      font-family: monospace;
-      font-size: 0.85rem;
-      color: var(--text);
-      font-weight: 600;
-    }
-    body.portal-authenticated #connect-xumm-btn,
-    body.portal-authenticated #connect-wallet-btn { opacity: 0.85; }
 
     /* ── CHAIRMAN WALLET SIGN-IN (unlocks Officers + Command HUD) ── */
     .holders-gated { display: block; }
@@ -332,6 +288,15 @@
     .metric-val {
       font-size: 1.4rem; font-weight: 900; color: var(--neon);
       font-family: monospace; word-break: break-all;
+    }
+    .metric-val a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .metric-val a:hover,
+    .metric-val a:focus-visible {
+      text-decoration: underline;
+      text-underline-offset: 4px;
     }
     .metric-val.sol { color: var(--neon2); }
 
@@ -710,6 +675,11 @@
       font-size: 0.8rem; color: var(--muted);
     }
     .footer-disclaimer { font-size: 0.72rem; color: var(--muted); opacity: 0.6; max-width: 600px; }
+    .link-accent2 { color: var(--neon2); }
+    .completed-orders { width: 100%; border-collapse: collapse; margin-top: 1.25rem; font-size: 0.88rem; }
+    .completed-orders th { color: var(--muted); font-weight: 600; text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
+    .completed-orders td { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text); }
+    .completed-orders a { color: var(--neon); }
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
@@ -720,6 +690,67 @@
     }
     @media (max-width: 480px) {
       nav a:not(.nav-cta) { display: none; }
+    }
+
+    /* Treasury collapsible styling */
+    .treasury-collapsible {
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 0;
+      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.3s ease;
+    }
+    .treasury-collapsible:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .treasury-collapsible[open] {
+      border-color: rgba(0, 255, 200, 0.3);
+    }
+    .treasury-summary {
+      cursor: pointer;
+      padding: 1.5rem 2rem;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      user-select: none;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+    .treasury-summary:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .treasury-summary::-webkit-details-marker {
+      display: none;
+    }
+    .treasury-summary-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .treasury-summary-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .treasury-summary-hint {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 400;
+      margin-left: auto;
+    }
+    @media (max-width: 768px) {
+      .treasury-summary {
+        flex-wrap: wrap;
+        padding: 1.25rem 1.5rem;
+      }
+      .treasury-summary-hint {
+        margin-left: 0;
+        width: 100%;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+      }
     }
   </style>
   <script type="application/ld+json">
@@ -745,19 +776,11 @@
         <div class="logo-badge">PEGD</div>
       </a>
       <nav>
-        <a href="#treasury">Treasury</a>
         <a href="#shop" class="nav-cta">Market</a>
-        <a href="#swap">Trade</a>
-        <a href="/about-xrp">XRP Oracle</a>
+        <a href="#swap">Get PEGD</a>
+        <a href="/pool.html">Mine</a>
+        <a href="#treasury">Treasury</a>
         <a href="#about">About</a>
-        <a href="#governance">Governance</a>
-        <a href="#holders">Sign In</a>
-        <span id="portal-badge" class="portal-badge hidden" aria-live="polite"></span>
-        <div id="wallet-indicator" class="wallet-indicator" aria-live="polite">
-          <img id="wallet-identicon" class="wallet-identicon" alt="Wallet identicon" style="display:none;">
-          <span id="wallet-emoji" class="wallet-emoji" style="display:none;"></span>
-          <span id="wallet-address" class="wallet-address"></span>
-        </div>
       </nav>
     </div>
   </header>
@@ -771,69 +794,138 @@
       <div class="hero-eyebrow">NOW LIVE</div>
       <h1>XRPEGGED</h1>
       <p class="hero-sub">
-        Real marketplace. USD prices. Crypto checkout. XRP-backed treasury you can verify.
+        Buy real items with crypto. USD prices, wallet checkout, XRP-backed treasury you can verify.
       </p>
+      <p class="public-teaser">Pay with <strong>PEGD</strong>, <strong>XRP</strong>, or <strong>SOL</strong>. No middlemen. Proof on blockchain.</p>
       <div class="hero-btns">
-        <a href="#shop" class="btn-primary">Browse Market</a>
+        <a href="#shop" class="btn-primary" style="font-size:1.1rem;padding:0.9rem 1.8rem;">🛒 Browse Market</a>
+        <a href="/pool.html" class="btn-secondary">⛏️ Mine to Earn</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-val" id="stat-xrp">…</div>
+          <div class="stat-label">XRP in Treasury</div>
+        </div>
+        <div class="stat hero-stat-gated">
+          <div class="stat-val" id="stat-supply">…</div>
+          <div class="stat-label">PEGD in Circulation</div>
+        </div>
       </div>
       <!-- hidden for legacy calc compatibility in gated stats -->
       <span id="stat-ratio" style="display:none"></span>
-      <span id="stat-xrp" style="display:none"></span>
-      <span id="stat-price" style="display:none"></span>
-      <span id="stat-price-source" style="display:none"></span>
-      <span id="stat-supply" style="display:none"></span>
     </div>
   </section>
 
-  <!-- SHOP — live PEGD Market listings -->
+  <!-- ABOUT (brief — before shop so new users know what this is) -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-text">
+        <p class="section-label">What is XRPEGGED?</p>
+        <h2>PEGD on Solana.<br>PEGD Market.</h2>
+        <p>XRPEGGED ($PEGD) is an SPL token on Solana. We run a marketplace for real items priced in USD. Pay with PEGD (preferred via Phantom), XRP (Xaman), or SOL. Settlement lands directly in treasury — no middlemen, no custom contracts.</p>
+        <p>Our XRP treasury on XRPL is fully public and verifiable. This is the proof layer.</p>
+        <div class="chain-badges">
+          <div class="chain-badge sol">🟣 Solana</div>
+          <div class="chain-badge xrp">⚡ XRP Ledger (reserves)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOP -->
   <section id="shop">
     <div class="section-inner">
-      <p class="section-label">💎 PEGD Market</p>
+      <p class="section-label">PEGD Market</p>
       <h2>prove its worth</h2>
       <p class="section-sub">Everyone can browse and buy. Listings are <strong>USD-priced</strong>. Checkout: <strong>PEGD</strong> (preferred), <strong>XRP via Xaman</strong>, or <strong>SOL</strong> on Phantom.</p>
+      <p style="text-align:center;margin-top:1rem;"><a href="/nft-list.html" style="display:inline-block;padding:0.75rem 1.5rem;background:var(--neon);color:black;text-decoration:none;border-radius:4px;font-weight:600;">📦 List Your NFT</a></p>
       <div class="shop-demo-banner" id="shop-status-banner">
-        <p id="shop-status-text"><strong style="color:var(--gold);">Order #1 complete.</strong> <span id="shop-pay-instructions">Metapod sold via PEGD/Phantom (first PEGD Market). See remaining listings below or the full market.</span> Need PEGD first? <a href="#swap" style="color:var(--neon2);">Swap XRP→PEGD</a> above.</p>
-        <a href="https://xrpegged-market.xrpegged.workers.dev/proof" target="_blank" rel="noopener" class="shop-cta-market" id="shop-market-cta">Open PEGD Market →</a>
+        <p id="shop-status-text"><span id="shop-pay-instructions">Verified sales below. Need PEGD? <a href="#swap" class="link-accent2">Get PEGD</a> to start shopping.</span></p>
+        <a href="#" class="shop-cta-market" id="shop-market-cta" style="opacity:0.55;cursor:default;" onclick="return false;" title="Full marketplace coming soon">Marketplace — Coming Soon</a>
       </div>
+      <table class="completed-orders">
+        <thead>
+          <tr><th>#</th><th>Item</th><th>Price</th><th>Payment</th><th>Verified</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Metapod (Pokemon card)</td>
+            <td>$1.00</td>
+            <td>PEGD / Phantom</td>
+            <td><a href="https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">On-chain</a></td>
+          </tr>
+        </tbody>
+      </table>
       <div class="shop-grid" id="shop-grid">
         <p style="color:var(--muted);grid-column:1/-1;text-align:center;">Loading market…</p>
       </div>
     </div>
   </section>
-  <!-- HOW IT WORKS -->
-  <section id="how-it-works" style="padding: 6rem 2rem;">
-    <div class="section-inner">
-      <p class="section-label">How It Works</p>
-      <h2>3 Simple Steps</h2>
-      <p class="section-sub">Start using PEGD Market in minutes</p>
-      <div class="features-grid" style="max-width: 900px;">
-        <div class="feature-card">
-          <div class="feature-icon">1️⃣</div>
-          <h3>Browse Listings</h3>
-          <p>All items priced in USD. No crypto knowledge required to shop.</p>
+
+  <!-- GET PEGD -->
+  <section id="swap">
+    <div class="swap-container">
+      <p class="section-label" style="text-align:center">Get PEGD</p>
+      <h2>Acquire PEGD for Marketplace Purchases</h2>
+      <p class="section-sub">PEGD is the payment method for <a href="#shop" style="color:var(--neon);">PEGD Market</a>. Swap any Solana token for PEGD instantly using your Phantom wallet.</p>
+      <div class="swap-card" style="margin-bottom:1rem;">
+        <div style="margin-bottom:1.25rem;">
+          <div style="background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.2);border-radius:8px;padding:1.25rem;">
+            <p style="color:var(--neon);font-weight:700;margin-bottom:0.4rem;font-size:0.9rem;">Swap on Jupiter with Phantom</p>
+            <p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.75rem;">Swap SOL or any Solana token → PEGD instantly. Connect your Phantom wallet on Jupiter to complete the swap.</p>
+            <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener"
+               style="display:inline-block;background:var(--neon);color:#0a0a1a;padding:0.5rem 1.25rem;border-radius:6px;font-weight:700;font-size:0.85rem;text-decoration:none;">
+              Swap on Jupiter →
+            </a>
+          </div>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">2️⃣</div>
-          <h3>Choose Payment</h3>
-          <p>Pay with PEGD (preferred), XRP via Xaman, or SOL via Phantom.</p>
+      </div>
+      <div class="swap-card">
+        <p style="font-size:0.9rem;color:var(--muted);margin-bottom:1.5rem;padding:1rem;background:rgba(255,200,0,0.1);border-left:3px solid var(--gold);border-radius:4px;">
+          <strong style="color:var(--text);">Notice:</strong> This swap exchanges XRP for PEGD at the current rate. PEGD is a utility token used as currency in the PEGD Market. Acquire only the amount you need for purchases. There is no promise or expectation of profit.
+        </p>
+        <div class="verify-proof">
+          <h4>Verify PEGD Token</h4>
+          <ul>
+            <li>PEGD is an SPL token on Solana — used for marketplace checkout</li>
+            <li><a href="https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">View on Solscan</a> — see supply, holders, and mint details</li>
+            <li><a href="#treasury">Treasury section</a> — verify XRP + SOL reserves yourself</li>
+            <li>Official site: <a href="https://pegd.org">pegd.org</a> · contact <a href="mailto:xrpegged@proton.me">xrpegged@proton.me</a></li>
+          </ul>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">3️⃣</div>
-          <h3>Get Your Item</h3>
-          <p>Physical delivery + digital twin (GLB) + on-chain proof (XRPL NFT).</p>
+        <div class="ca-copy">
+          <span>PEGD Contract:</span>
+          <code id="ca-text">BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon</code>
+          <button type="button" id="copy-ca-btn">Copy</button>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPUTE POOL TEASER -->
+  <section id="mine" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="section-inner" style="text-align:center;padding:3rem 1rem;">
+      <p class="section-label">PEGD Compute Pool</p>
+      <h2>Mine to Earn PEGD</h2>
+      <p class="section-sub">Run the worker on any machine — NVIDIA GPU, AMD GPU, or CPU. The pool picks the most profitable coin automatically and pays out in PEGD every 3 hours.</p>
+      <div style="margin-top:1.5rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <a href="/pool.html" class="btn-secondary">Pool Stats &amp; Leaderboard →</a>
+        <a href="/pool.html#get-started" class="btn-primary">Start Mining</a>
       </div>
     </div>
   </section>
 
   <!-- TREASURY -->
   <section id="treasury">
+    <details class="treasury-collapsible">
+      <summary class="treasury-summary">
+        <span class="treasury-summary-icon">🔍</span>
+        <span class="treasury-summary-text">Verify Treasury (Click to Expand)</span>
+        <span class="treasury-summary-hint">Live XRP + Solana balances • On-chain proof</span>
+      </summary>
     <div class="section-inner">
-      <details>
-        <summary style="cursor: pointer; padding: 1.5rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); text-align: center; font-size: 1.1rem; font-weight: 800; color: var(--neon); margin-bottom: 2rem;">
-          🔍 Verify Treasury (Click to Expand)
-        </summary>
-      <p class="section-label">🔐 Proof of Reserves</p>
+      <p class="section-label">Proof of Reserves</p>
       <h2>Transparent Treasury</h2>
       <p class="section-sub">Our XRP holdings are always public and verifiable. Enter the treasury wallet address below to see live balances on the XRP Ledger.</p>
       <div class="treasury-card">
@@ -848,15 +940,20 @@
             readonly
           >
           <p style="margin-top:0.75rem;font-size:0.8rem;color:var(--muted);word-break:break-all;">
-            Solana Treasury: <a href="https://solscan.io/account/fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb" style="color:var(--neon2);">fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb</a><br>
+            XRP Treasury: <a href="https://bithomp.com/explorer/rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" target="_blank" rel="noopener noreferrer" style="color:var(--neon);">View on Bithomp</a><br>
+            Solana Treasury 1: <a href="https://solscan.io/account/fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb" style="color:var(--neon2);">fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb</a><br>
+            Solana Treasury 2 (Compute Pool): <a href="https://solscan.io/account/4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9" style="color:var(--neon2);">4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9</a><br>
             PEGD CA: <a href="https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" style="color:var(--neon2);">BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon</a>
           </p>
-          <button class="btn-verify" id="verify-btn">Verify →</button>
+          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:0.5rem">
+            <button class="btn-verify" id="verify-btn">Verify →</button>
+            <span id="stats-timestamp" style="font-size:0.72rem;color:var(--muted);">Not yet loaded</span>
+          </div>
         </div>
         <div class="treasury-metrics">
           <div class="metric-card">
             <div class="metric-icon">💎</div>
-            <div class="metric-val" id="xrp-balance">—</div>
+            <div class="metric-val"><a id="xrp-balance" href="https://bithomp.com/explorer/rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" target="_blank" rel="noopener noreferrer">—</a></div>
             <div class="metric-usd" id="xrp-usd">($—)</div>
             <div class="metric-label">XRP Balance</div>
           </div>
@@ -873,10 +970,6 @@
             <div class="metric-label">SOL Balance</div>
           </div>
         </div>
-        <div class="pegd-price-callout" style="margin-top:0.75rem;font-size:0.9rem;">
-          PEGD Price (treasury implied): <strong id="treasury-pegd-price">—</strong>
-        </div>
-
         <!-- Full Solana token portfolio added per request: shows all SPL / meme holdings on treasury wallet via on-chain query -->
         <div class="treasury-portfolio" style="margin-top:0.75rem; border-top:1px solid var(--border); padding-top:0.5rem;">
           <div style="font-size:0.72rem; color:var(--muted); margin-bottom:0.25rem; font-weight:600;">Solana Portfolio — All Tokens (meme coins + PEGD etc. on treasury)</div>
@@ -887,38 +980,48 @@
         </div>
 
         <div class="treasury-note">
-          <strong>🔒 Proof is everything.</strong> Treasury balances are public and verifiable on XRP Ledger and Solana. No hidden wallets — transparent, on-chain reserves you can audit yourself anytime.
+          <strong>Proof is everything.</strong> Treasury balances are public and verifiable on XRP Ledger and Solana. No hidden wallets — transparent, on-chain reserves you can audit yourself anytime.
         </div>
       </div>
-      </details>
     </div>
   </section>
 
   <script>
-    // Auto-updating Solana token portfolio for treasury (all SPL/meme holdings)
-    // Client-side via /api/solana proxy + getTokenAccountsByOwner. Refreshes every 60s.
+    // Auto-updating Solana token portfolio — calls Solana RPC directly (public read-only)
     async function loadTreasuryPortfolio() {
       const el = document.getElementById('sol-portfolio');
       if (!el) return;
-      const SOL_TREASURY = 'fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb';
-      const PEGD_MINT = 'BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
+      const SOL_TREASURIES = [
+        'fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb',
+        '4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9',
+      ];
+      const PEGD_MINT_P = 'BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
+      const RPCS = ['https://solana.publicnode.com', 'https://api.mainnet-beta.solana.com'];
+
+      async function rpcDirect(method, params) {
+        for (const rpc of RPCS) {
+          try {
+            const r = await fetch(rpc, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+            });
+            const d = await r.json();
+            if (d.result != null) return d.result;
+          } catch {}
+        }
+        return null;
+      }
+
       try {
-        const res = await fetch('/api/solana', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            id: 1,
-            method: 'getTokenAccountsByOwner',
-            params: [
-              SOL_TREASURY,
-              { programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
-              { commitment: 'confirmed', encoding: 'jsonParsed' }
-            ]
-          })
-        });
-        const data = await res.json();
-        const accounts = data?.result?.value || [];
+        const results = await Promise.all(SOL_TREASURIES.map(addr =>
+          rpcDirect('getTokenAccountsByOwner', [
+            addr,
+            { programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' },
+            { commitment: 'confirmed', encoding: 'jsonParsed' }
+          ])
+        ));
+        const accounts = results.flatMap(r => r?.value || []);
         if (!accounts.length) {
           el.innerHTML = 'No additional SPL tokens (native SOL shown above). <span style="font-size:0.55rem;">(auto-updating)</span>';
           return;
@@ -940,7 +1043,7 @@
             amt = frac ? `${int}.${frac}` : int.toString();
           }
           const short = mint.slice(0,4) + '…' + mint.slice(-4);
-          const label = (mint === PEGD_MINT) ? 'PEGD' : short;
+          const label = (mint === PEGD_MINT_P) ? 'PEGD' : short;
           const href = `https://solscan.io/token/${mint}`;
           html += `<li style="margin:1px 0;"><a href="${href}" target="_blank" rel="noopener" style="color:var(--neon);">${label}</a> <span style="color:var(--text);">${amt}</span></li>`;
         });
@@ -954,123 +1057,18 @@
     loadTreasuryPortfolio();
     setInterval(loadTreasuryPortfolio, 60000);
   </script>
-  <!-- SWAP -->
-  <section id="swap">
-    <div class="swap-container">
-      <p class="section-label" style="text-align:center">🚀 Trade PEGD</p>
-      <h2>Verify &amp; Trade</h2>
-      <p class="section-sub">PEGD is a real Solana token with a public XRP treasury. Swap XRP→PEGD onsite below, or trade on the curve / Jupiter after graduation.</p>
-      <div class="swap-card">
-        <div class="trade-status" id="trade-status">
-          <strong>Loading trade status…</strong>
-        </div>
-        <div class="graduation-wrap">
-          <div class="graduation-label">
-            <span>Bonding curve progress</span>
-            <span id="grad-pct">—</span>
-          </div>
-          <div class="graduation-bar"><div class="graduation-fill" id="grad-fill"></div></div>
-        </div>
-        <div class="trade-actions">
-          <a href="https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener" class="btn-trade-verify" id="verify-trade-btn">🔍 Verify PEGD on Solscan</a>
-          <a href="https://moon.it/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener" class="btn-trade-primary" id="moonit-trade-btn">🚀 Try Moonit (listing being restored)</a>
-          <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener" class="btn-trade-secondary" id="jupiter-trade-btn" aria-disabled="true" tabindex="-1">🟣 Jupiter — unlocks after graduation</a>
-        </div>
-        <div class="verify-proof">
-          <h4>On-chain proof (not a scam checklist)</h4>
-          <ul>
-            <li>Mint exists on Solana — ends in <strong>moon</strong> (Moonshot/Moonit launchpad CA)</li>
-            <li><a href="https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">Solscan token page</a> shows supply, holders, and mint authority revoked</li>
-            <li><a href="#treasury">Treasury section</a> — live XRP + SOL balances you can verify yourself</li>
-            <li><a href="https://www.geckoterminal.com/solana/tokens/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">GeckoTerminal</a> tracks curve reserve (<span id="curve-reserve">—</span>)</li>
-            <li>Official site: <a href="https://pegd.org">pegd.org</a> · contact <a href="mailto:xrpegged@proton.me">xrpegged@proton.me</a></li>
-          </ul>
-        </div>
-        <div class="ca-copy">
-          <span>Contract:</span>
-          <code id="ca-text">BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon</code>
-          <button type="button" id="copy-ca-btn">Copy</button>
-        </div>
-        <div class="swap-chains">
-          <a href="https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener" class="swap-chain-tag" style="text-decoration:none;color:inherit;">🔍 Solscan</a>
-          <a href="https://www.geckoterminal.com/solana/tokens/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener" class="swap-chain-tag" style="text-decoration:none;color:inherit;">📈 GeckoTerminal</a>
-          <a href="https://moon.it/cto" target="_blank" rel="noopener" class="swap-chain-tag" style="text-decoration:none;color:inherit;">📋 Moonit CTO</a>
-        </div>
-      </div>
-    </div>
+    </details>
   </section>
-  <!-- MEMES -->
-  <section id="memes">
-    <div class="meme-header">
-      <p class="section-label">🐸 Culture</p>
-      <h2>Culture is Defined by the Holders</h2>
-      <p class="section-sub">PEGD holders decide what XRPEGGED stands for. Through directives, memes, and PEGD market — our culture is whatever the holders make it.</p>
-    </div>
-    <div class="meme-grid" style="max-width:1100px;margin:0 auto;">
-      <div class="meme-card">🐸<span>PEGD Gang</span></div>
-      <div class="meme-card">🚀<span>To The Moon</span></div>
-      <div class="meme-card">💎<span>Diamond Hands</span></div>
-      <div class="meme-card">🦍<span>Ape In</span></div>
-      <div class="meme-card">📈<span>Number Go Up</span></div>
-      <div class="meme-card">🤝<span>XRP Army</span></div>
-      <div class="meme-card">⚡<span>The Standard</span></div>
-      <div class="meme-card">🟣<span>SOL Speed</span></div>
-    </div>
-    <div class="holder-chat-demo" style="max-width:620px;margin:1.25rem auto 0;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;font-size:0.8rem;line-height:1.35;">
-      <div style="font-weight:700;color:var(--muted);margin-bottom:0.4rem;font-size:0.7rem;letter-spacing:0.5px;">FEATURED HOLDER CHAT — CULTURE IN ACTION (try it — powered by the same AI brief as the officers panel)</div>
-      <div style="margin:0.2rem 0;"><strong>Holder42</strong> (12M $PEGD): Culture is whatever we decide — more memes, less noise. Let's feature holder art in the grid.</div>
-      <div style="margin:0.2rem 0;"><strong>DiamondApe</strong> (8.5M $PEGD): +1. Directives board for culture votes? I move to add a "Holder Memes" tab.</div>
-      <div style="margin:0.2rem 0;"><strong>SOLGhost</strong> (15M $PEGD): +1. Cross-chain memes only. This is our culture now.</div>
-      <div id="cchat-log" style="margin-top:0.5rem;border-top:1px dashed var(--border);padding-top:0.3rem;"></div>
-      <div style="display:flex;gap:4px;margin-top:0.3rem;">
-        <input id="cchat-in" style="flex:1;font-size:0.75rem;padding:2px;" placeholder="Ask the holders (e.g. what memes for our culture?)">
-        <button id="cchat-send" style="font-size:0.75rem;padding:2px 6px;">Send to Board</button>
-      </div>
-    </div>
-    <p style="text-align:center;color:var(--muted);font-size:0.8rem;margin-top:1rem;">Holders shape the culture through the directives board (sign in with treasury-parity $PEGD) and community channels. Submit memes or culture ideas — best ones get featured. 🏆</p>
-    <script>
-      (function(){
-        var log = document.getElementById('cchat-log');
-        var inp = document.getElementById('cchat-in');
-        var send = document.getElementById('cchat-send');
-        if(!log || !inp || !send) return;
-        send.onclick = async function(){
-          var q = inp.value.trim();
-          if(!q) return;
-          log.innerHTML += '<div><strong>You:</strong> ' + q + '</div>';
-          inp.value = '';
-          try{
-            var r = await fetch('/api/officers/brief', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question: q})});
-            var d = await r.json();
-            var resp = 'Board: ';
-            if(d.officers){
-              if(d.officers.ceo) resp += 'CEO: ' + d.officers.ceo + ' ';
-              if(d.officers.cto) resp += 'CTO: ' + d.officers.cto + ' ';
-              if(d.officers.cfo) resp += 'CFO: ' + d.officers.cfo + ' ';
-              if(d.officers.cmo) resp += 'CMO: ' + d.officers.cmo + ' ';
-            } else if(d.error){
-              resp += d.error + ' (sign in via ◎ Officers or /portal.html for full AI board)';
-            } else {
-              resp += 'Thanks for shaping our culture!';
-            }
-            log.innerHTML += '<div><strong>' + resp + '</strong></div>';
-          }catch(e){
-            log.innerHTML += '<div><strong>Board:</strong> Sign in first via the ◎ Officers button or /portal.html to chat with real AI board.</div>';
-          }
-          log.scrollTop = log.scrollHeight;
-        };
-      })();
-    </script>
-  </section>
+
   <!-- GOVERNANCE -->
   <section id="governance">
     <div class="section-inner">
-      <p class="section-label">⚖️ How XRPEGGED Decides</p>
+      <p class="section-label">How XRPEGGED Decides</p>
       <h2>Governance</h2>
       <p class="section-sub">Transparent process, Chairman-led. We publish <strong>principles</strong> and <strong>on-chain proof</strong> — not internal playbooks.</p>
       <div class="trade-status" style="margin-top:0;">
         <p><strong>Chairman (Founder)</strong> holds final authority on treasury, deploys, and strategic direction. Executive input covers strategy, technology, finance, and brand — then the Chairman ratifies.</p>
-        <p style="margin-top:0.75rem;"><strong>Proof-of-reserves</strong> — public XRP and Solana treasuries you can verify anytime. <strong>Proof-of-worth</strong> — real USD-priced listings and completed orders on the <a href="https://xrpegged-market.xrpegged.workers.dev/proof" style="color:var(--neon);">PEGD Market market</a>.</p>
+        <p style="margin-top:0.75rem;"><strong>Proof-of-reserves</strong> — public XRP and Solana treasuries you can verify anytime. <strong>Proof-of-worth</strong> — real USD-priced listings and completed orders on the <a href="#shop" style="color:var(--neon);">PEGD Market</a>.</p>
         <p style="margin-top:0.75rem;"><strong>Decision tiers:</strong> routine site updates (operational), marketplace and payment rails (strategic), treasury moves (critical — Chairman sign-off required).</p>
         <p style="margin-top:0.75rem;">Questions or governance requests: <a href="mailto:xrpegged@proton.me" style="color:var(--neon);">xrpegged@proton.me</a></p>
       </div>
@@ -1086,96 +1084,22 @@
       </div>
     </div>
   </section>
-  <!-- ABOUT + FEATURES -->
-  <section id="about">
-    <div class="about-grid">
-      <div class="about-text">
-        <p class="section-label">What is XRPEGGED?</p>
-        <h2>PEGD on Solana.<br>PEGD Market.</h2>
-        <p>XRPEGGED ($PEGD) is an SPL token on Solana. We run a marketplace for real items priced in USD. Pay with PEGD (preferred via Phantom), XRP (Xaman), or SOL. Settlement lands directly in treasury — no middlemen, no custom contracts.</p>
-        <p>Our XRP treasury on XRPL is fully public and verifiable. This is the proof layer. After physical fulfillment, buyers get a digital twin (GLB asset) + on-chain proof (XRPL NFT to your wallet).</p>
-        <p>Trading happens on Solana (Moonshot curve today, Jupiter tomorrow). The marketplace is ours. Proof is everything.</p>
-        <p style="margin-top:1rem;"><a href="/about-xrp" style="color:var(--neon);font-weight:700;text-decoration:none;">📊 Explore the Proof Oracle →</a> Live XRPL intelligence for the reserves that back it.</p>
-        <div class="chain-badges">
-          <div class="chain-badge sol">🟣 Solana</div>
-          <div class="chain-badge xrp">⚡ XRP Ledger (reserves)</div>
-        </div>
+
+  <!-- OFFICER SIGN-IN (compact — JS IDs kept for auth) -->
+  <section id="holders" style="background:var(--bg2);border-top:1px solid var(--border);">
+    <div class="section-inner" style="text-align:center;padding:2rem 1rem;">
+      <p class="section-label">◎ Officer Access</p>
+      <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1.25rem;">Sprint board, backlog, and command HUD require wallet sign-in.</p>
+      <div class="holders-actions" style="justify-content:center;">
+        <button type="button" class="btn-connect xumm" id="connect-xumm-btn">🔵 Xaman</button>
+        <p class="holders-divider">or</p>
+        <button type="button" class="btn-connect" id="connect-wallet-btn">🟣 Phantom</button>
       </div>
-      <div class="about-visual">
-        <div class="token-diagram">
-          <div class="token-circle xrp">XRP</div>
-          <div class="token-arrow">⬇</div>
-          <div class="token-label">Treasury reserves · publicly verifiable</div>
-          <div class="token-arrow">⬇</div>
-          <div class="token-circle pegd">PEGD</div>
-          <div class="token-arrow">⬇</div>
-          <div class="token-label">PEGD on Solana · trade on Moonshot/Jupiter</div>
-          <div class="token-arrow">⬇</div>
-          <div style="font-size:2rem">🛒</div>
-          <div class="token-label">Spend PEGD via PEGD Market</div>
-        </div>
-      </div>
+      <img class="xumm-qr" id="xumm-qr" alt="Xumm QR code" width="220" height="220">
+      <p class="holders-status" id="holders-status"></p>
+      <p class="holders-wallet" id="holders-wallet"></p>
     </div>
   </section>
-
-  <section id="features">
-    <div class="section-inner">
-      <p class="section-label">Why PEGD</p>
-      <h2>Built Different</h2>
-      <p class="section-sub">No roadmap theater. Just a token, a treasury, and a community that believes in the standard.</p>
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">🔗</div>
-          <h3>Treasury-Backed</h3>
-          <p>PEGD is built around XRP treasury reserves — transparent on-chain, no hidden wallets. Market price follows supply and demand while reserves stay publicly verifiable.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔍</div>
-          <h3>Fully Transparent</h3>
-          <p>Our treasury wallet is public. Anyone can verify our XRP holdings on the XRP Ledger at any time. Proof is not a promise — it's on-chain.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">⚡</div>
-          <h3>PEGD on Solana</h3>
-          <p>PEGD is an SPL token on Solana. The bonding curve is Moonshot's launchpad program — not something we wrote. After graduation, pools like Jupiter can list it; our marketplace checkout does not depend on them.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">💎</div>
-          <h3>PEGD Market</h3>
-          <p>PEGD isn't just a token to hold — it's currency with <strong>PEGD Market</strong>. List collectibles, price in USD, settle on XRP or Solana rails.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔁</div>
-          <h3>Cross-Chain Rails</h3>
-          <p>XRP treasury on XRPL backs the system. PEGD moves on Solana. Wormhole connects them for real interoperability. The marketplace runs on USD pricing and direct settlement.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="holders-gated">
-
-  <!-- CHAIRMAN SIGN-IN (wallet-gated Officers panel + Command HUD) -->
-  <section id="holders">
-    <div class="section-inner" style="text-align:center;">
-      <p class="section-label">🔐 Chairman Portal</p>
-      <div class="holders-card">
-        <div class="holders-icon">◎</div>
-        <h2>Sign In First</h2>
-        <p>Market is open to everyone — <strong>◎ Officers</strong> public brief (market/treasury/curve) always available from the floating button. Sprint/backlog + full HUD require wallet sign-in (Xaman/Phantom allowlist). Use <strong>/portal.html</strong> for Chairman/holder command.</p>
-        <div class="holders-actions">
-          <button type="button" class="btn-connect xumm" id="connect-xumm-btn">🔵 Sign in with Xaman</button>
-          <p class="holders-divider">or</p>
-          <button type="button" class="btn-connect" id="connect-wallet-btn">🟣 Sign in with Phantom</button>
-        </div>
-        <img class="xumm-qr" id="xumm-qr" alt="Xumm QR code" width="220" height="220">
-        <p class="holders-status" id="holders-status"></p>
-        <p class="holders-wallet" id="holders-wallet"></p>
-      </div>
-    </div>
-  </section>
-
-  </div><!-- /.holders-gated -->
 
   <!-- FOOTER -->
   <footer>
@@ -1186,51 +1110,50 @@
       </div>
       <div class="footer-col">
         <h4>Navigate</h4>
-        <a href="#treasury">Treasury</a>
-        <a href="#about">About</a>
-        <a href="/about-xrp">XRP Oracle</a>
         <a href="#shop">Market</a>
+        <a href="#swap">Get PEGD</a>
+        <a href="/pool.html">Mine</a>
+        <a href="#treasury">Treasury</a>
         <a href="#governance">Governance</a>
-        <a href="#holders">Sign In</a>
+        <a href="#holders">Officer Sign-in</a>
       </div>
       <div class="footer-col">
         <h4>Contact</h4>
         <a href="mailto:xrpegged@proton.me">xrpegged@proton.me</a>
       </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="/faq.html">FAQ</a>
+        <a href="/disclaimer.html">Disclaimer</a>
+        <a href="/terms.html">Terms of Use</a>
+        <a href="/privacy.html">Privacy Policy</a>
+      </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2025 XRPEGGED. All rights reserved.</span>
-      <span class="footer-disclaimer">Not financial advice. PEGD is a community token. Always DYOR. 🐸</span>
+      <span>© 2026 XRPEGGED. All rights reserved.</span>
+      <span class="footer-disclaimer">Not financial advice. PEGD is a utility token. Acquire only what you intend to spend. Always DYOR.</span>
     </div>
   </footer>
 
-<script src="/js/portal-auth.js"></script>
 <script src="/js/pegd-checkout.js"></script>
-
 
 <script>
   const XRP_TREASURY = 'rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78';
-  const SOL_TREASURY = 'fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb';
+  const SOL_TREASURY = 'fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb';   // original
+  const SOL_TREASURY_2 = '4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9'; // compute pool
   const PEGD_MINT = 'BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
   const PEGD_TOTAL_SUPPLY = 1_000_000_000; // fixed at mint creation (standard Moonshot 1B supply; authority revoked)
+  const MARKET_URL = 'https://market.pegd.org/proof';
+  const API_BASE_URL = 'https://market.pegd.org';
 
 
   const verifyBtn = document.getElementById('verify-btn');
   const xrpBalance = document.getElementById('xrp-balance');
   const pegdHeld = document.getElementById('pegd-held');
   const solBalance = document.getElementById('sol-balance');
-  const statPrice = document.getElementById('stat-price');
-  const statPriceSource = document.getElementById('stat-price-source');
   const statXrp = document.getElementById('stat-xrp');
   const statSupply = document.getElementById('stat-supply');
   const statRatio = document.getElementById('stat-ratio');
-  const bgPegPrice = document.getElementById('bg-pegd-price');
-  const tradeStatus = document.getElementById('trade-status');
-  const gradPct = document.getElementById('grad-pct');
-  const gradFill = document.getElementById('grad-fill');
-  const jupiterTradeBtn = document.getElementById('jupiter-trade-btn');
-  const moonitTradeBtn = document.getElementById('moonit-trade-btn');
-  const curveReserve = document.getElementById('curve-reserve');
   const MOONIT_URL = 'https://moon.it/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
   const JUPITER_URL = 'https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
   const SOLSCAN_URL = 'https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon';
@@ -1263,47 +1186,60 @@
     return fmt(n, 0);
   };
 
+  function fetchWithTimeout(url, opts, ms = 9000) {
+    const ctrl = new AbortController();
+    const tid = setTimeout(() => ctrl.abort(), ms);
+    return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(tid));
+  }
+
   async function xrplAccount(addr) {
-    const res = await fetch('https://xrplcluster.com/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ method: 'account_info', params: [{ account: addr, ledger_index: 'current' }] })
-    });
-    const data = await res.json();
-    if (!data.result?.account_data) return null;
-    return parseInt(data.result.account_data.Balance, 10) / 1_000_000;
+    try {
+      const res = await fetchWithTimeout('/api/xrpl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ account: addr })
+      });
+      const data = await res.json();
+      if (!data.result?.account_data) return null;
+      return parseInt(data.result.account_data.Balance, 10) / 1_000_000;
+    } catch { return null; }
   }
 
   async function solanaRpc(method, params) {
-    const res = await fetch('/api/solana', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params })
-    });
-    const data = await res.json();
-    return data.result ?? null;
+    try {
+      const res = await fetchWithTimeout('/api/solana', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params })
+      });
+      const data = await res.json();
+      return data.result ?? null;
+    } catch { return null; }
   }
 
   async function solTreasuryPegd() {
-    const result = await solanaRpc('getTokenAccountsByOwner', [
-      SOL_TREASURY,
-      { mint: PEGD_MINT },
-      { encoding: 'jsonParsed' }
+    const [r1, r2] = await Promise.all([
+      solanaRpc('getTokenAccountsByOwner', [SOL_TREASURY,   { mint: PEGD_MINT }, { encoding: 'jsonParsed' }]),
+      solanaRpc('getTokenAccountsByOwner', [SOL_TREASURY_2, { mint: PEGD_MINT }, { encoding: 'jsonParsed' }]),
     ]);
-    const accounts = result?.value ?? [];
+    const accounts = [...(r1?.value ?? []), ...(r2?.value ?? [])];
+    let total = 0;
     for (const acct of accounts) {
       const ta = acct.account?.data?.parsed?.info?.tokenAmount;
-      if (ta && ta.uiAmountString) {
-        return ta.uiAmountString;
-      }
+      if (ta?.uiAmount) total += ta.uiAmount;
     }
-    return '0';
+    return total > 0 ? total.toLocaleString() : '0';
   }
 
   async function solTreasurySol() {
-    const result = await solanaRpc('getBalance', [SOL_TREASURY]);
-    const lamports = typeof result === 'number' ? result : result?.value;
-    return lamports != null && Number.isFinite(lamports) ? lamports / 1e9 : null;
+    const [r1, r2] = await Promise.all([
+      solanaRpc('getBalance', [SOL_TREASURY]),
+      solanaRpc('getBalance', [SOL_TREASURY_2]),
+    ]);
+    const l1 = typeof r1 === 'number' ? r1 : (r1?.value ?? 0);
+    const l2 = typeof r2 === 'number' ? r2 : (r2?.value ?? 0);
+    const total = l1 + l2;
+    return total > 0 ? total / 1e9 : null;
   }
 
   async function geckoPegdMeta() {
@@ -1441,12 +1377,11 @@
   }
 
   async function xrplXrpBalance(account) {
-    const res = await fetch('https://xrplcluster.com/', {
+    const res = await fetch('/api/xrpl', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        method: 'account_info',
-        params: [{ account, ledger_index: 'current' }],
+        account,
       }),
     });
     const data = await res.json();
@@ -1623,12 +1558,18 @@
     verifyBtn.textContent = 'Refreshing…';
     verifyBtn.disabled = true;
     try {
-      const [xrp, pegdTreasury, sol, prices] = await Promise.all([
+      const [xrpRes, pegdRes, solRes, pricesRes] = await Promise.allSettled([
         xrplAccount(XRP_TREASURY),
         solTreasuryPegd(),
         solTreasurySol(),
         fetchPrices(),
       ]);
+      const xrp = xrpRes.status === 'fulfilled' ? xrpRes.value : null;
+      const pegdTreasury = pegdRes.status === 'fulfilled' ? pegdRes.value : null;
+      const sol = solRes.status === 'fulfilled' ? solRes.value : null;
+      const prices = pricesRes.status === 'fulfilled'
+        ? pricesRes.value
+        : { XRP: null, SOL: null, PEGD: null };
 
       const xrpUsd = xrp != null && prices.XRP ? xrp * prices.XRP : null;
       const solUsd = sol != null && prices.SOL ? sol * prices.SOL : null;
@@ -1642,7 +1583,7 @@
         if (xrpUsdEl) xrpUsdEl.textContent = xrpUsd != null ? '(' + fmtUsd(xrpUsd) + ')' : '($—)';
         statXrp.textContent = fmt(xrp);
       } else {
-        xrpBalance.textContent = 'Not found';
+        xrpBalance.innerHTML = '<a href="https://bithomp.com/explorer/rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" target="_blank" rel="noopener" style="color:var(--muted);font-size:0.8rem;">verify on Bithomp ↗</a>';
         statXrp.textContent = '—';
       }
 
@@ -1673,13 +1614,24 @@
       }
 
       await loadGatedStats();
-    } catch {
-      xrpBalance.textContent = 'Error';
+    } catch (err) {
+      console.error('Treasury stats refresh failed', err);
+      xrpBalance.innerHTML = '<a href="https://bithomp.com/explorer/rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" target="_blank" rel="noopener" style="color:var(--muted);font-size:0.8rem;">verify on Bithomp ↗</a>';
+      pegdHeld.textContent = '—';
+      solBalance.innerHTML = '<a href="https://solscan.io/account/4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9" target="_blank" rel="noopener" style="color:var(--muted);font-size:0.8rem;">verify on Solscan ↗</a>';
       statXrp.textContent = '—';
+      if (statRatio) statRatio.textContent = '—';
+      const ts = document.getElementById('stats-timestamp');
+      if (ts) ts.textContent = 'Failed to load — click Refresh to retry';
+    } finally {
+      verifyBtn.textContent = 'Refresh →';
+      verifyBtn.disabled = false;
     }
-    verifyBtn.textContent = 'Refresh →';
-    verifyBtn.disabled = false;
+    const ts = document.getElementById('stats-timestamp');
+    if (ts) ts.textContent = 'Last updated: ' + new Date().toLocaleTimeString();
   }
+
+  setInterval(loadStats, 5 * 60 * 1000); // auto-refresh every 5 min
 
   async function loadGatedStats() {
     try {
@@ -1705,29 +1657,7 @@
       const implied = impliedPegdPrice(liquidUsd, PEGD_TOTAL_SUPPLY, pegdTreasury);
 
       // Always prioritize the treasury-implied calc (treating treasury PEGD as burned per your spec)
-      const pegdPriceCallout = document.getElementById('treasury-pegd-price');
-      if (implied != null) {
-        statPrice.textContent = fmtUsd(implied);
-        statPriceSource.textContent = '(treasury implied, burned holdings)';
-        if (bgPegPrice) bgPegPrice.textContent = fmtUsd(implied).replace('$', '');
-        if (pegdPriceCallout) pegdPriceCallout.textContent = fmtUsd(implied);
-        // PEGD held USD (for display)
-        const pegdUsd = pegdTreasury * implied;
-        const pegdUsdEl = document.getElementById('pegd-usd');
-        if (pegdUsdEl) pegdUsdEl.textContent = '(' + fmtUsd(pegdUsd) + ')';
-      } else if (prices.PEGD != null) {
-        statPrice.textContent = fmtUsd(prices.PEGD);
-        statPriceSource.textContent = priceSourceLabel(pegdMeta) ? '(' + priceSourceLabel(pegdMeta) + ')' : '';
-        if (bgPegPrice) bgPegPrice.textContent = fmtUsd(prices.PEGD).replace('$', '');
-        if (pegdPriceCallout) pegdPriceCallout.textContent = fmtUsd(prices.PEGD);
-      } else {
-        statPrice.textContent = '—';
-        statPriceSource.textContent = '';
-        if (bgPegPrice) bgPegPrice.textContent = '—';
-        if (pegdPriceCallout) pegdPriceCallout.textContent = '—';
-      }
-
-      updateTradeUi(pegdMeta, indexed);
+      // Price display removed - PEGD is a utility token for marketplace, not a speculative investment
     } catch { /* ignore */ }
   }
 
@@ -1828,8 +1758,6 @@
 
   // hero-buy-now listener removed (button is now non-purchase per sold PoC)
 
-  const MARKET_URL = 'https://xrpegged-market.xrpegged.workers.dev/proof';
-  const API_BASE_URL = 'https://xrpegged-market.xrpegged.workers.dev';
   const shopMarketCta = document.getElementById('shop-market-cta');
   if (shopMarketCta) shopMarketCta.href = MARKET_URL;
 
@@ -1903,15 +1831,22 @@
       }
 
       grid.innerHTML = listings.map(item => {
-        const img = item.mediaUri
+        const isNFT = item.itemType && item.itemType.startsWith('nft_');
+        const nftBadge = isNFT ? `<span class="nft-badge" style="background:var(--neon);color:black;padding:0.25rem 0.5rem;border-radius:3px;font-size:0.75rem;font-weight:bold;">${item.itemType === 'nft_xrpl' ? 'XRPL NFT' : 'SOLANA NFT'}</span>` : '';
+
+        const img = item.nftImageUrl
+          ? `<div class="shop-img-real"><img src="${item.nftImageUrl}" alt=""></div>`
+          : item.mediaUri
           ? `<div class="shop-img-real"><img src="${item.mediaUri}" alt=""></div>`
-          : `<div class="shop-img">${item.emoji || '📦'}</div>`;
+          : `<div class="shop-img">${item.emoji || (isNFT ? '🎨' : '📦')}</div>`;
+
         return `
         <div class="shop-card">
           ${img}
           <div class="shop-info">
-            <h3>${item.title}</h3>
+            <h3>${item.title} ${nftBadge}</h3>
             <p>${item.description || ''}</p>
+            ${item.nftCollection ? `<p style="font-size:0.85rem;color:var(--neon2);">Collection: ${item.nftCollection}</p>` : ''}
             <div class="shop-price">${fmtUsd(item.priceUsd)} <span>${item.quotes ? '· ' + item.quotes : ''}</span></div>
             <a href="${MARKET_URL}" target="_blank" rel="noopener" class="btn-shop">View in Market</a>
             <button type="button" class="btn-pay-pegd" data-listing-id="${item.id}" data-listing-title="${item.title.replace(/"/g, '&quot;')}">${isMobileShop() ? '🟣 Pay with PEGD (Phantom)' : '🟣 Pay with PEGD'}</button>
@@ -1992,4 +1927,3 @@
 <script src="/js/officer-sidecar.js" defer></script>
 </body>
 </html>
-
