@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PEGD Pet ID</title>
+  <style>
+    :root {
+      --bg: #0a0a1a; --card: #13132e; --neon: #00f5ff; --neon2: #9945ff;
+      --gold: #f0b90b; --text: #e0e0ff; --muted: #7070a0;
+      --border: rgba(0,245,255,0.15); --green: #10b981; --red: #ef4444;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; min-height: 100vh; }
+
+    .page { max-width: 480px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+
+    .logo { text-align: center; font-size: 0.8rem; color: var(--muted); margin-bottom: 1.5rem; }
+    .logo a { color: var(--neon); text-decoration: none; font-weight: 700; }
+
+    .pet-photo {
+      width: 100%; aspect-ratio: 1; border-radius: 16px; overflow: hidden;
+      background: var(--card); border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem; margin-bottom: 1.25rem;
+    }
+    .pet-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px; border-radius: 100px; font-size: 0.8rem; font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .status-badge.home { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+    .status-badge.lost { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); animation: pulse-border 2s infinite; }
+    @keyframes pulse-border { 0%,100%{ border-color: rgba(239,68,68,0.3) } 50%{ border-color: rgba(239,68,68,0.8) } }
+
+    .pet-name { font-size: 2.2rem; font-weight: 900; color: var(--neon); margin-bottom: 0.25rem; }
+    .pet-sub  { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; }
+
+    .bounty-card {
+      background: rgba(240,185,11,0.08); border: 1px solid rgba(240,185,11,0.35);
+      border-radius: 14px; padding: 1.25rem; margin-bottom: 1.25rem; text-align: center;
+    }
+    .bounty-label { font-size: 0.75rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .bounty-pegd  { font-size: 2rem; font-weight: 900; color: var(--gold); }
+    .bounty-sol   { font-size: 0.9rem; color: var(--muted); margin-top: 4px; }
+
+    .info-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem;
+    }
+    .info-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.88rem; }
+    .info-row:last-child { border-bottom: none; }
+    .info-row .lbl { color: var(--muted); }
+    .info-row .val { color: var(--text); font-weight: 600; text-align: right; max-width: 60%; word-break: break-word; }
+
+    .contact-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.25rem; margin-bottom: 1.25rem;
+    }
+    .contact-card h3 { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.75rem; }
+    .contact-val { font-size: 1rem; color: var(--text); font-weight: 600; word-break: break-all; }
+
+    .claim-btn {
+      width: 100%; padding: 1rem; border: none; border-radius: 14px;
+      background: var(--gold); color: #0a0a1a; font-size: 1.1rem; font-weight: 900;
+      cursor: pointer; transition: filter 0.2s; margin-bottom: 0.75rem;
+    }
+    .claim-btn:hover { filter: brightness(1.08); }
+    .claim-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .claim-form { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; display: none; }
+    .claim-form.open { display: block; }
+    .claim-form label { font-size: 0.78rem; color: var(--muted); display: block; margin-bottom: 0.35rem; }
+    .claim-form input, .claim-form textarea {
+      width: 100%; background: #0a0a1a; border: 1px solid var(--border);
+      color: var(--text); font-size: 0.88rem; padding: 0.75rem; border-radius: 10px;
+      outline: none; margin-bottom: 0.75rem; font-family: monospace;
+    }
+    .claim-form textarea { font-family: system-ui; resize: vertical; min-height: 80px; }
+    .claim-form input:focus, .claim-form textarea:focus { border-color: var(--neon); }
+    .submit-btn {
+      width: 100%; padding: 0.9rem; border: none; border-radius: 10px;
+      background: var(--neon); color: #0a0a1a; font-weight: 800; font-size: 1rem; cursor: pointer;
+    }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .msg { font-size: 0.85rem; text-align: center; margin-top: 0.75rem; min-height: 1.2rem; }
+    .msg.ok  { color: var(--green); }
+    .msg.err { color: var(--red); }
+
+    .proof-link { text-align: center; font-size: 0.72rem; color: var(--muted); margin-top: 1.25rem; }
+    .proof-link a { color: var(--neon2); }
+
+    .skeleton { animation: shimmer 1.5s infinite; background: linear-gradient(90deg, var(--card) 25%, #1a1a40 50%, var(--card) 75%); background-size: 200%; border-radius: 8px; height: 1.2rem; margin-bottom: 0.5rem; }
+    @keyframes shimmer { 0%{ background-position: 200% } 100%{ background-position: -200% } }
+
+    footer { text-align: center; color: var(--muted); font-size: 0.72rem; margin-top: 2rem; }
+    footer a { color: var(--neon); text-decoration: none; }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="logo"><a href="/">PEGD.org</a> — Digital Pet ID</div>
+
+  <div id="loading">
+    <div class="skeleton" style="height:300px;border-radius:16px;margin-bottom:1.25rem;"></div>
+    <div class="skeleton" style="width:40%;"></div>
+    <div class="skeleton" style="width:60%;height:2rem;"></div>
+    <div class="skeleton" style="width:80%;"></div>
+  </div>
+
+  <div id="content" style="display:none;">
+    <div class="pet-photo" id="pet-photo"><span id="pet-emoji">🐾</span></div>
+
+    <div id="status-badge" class="status-badge home">● Home Safe</div>
+    <div class="pet-name" id="pet-name">—</div>
+    <div class="pet-sub" id="pet-sub">—</div>
+
+    <div class="bounty-card" id="bounty-card" style="display:none;">
+      <div class="bounty-label">🏆 Reward for Safe Return</div>
+      <div class="bounty-pegd" id="bounty-pegd">—</div>
+      <div class="bounty-sol" id="bounty-sol"></div>
+    </div>
+
+    <div class="info-card">
+      <div class="info-row"><span class="lbl">Breed</span><span class="val" id="info-breed">—</span></div>
+      <div class="info-row"><span class="lbl">Color</span><span class="val" id="info-color">—</span></div>
+      <div class="info-row"><span class="lbl">Notes</span><span class="val" id="info-desc">—</span></div>
+    </div>
+
+    <div class="contact-card" id="contact-card" style="display:none;">
+      <h3>Contact Owner</h3>
+      <div class="contact-val" id="contact-val">—</div>
+    </div>
+
+    <button class="claim-btn" id="claim-btn" style="display:none;">
+      🐾 I Found <span id="claim-name">this pet</span>!
+    </button>
+
+    <div class="claim-form" id="claim-form">
+      <label>Your Solana wallet (to receive PEGD reward)</label>
+      <input type="text" id="finder-wallet" placeholder="Your Solana address…" autocomplete="off" spellcheck="false">
+      <label>Message to owner (optional)</label>
+      <textarea id="finder-msg" placeholder="Where did you find them? Your phone number?"></textarea>
+      <button class="submit-btn" id="submit-claim">Send Claim →</button>
+      <p class="msg" id="claim-msg"></p>
+    </div>
+
+    <div class="proof-link">
+      <a id="proof-link" href="#" target="_blank" rel="noopener">Verify on-chain ownership →</a>
+    </div>
+  </div>
+
+  <div id="not-found" style="display:none; text-align:center; padding: 3rem 0;">
+    <div style="font-size:3rem; margin-bottom:1rem;">❓</div>
+    <p style="color:var(--muted);">Pet ID not found. The tag may be invalid.</p>
+    <p style="margin-top:0.75rem;"><a href="/" style="color:var(--neon);">pegd.org</a></p>
+  </div>
+
+  <footer>Digital Pet ID powered by <a href="/">PEGD.org</a> · <a href="/register-pet.html">Register your pet →</a></footer>
+</div>
+
+<script>
+const EMOJIS = { dog: '🐕', cat: '🐈', bird: '🐦', rabbit: '🐇', other: '🐾' }
+
+async function load() {
+  const id = new URLSearchParams(location.search).get('id')
+  if (!id) { show('not-found'); return }
+
+  const res = await fetch(`/api/pets/${id}`).catch(() => null)
+  if (!res?.ok) { show('not-found'); return }
+  const pet = await res.json()
+  if (!pet.found) { show('not-found'); return }
+
+  document.title = `${pet.name} — PEGD Pet ID`
+
+  // Photo
+  if (pet.photoUrl) {
+    document.getElementById('pet-photo').innerHTML = `<img src="${escHtml(pet.photoUrl)}" alt="${escHtml(pet.name)}">`
+  } else {
+    document.getElementById('pet-emoji').textContent = EMOJIS[pet.species] || '🐾'
+  }
+
+  // Status
+  const badge = document.getElementById('status-badge')
+  const lost = pet.status === 'lost'
+  badge.className = `status-badge ${pet.status}`
+  badge.textContent = lost ? '⚠️ LOST — Please Help!' : '● Home Safe'
+
+  document.getElementById('pet-name').textContent = pet.name
+  const sub = [pet.species.charAt(0).toUpperCase() + pet.species.slice(1)]
+  if (pet.breed) sub.push(pet.breed)
+  document.getElementById('pet-sub').textContent = sub.join(' · ')
+
+  document.getElementById('info-breed').textContent = pet.breed || '—'
+  document.getElementById('info-color').textContent = pet.color || '—'
+  document.getElementById('info-desc').textContent  = pet.description || '—'
+
+  // Bounty
+  if (lost && pet.bounty?.pegd > 0) {
+    document.getElementById('bounty-pegd').textContent = pet.bounty.pegd.toLocaleString() + ' PEGD'
+    if (pet.bounty.sol) {
+      document.getElementById('bounty-sol').textContent =
+        '≈ ' + pet.bounty.sol.toFixed(4) + ' SOL  ·  $' + pet.bounty.usd.toFixed(2)
+    }
+    document.getElementById('bounty-card').style.display = 'block'
+  }
+
+  // Contact
+  if (pet.contact) {
+    document.getElementById('contact-val').textContent = pet.contact
+    document.getElementById('contact-card').style.display = 'block'
+  }
+
+  // Claim button only if lost
+  if (lost) {
+    document.getElementById('claim-name').textContent = pet.name
+    document.getElementById('claim-btn').style.display = 'block'
+  }
+
+  // Ownership proof link — points to Solscan for the owner wallet
+  document.getElementById('proof-link').href =
+    `https://solscan.io/account/${pet.ownerWallet}`
+
+  show('content')
+
+  // Claim flow
+  document.getElementById('claim-btn').addEventListener('click', () => {
+    document.getElementById('claim-form').classList.toggle('open')
+  })
+
+  document.getElementById('submit-claim').addEventListener('click', async () => {
+    const wallet = document.getElementById('finder-wallet').value.trim()
+    const msg    = document.getElementById('finder-msg').value.trim()
+    const msgEl  = document.getElementById('claim-msg')
+    const btn    = document.getElementById('submit-claim')
+
+    if (!wallet || wallet.length < 32) {
+      setMsg(msgEl, 'Enter your Solana wallet address to receive the reward.', 'err')
+      return
+    }
+
+    btn.disabled = true
+    btn.textContent = 'Submitting…'
+
+    // For now: just notify the owner via a KV claim record
+    // Future: trigger email/notification to owner
+    const claimRes = await fetch(`/api/pets/${id}/claim`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ finderWallet: wallet, message: msg }),
+    }).catch(() => null)
+
+    if (claimRes?.ok) {
+      setMsg(msgEl, `Claim sent! The owner has been notified. Check your wallet for the reward once confirmed.`, 'ok')
+      btn.textContent = 'Claim Sent ✓'
+    } else {
+      setMsg(msgEl, 'Failed to submit claim. Try contacting the owner directly using the info above.', 'err')
+      btn.disabled = false
+      btn.textContent = 'Send Claim →'
+    }
+  })
+}
+
+function show(id) {
+  document.getElementById('loading').style.display    = 'none'
+  document.getElementById('content').style.display    = 'none'
+  document.getElementById('not-found').style.display  = 'none'
+  document.getElementById(id).style.display = 'block'
+}
+
+function setMsg(el, txt, cls) {
+  el.textContent  = txt
+  el.className    = `msg ${cls}`
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+load()
+</script>
+</body>
+</html>

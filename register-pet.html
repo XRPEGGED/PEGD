@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register Pet — PEGD Pet ID</title>
+  <meta name="robots" content="noindex">
+  <style>
+    :root {
+      --bg:#0a0a1a; --bg2:#0d0d22; --card:#13132e; --neon:#00f5ff; --neon2:#9945ff;
+      --gold:#f0b90b; --text:#e0e0ff; --muted:#7070a0; --border:rgba(0,245,255,0.15);
+      --green:#10b981; --red:#ef4444; --radius:12px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;min-height:100vh;}
+    .page{max-width:520px;margin:0 auto;padding:2rem 1rem 4rem;}
+    header{text-align:center;margin-bottom:2rem;}
+    header a{color:var(--neon);text-decoration:none;font-size:0.85rem;}
+    h1{font-size:1.8rem;font-weight:900;color:var(--neon);margin-bottom:0.25rem;}
+    .sub{color:var(--muted);font-size:0.9rem;}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-bottom:1rem;}
+    .section-label{font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--neon);margin-bottom:1rem;}
+
+    .field{margin-bottom:1rem;}
+    .field label{display:block;font-size:0.78rem;color:var(--muted);margin-bottom:0.35rem;text-transform:uppercase;letter-spacing:0.05em;}
+    .field input,.field select,.field textarea{
+      width:100%;background:#0a0a1a;border:1px solid var(--border);
+      color:var(--text);font-size:0.9rem;padding:0.75rem 1rem;
+      border-radius:10px;outline:none;transition:border-color 0.2s;
+    }
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--neon);}
+    .field input::placeholder,.field textarea::placeholder{color:var(--muted);}
+    .field select option{background:#13132e;}
+    .field textarea{resize:vertical;min-height:80px;font-family:system-ui;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+
+    .connect-btn{
+      width:100%;padding:0.9rem;border:none;border-radius:10px;
+      background:linear-gradient(135deg,var(--neon2),#7c3aed);
+      color:#fff;font-size:1rem;font-weight:800;cursor:pointer;margin-bottom:0.75rem;
+    }
+    .wallet-connected{
+      display:flex;align-items:center;gap:8px;
+      background:rgba(153,69,255,0.1);border:1px solid rgba(153,69,255,0.35);
+      border-radius:10px;padding:0.75rem 1rem;margin-bottom:0.75rem;
+      font-size:0.85rem;font-family:monospace;color:var(--neon2);
+    }
+
+    .register-btn{
+      width:100%;padding:1rem;border:none;border-radius:var(--radius);
+      background:var(--neon);color:#0a0a1a;font-size:1.1rem;font-weight:900;
+      cursor:pointer;transition:filter 0.2s;
+    }
+    .register-btn:hover{filter:brightness(0.9);}
+    .register-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+    .msg{font-size:0.85rem;text-align:center;margin-top:0.75rem;min-height:1.2rem;}
+    .msg.ok{color:var(--green);}
+    .msg.err{color:var(--red);}
+
+    /* Result card */
+    .result-card{
+      background:rgba(0,245,255,0.05);border:1px solid var(--neon);
+      border-radius:var(--radius);padding:1.5rem;text-align:center;display:none;
+    }
+    .result-card h2{color:var(--neon);font-size:1.4rem;margin-bottom:0.5rem;}
+    .result-card .pet-url{
+      background:#0a0a1a;border:1px solid var(--border);border-radius:8px;
+      padding:0.75rem;font-family:monospace;font-size:0.85rem;
+      word-break:break-all;color:var(--text);margin:1rem 0;
+    }
+    .qr-wrap{margin:1rem auto;max-width:200px;}
+    .qr-wrap img{width:100%;border-radius:10px;border:3px solid var(--neon);}
+    .copy-btn{
+      background:transparent;border:1px solid var(--border);color:var(--neon);
+      padding:6px 16px;border-radius:8px;font-size:0.8rem;font-weight:700;cursor:pointer;
+    }
+    .copy-btn:hover{border-color:var(--neon);}
+    .print-hint{font-size:0.78rem;color:var(--muted);margin-top:0.75rem;line-height:1.5;}
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <a href="/">← pegd.org</a>
+    <h1 style="margin-top:1rem;">🐾 Digital Pet ID</h1>
+    <p class="sub">Register your pet. Get a QR tag. Ownership proved on Solana.</p>
+  </header>
+
+  <div id="reg-form">
+    <!-- Step 1: Wallet -->
+    <div class="card">
+      <p class="section-label">1 — Connect Wallet (Proves Ownership)</p>
+      <button class="connect-btn" id="connect-btn">🟣 Connect Phantom</button>
+      <div class="wallet-connected" id="wallet-connected" style="display:none;">
+        <span>●</span><span id="wallet-addr">—</span>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);">Your wallet address is the on-chain proof you own this pet's ID. Keep your wallet safe — it's the only way to update the record.</p>
+    </div>
+
+    <!-- Step 2: Identity (locked after registration) -->
+    <div class="card">
+      <p class="section-label">2 — Pet Identity (Immutable)</p>
+      <div class="field">
+        <label>Pet Name *</label>
+        <input type="text" id="f-name" placeholder="Buddy" maxlength="60">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Species *</label>
+          <select id="f-species">
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+            <option value="bird">Bird</option>
+            <option value="rabbit">Rabbit</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Breed</label>
+          <input type="text" id="f-breed" placeholder="Labrador" maxlength="60">
+        </div>
+      </div>
+      <div class="field">
+        <label>Color / Markings</label>
+        <input type="text" id="f-color" placeholder="Yellow, white chest patch" maxlength="80">
+      </div>
+      <div class="field">
+        <label>Photo URL</label>
+        <input type="url" id="f-photo" placeholder="https://… (Imgur, Google Photos, etc.)">
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:0.25rem;">Name, species, breed and color are locked after registration — they become the permanent on-chain identity.</p>
+    </div>
+
+    <!-- Step 3: Contact (mutable) -->
+    <div class="card">
+      <p class="section-label">3 — Contact Info (Shown to Finder)</p>
+      <div class="field">
+        <label>Your Contact Info</label>
+        <textarea id="f-contact" placeholder="e.g. Call/text 555-1234 or email me@example.com — share whatever you're comfortable making public on the tag."></textarea>
+      </div>
+      <div class="field">
+        <label>Additional Notes</label>
+        <textarea id="f-desc" placeholder="Friendly, responds to name, indoor pet…" maxlength="400"></textarea>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);">Contact and notes can be updated anytime by signing with your wallet.</p>
+    </div>
+
+    <button class="register-btn" id="register-btn" disabled>Register Pet →</button>
+    <p class="msg" id="reg-msg"></p>
+  </div>
+
+  <!-- Result -->
+  <div class="result-card" id="result-card">
+    <h2>🎉 Pet Registered!</h2>
+    <p style="color:var(--muted);font-size:0.9rem;">Your pet's permanent digital ID is live. Print the QR and put it on their tag.</p>
+    <div class="pet-url" id="result-url"></div>
+    <button class="copy-btn" id="copy-url-btn">Copy Link</button>
+    <div class="qr-wrap">
+      <img id="result-qr" src="" alt="QR Code">
+    </div>
+    <p class="print-hint">
+      Print this QR code and attach it to your pet's collar tag.<br>
+      Anyone who scans it will see your pet's info and how to reach you.<br>
+      <strong style="color:var(--neon);">Bookmark this page</strong> to manage status and add a bounty if they ever go missing.
+    </p>
+    <a id="manage-link" href="#" style="display:inline-block;margin-top:1rem;color:var(--neon2);font-weight:700;">Manage this pet →</a>
+  </div>
+</div>
+
+<script>
+let connectedWallet = null
+
+document.getElementById('connect-btn').addEventListener('click', async () => {
+  const provider = window.solana
+  if (!provider?.isPhantom) {
+    window.open('https://phantom.app/', '_blank')
+    return
+  }
+  try {
+    const { publicKey } = await provider.connect()
+    connectedWallet = publicKey.toString()
+    document.getElementById('wallet-connected').style.display = 'flex'
+    document.getElementById('wallet-addr').textContent = connectedWallet.slice(0,6) + '…' + connectedWallet.slice(-4)
+    document.getElementById('connect-btn').style.display = 'none'
+    document.getElementById('register-btn').disabled = false
+  } catch (e) {
+    setMsg('reg-msg', 'Phantom connection failed.', 'err')
+  }
+})
+
+document.getElementById('register-btn').addEventListener('click', async () => {
+  if (!connectedWallet) return
+
+  const name = document.getElementById('f-name').value.trim()
+  if (!name) { setMsg('reg-msg', 'Pet name is required.', 'err'); return }
+
+  const btn = document.getElementById('register-btn')
+  btn.disabled = true
+  btn.textContent = 'Signing…'
+  setMsg('reg-msg', '', '')
+
+  try {
+    // Sign a message to prove wallet ownership at time of registration
+    const timestamp = Date.now()
+    const message = `PEGD Pet ID Registration\nOwner: ${connectedWallet}\nPet: ${name}\nTimestamp: ${timestamp}`
+    const encoded  = new TextEncoder().encode(message)
+    const { signature } = await window.solana.signMessage(encoded, 'utf8')
+    const sigB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
+
+    btn.textContent = 'Registering…'
+
+    const res = await fetch('/api/pets/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        address:   connectedWallet,
+        message,
+        signature: sigB64,
+        pet: {
+          name,
+          species:     document.getElementById('f-species').value,
+          breed:       document.getElementById('f-breed').value.trim(),
+          color:       document.getElementById('f-color').value.trim(),
+          photoUrl:    document.getElementById('f-photo').value.trim(),
+          description: document.getElementById('f-desc').value.trim(),
+          contact:     document.getElementById('f-contact').value.trim(),
+        },
+      }),
+    })
+
+    const data = await res.json()
+    if (!data.success) throw new Error(data.error || 'Registration failed')
+
+    const petUrl = `${location.origin}/pet.html?id=${data.id}`
+    const qrUrl  = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(petUrl)}`
+
+    document.getElementById('result-url').textContent = petUrl
+    document.getElementById('result-qr').src = qrUrl
+    document.getElementById('manage-link').href = petUrl
+
+    document.getElementById('reg-form').style.display = 'none'
+    document.getElementById('result-card').style.display = 'block'
+
+    document.getElementById('copy-url-btn').addEventListener('click', () => {
+      navigator.clipboard.writeText(petUrl).then(() => {
+        document.getElementById('copy-url-btn').textContent = 'Copied!'
+        setTimeout(() => document.getElementById('copy-url-btn').textContent = 'Copy Link', 2000)
+      })
+    })
+
+  } catch (e) {
+    setMsg('reg-msg', e.message || 'Registration failed.', 'err')
+    btn.disabled = false
+    btn.textContent = 'Register Pet →'
+  }
+})
+
+function setMsg(id, txt, cls) {
+  const el = document.getElementById(id)
+  el.textContent = txt
+  el.className = `msg ${cls}`
+}
+</script>
+</body>
+</html>

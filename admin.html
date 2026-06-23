@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PEGD Payout Admin</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0a0a1a;color:#c8c8e8;font-family:monospace;padding:2rem;min-height:100vh}
+  h1{color:#00f5ff;font-size:1.2rem;margin-bottom:1.5rem;letter-spacing:.05em}
+  .card{background:#13132e;border:1px solid #1e1e4a;border-radius:8px;padding:1.5rem;margin-bottom:1rem}
+  .status-row{display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid #1e1e4a;font-size:.9rem}
+  .status-row:last-child{border-bottom:none}
+  .dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+  .pass{background:#00e676}
+  .warn{background:#f0b90b}
+  .fail{background:#ff4444}
+  .pending{background:#444}
+  .label{color:#7070a0;width:140px;flex-shrink:0}
+  .value{color:#c8c8e8}
+  .big{font-size:2rem;font-weight:bold;margin:.5rem 0}
+  .green{color:#00e676}
+  .yellow{color:#f0b90b}
+  .red{color:#ff4444}
+  .blue{color:#00f5ff}
+  .muted{color:#444466}
+  .btn{display:inline-block;padding:.75rem 2rem;border-radius:6px;border:none;font-family:monospace;font-size:.95rem;cursor:pointer;font-weight:bold;transition:opacity .2s}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn-green{background:#00e676;color:#0a0a1a}
+  .btn-red{background:#ff4444;color:#fff}
+  .btn-row{display:flex;gap:1rem;margin-top:1rem}
+  input{background:#0a0a1a;border:1px solid #1e1e4a;color:#c8c8e8;padding:.5rem .75rem;border-radius:4px;font-family:monospace;font-size:.85rem;width:100%}
+  .section{color:#7070a0;font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem}
+  table{width:100%;border-collapse:collapse;font-size:.8rem}
+  td,th{padding:.4rem .6rem;text-align:left;border-bottom:1px solid #1e1e4a}
+  th{color:#7070a0;font-weight:normal}
+  .mono{color:#00f5ff}
+  #msg{margin-top:1rem;padding:.75rem;border-radius:4px;font-size:.85rem;display:none}
+  .msg-ok{background:#00261a;border:1px solid #00e676;color:#00e676}
+  .msg-err{background:#2a0a0a;border:1px solid #ff4444;color:#ff4444}
+  .banner{padding:1rem 1.5rem;border-radius:8px;margin-bottom:1rem;font-size:1.1rem;font-weight:bold;text-align:center}
+  .banner-safe{background:#00261a;border:2px solid #00e676;color:#00e676}
+  .banner-warn{background:#2a2000;border:2px solid #f0b90b;color:#f0b90b}
+  .banner-fail{background:#2a0000;border:2px solid #ff4444;color:#ff4444}
+  .banner-none{background:#13132e;border:2px solid #444;color:#444466}
+</style>
+</head>
+<body>
+<h1>XRPEGGED · Payout Admin</h1>
+
+<div class="card" id="auth-card">
+  <div class="section">Operator Secret</div>
+  <input type="password" id="secret-input" placeholder="Bearer token…" autocomplete="current-password">
+  <div class="btn-row">
+    <button class="btn btn-green" onclick="load()">Check Pending Payout</button>
+  </div>
+</div>
+
+<div id="banner" class="banner banner-none" style="display:none"></div>
+
+<div class="card" id="checks-card" style="display:none">
+  <div class="section">Checks</div>
+  <div id="checks-list"></div>
+</div>
+
+<div class="card" id="summary-card" style="display:none">
+  <div class="section">Cycle Summary</div>
+  <div id="summary"></div>
+</div>
+
+<div class="card" id="miners-card" style="display:none">
+  <div class="section">Miner Breakdown</div>
+  <table>
+    <thead><tr>
+      <th>Wallet</th><th>MH contributed</th><th>Share %</th><th>PEGD earned</th><th>SOL value</th>
+    </tr></thead>
+    <tbody id="miners-table"></tbody>
+  </table>
+</div>
+
+<div class="card" id="action-card" style="display:none">
+  <div class="section">Execute Payout</div>
+  <p style="font-size:.82rem;color:#7070a0;margin-bottom:.75rem">
+    Sign and submit the swap transaction below, then paste the Solana tx signature to confirm.
+  </p>
+  <button class="btn" style="background:#1e1e4a;color:#00f5ff;margin-bottom:.75rem" onclick="copyTx()">Copy Swap Tx (base64)</button>
+  <br>
+  <input type="text" id="sig-input" placeholder="Paste tx signature after submitting…" style="margin-top:.5rem">
+  <div class="btn-row">
+    <button class="btn btn-green" id="confirm-btn" onclick="confirm_payout()">Confirm Payout</button>
+    <button class="btn btn-red" onclick="reject()">Skip This Cycle</button>
+  </div>
+  <div id="msg"></div>
+</div>
+
+<script>
+const API = 'https://pegd-compute.xrpegged.workers.dev'
+let pendingData = null
+
+function secret() {
+  return document.getElementById('secret-input').value.trim()
+}
+
+function fmt(n, d=6) {
+  return parseFloat(n).toFixed(d)
+}
+
+function shortWallet(w) {
+  return w ? w.slice(0,4)+'…'+w.slice(-4) : '—'
+}
+
+async function load() {
+  const s = secret()
+  if (!s) { alert('Enter your operator secret first'); return }
+
+  document.getElementById('banner').style.display = 'none'
+  ;['checks-card','summary-card','miners-card','action-card'].forEach(id =>
+    document.getElementById(id).style.display = 'none'
+  )
+
+  const res = await fetch(`${API}/pending-payout`, {
+    headers: { 'Authorization': `Bearer ${s}` }
+  }).catch(e => null)
+
+  if (!res || !res.ok) {
+    showBanner('fail', res ? `HTTP ${res.status}` : 'Network error')
+    return
+  }
+
+  const data = await res.json()
+
+  if (!data.pending) {
+    showBanner('none', 'No pending payout — next cycle runs at the top of the next 3-hour mark')
+    return
+  }
+
+  pendingData = data
+  const { safe, checks, audit, avgSol, avgWorkers } = data
+
+  // Banner
+  showBanner(safe ? 'safe' : 'fail',
+    safe ? '✓ Payout looks legitimate — safe to execute'
+         : '✗ One or more checks failed — do not execute without investigating')
+
+  // Checks
+  const checkLabels = {
+    signature:   'HMAC signature',
+    solAmount:   `SOL amount (avg ${avgSol ? fmt(avgSol,4) : 'n/a'} SOL)`,
+    workerCount: `Worker count (avg ${avgWorkers ? avgWorkers.toFixed(1) : 'n/a'})`,
+    hasMiner:    'At least one miner',
+  }
+  const checkNotes = {
+    signature:   { pass: 'Payload came from our cron — not tampered', fail: 'Signature mismatch — data may be injected' },
+    solAmount:   { pass: 'Within 5× historical average', warn: 'Unusually high — verify on Unmineable', fail: 'Failed' },
+    workerCount: { pass: 'Normal range', warn: 'Unusual worker count', fail: 'Failed' },
+    hasMiner:    { pass: 'Miners present', fail: 'No miners — nothing to pay' },
+  }
+  document.getElementById('checks-card').style.display = ''
+  document.getElementById('checks-list').innerHTML = Object.entries(checks).map(([k, v]) => `
+    <div class="status-row">
+      <div class="dot ${v}"></div>
+      <div class="label">${checkLabels[k] || k}</div>
+      <div class="value">${checkNotes[k]?.[v] || v}</div>
+    </div>
+  `).join('')
+
+  // Summary
+  document.getElementById('summary-card').style.display = ''
+  document.getElementById('summary').innerHTML = `
+    <div class="status-row"><div class="label">SOL this cycle</div><div class="value blue">${fmt(audit.solThisCycle,6)} SOL</div></div>
+    <div class="status-row"><div class="label">Operator fee</div><div class="value">${audit.operatorFeePct}%</div></div>
+    <div class="status-row"><div class="label">Miner SOL</div><div class="value">${fmt(audit.minerSol,6)} SOL</div></div>
+    <div class="status-row"><div class="label">PEGD/SOL rate</div><div class="value">${parseFloat(audit.pegdPerSol).toLocaleString()} PEGD / SOL</div></div>
+    <div class="status-row"><div class="label">Total PEGD out</div><div class="value green">${(audit.pegdTotal / Math.pow(10, audit.pegdDecimals)).toLocaleString(undefined,{maximumFractionDigits:2})} PEGD</div></div>
+    <div class="status-row"><div class="label">Total pool MH</div><div class="value">${(audit.totalPoolMh).toLocaleString()} MH</div></div>
+    <div class="status-row"><div class="label">SOL per MH</div><div class="value muted">${audit.solPerMh}</div></div>
+    <div class="status-row"><div class="label">Verify Unmineable</div><div class="value"><a href="${audit.verifyUnmineable}" target="_blank" style="color:#00f5ff">open ↗</a></div></div>
+    <div class="status-row"><div class="label">Verify treasury</div><div class="value"><a href="${audit.verifyTreasury}" target="_blank" style="color:#00f5ff">open ↗</a></div></div>
+  `
+
+  // Miners
+  document.getElementById('miners-card').style.display = ''
+  document.getElementById('miners-table').innerHTML = audit.workers.map(w => `
+    <tr>
+      <td class="mono" title="${w.wallet}">${shortWallet(w.wallet)}</td>
+      <td>${w.mh.toLocaleString()} MH</td>
+      <td>${(w.share * 100).toFixed(2)}%</td>
+      <td class="green">${(w.pegdEarned / Math.pow(10, audit.pegdDecimals)).toLocaleString(undefined,{maximumFractionDigits:2})} PEGD</td>
+      <td class="muted">${fmt(w.solValue,5)} SOL</td>
+    </tr>
+  `).join('')
+
+  document.getElementById('action-card').style.display = ''
+}
+
+function showBanner(type, text) {
+  const el = document.getElementById('banner')
+  el.className = `banner banner-${type}`
+  el.textContent = text
+  el.style.display = ''
+}
+
+function copyTx() {
+  if (!pendingData?.swapTx) return
+  navigator.clipboard.writeText(pendingData.swapTx).then(() => alert('Swap tx copied to clipboard'))
+}
+
+async function confirm_payout() {
+  const sig = document.getElementById('sig-input').value.trim()
+  if (!sig) { showMsg('Paste the tx signature first', false); return }
+  const s = secret()
+
+  document.getElementById('confirm-btn').disabled = true
+  const res = await fetch(`${API}/confirm-payout`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${s}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ txSignature: sig })
+  }).catch(() => null)
+
+  if (!res) { showMsg('Network error', false); document.getElementById('confirm-btn').disabled = false; return }
+  const data = await res.json()
+  if (data.ok) {
+    showMsg('Payout confirmed ✓ — cycle cleared, miners credited', true)
+    pendingData = null
+  } else {
+    showMsg(`Error: ${data.error || JSON.stringify(data)}`, false)
+    document.getElementById('confirm-btn').disabled = false
+  }
+}
+
+async function reject() {
+  if (!confirm('Skip this cycle? The pending swap will remain until next cycle overwrites it.')) return
+  // Just reload to show current state
+  pendingData = null
+  ;['banner','checks-card','summary-card','miners-card','action-card'].forEach(id =>
+    document.getElementById(id).style.display = 'none'
+  )
+}
+
+function showMsg(text, ok) {
+  const el = document.getElementById('msg')
+  el.textContent = text
+  el.className = ok ? 'msg-ok' : 'msg-err'
+  el.style.display = ''
+}
+
+document.getElementById('secret-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') load()
+})
+</script>
+</body>
+</html>

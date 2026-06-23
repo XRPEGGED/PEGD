@@ -23,10 +23,10 @@
   let prices = { XRP: null, SOL: null, PEGD: null, PROOF: null };
 
   async function xrplAccount(addr) {
-    const res = await fetch('https://xrplcluster.com/', {
+    const res = await fetch('/api/xrpl', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ method: 'account_info', params: [{ account: addr, ledger_index: 'current' }] }),
+      body: JSON.stringify({ account: addr }),
     });
     const data = await res.json();
     if (!data.result?.account_data) return null;

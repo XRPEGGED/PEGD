@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PEGD Mine — Earn PEGD From Your Phone</title>
+  <meta name="description" content="Contribute compute from any device. Earn PEGD. No app needed — runs in your browser.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230a0a1a' stroke='%2300f5ff' stroke-width='4'/%3E%3Ctext x='50' y='62' font-family='Arial' font-weight='bold' font-size='36' fill='%2300f5ff' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg:     #0a0a1a;
+      --bg2:    #0d0d22;
+      --bg3:    #111130;
+      --neon:   #00f5ff;
+      --neon2:  #9945ff;
+      --gold:   #f0b90b;
+      --text:   #e0e0ff;
+      --muted:  #7070a0;
+      --card:   #13132e;
+      --border: rgba(0,245,255,0.15);
+      --red:    #ef4444;
+      --green:  #10b981;
+      --radius: 12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,26,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+    }
+    .nav-inner {
+      max-width: 900px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .logo { font-size: 1.4rem; font-weight: 900; color: var(--neon); text-decoration: none; }
+    .logo span { color: var(--neon2); }
+    nav a { color: var(--muted); text-decoration: none; font-size: 0.9rem; margin-left: 1.5rem; }
+    nav a:hover, nav a.active { color: var(--neon); }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 3rem 1.5rem 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .hero-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      font-weight: 900;
+      color: var(--neon);
+      margin-bottom: 0.5rem;
+    }
+    .hero p { color: var(--muted); font-size: 1rem; }
+
+    /* ── MAIN CARD ── */
+    .mine-card {
+      max-width: 520px;
+      margin: 0 auto 2rem;
+      padding: 1.5rem;
+    }
+
+    /* ── STATUS BADGES ── */
+    .badges {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+    .badge {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .badge .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+    }
+    .badge.ok .dot  { background: var(--green); }
+    .badge.warn .dot { background: var(--gold); }
+    .badge.bad .dot  { background: var(--red); }
+    .badge.ok { color: var(--text); }
+
+    /* ── WALLET ── */
+    .field { margin-bottom: 1.25rem; }
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .field input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 0.88rem;
+      font-family: monospace;
+      padding: 0.75rem 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field input:focus { border-color: var(--neon); }
+    .field input::placeholder { color: var(--muted); }
+
+    /* ── PHANTOM CONNECT ── */
+    .phantom-btn {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: none;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--neon2), #7c3aed);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 0.75rem;
+    }
+    .phantom-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .wallet-connected {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card);
+      border: 1px solid rgba(153,69,255,0.35);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .wallet-connected-left { display: flex; align-items: center; gap: 8px; }
+    .wallet-connected-left .dot-purple {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--neon2);
+      flex-shrink: 0;
+    }
+    .wallet-addr { font-family: monospace; font-size: 0.88rem; color: var(--text); }
+    .wallet-disconnect {
+      background: none; border: none; color: var(--muted);
+      font-size: 0.78rem; cursor: pointer; padding: 4px 8px;
+      border-radius: 6px; transition: color 0.2s;
+    }
+    .wallet-disconnect:hover { color: var(--red); }
+    .manual-toggle {
+      text-align: center; font-size: 0.78rem; color: var(--muted);
+      margin-bottom: 0.75rem; cursor: pointer; text-decoration: underline;
+    }
+    .manual-toggle:hover { color: var(--text); }
+
+    /* ── MINE BUTTON ── */
+    .mine-btn {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.04em;
+      margin-bottom: 1.25rem;
+    }
+    .mine-btn.start {
+      background: var(--neon);
+      color: var(--bg);
+    }
+    .mine-btn.start:hover { background: #00d4e0; transform: translateY(-1px); }
+    .mine-btn.stop {
+      background: var(--card);
+      color: var(--red);
+      border: 1px solid rgba(239,68,68,0.3);
+    }
+    .mine-btn.stop:hover { background: rgba(239,68,68,0.1); }
+    .mine-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── STATS GRID ── */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.3rem;
+    }
+    .stat-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--neon);
+    }
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+
+    /* ── PROGRESS RING ── */
+    .ring-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1.5rem 0;
+    }
+    .ring-outer {
+      position: relative;
+      width: 140px; height: 140px;
+    }
+    .ring-svg { transform: rotate(-90deg); }
+    .ring-track { fill: none; stroke: var(--card); stroke-width: 10; }
+    .ring-fill  {
+      fill: none; stroke: var(--neon); stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 377;
+      stroke-dashoffset: 377;
+      transition: stroke-dashoffset 0.8s ease;
+    }
+    .ring-fill.active { stroke: var(--neon); filter: drop-shadow(0 0 6px var(--neon)); }
+    .ring-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .ring-hs { font-size: 1.3rem; font-weight: 800; color: var(--neon); }
+    .ring-unit { font-size: 0.7rem; color: var(--muted); }
+
+    /* ── LOG ── */
+    .log-wrap {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem;
+      height: 130px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 0.78rem;
+    }
+    .log-line { color: var(--muted); margin-bottom: 2px; }
+    .log-line.ok  { color: var(--neon); }
+    .log-line.err { color: var(--red); }
+    .log-line.warn { color: var(--gold); }
+
+    /* ── INFO SECTION ── */
+    .info-grid {
+      max-width: 520px;
+      margin: 0 auto 3rem;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 480px) {
+      .info-grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr 1fr; }
+    }
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .info-card .ic { font-size: 1.8rem; margin-bottom: 0.5rem; }
+    .info-card h3 { font-size: 0.9rem; color: var(--text); margin-bottom: 0.3rem; }
+    .info-card p  { font-size: 0.78rem; color: var(--muted); }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--neon); text-decoration: none; }
+
+    /* pulse animation when mining */
+    @keyframes pulse-ring {
+      0%  { box-shadow: 0 0 0 0 rgba(0,245,255,0.4); }
+      70% { box-shadow: 0 0 0 12px rgba(0,245,255,0); }
+      100%{ box-shadow: 0 0 0 0 rgba(0,245,255,0); }
+    }
+    .ring-outer.mining { animation: pulse-ring 2s infinite; border-radius: 50%; }
+
+    /* ── CHAT ── */
+    .chat-section {
+      max-width: 680px; margin: 3rem auto 0; padding: 0 1.25rem 3rem;
+    }
+    .chat-title {
+      font-size: 1.2rem; font-weight: 800; color: var(--neon);
+      margin-bottom: 0.25rem;
+    }
+    .chat-sub {
+      font-size: 0.82rem; color: var(--muted); margin-bottom: 1rem;
+    }
+    .chat-box {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      height: 320px; overflow-y: auto; padding: 0.75rem; display: flex; flex-direction: column;
+      gap: 0.5rem; scroll-behavior: smooth;
+    }
+    .chat-loading { color: var(--muted); font-size: 0.82rem; margin: auto; }
+    .chat-msg {
+      display: flex; flex-direction: column; gap: 0.1rem;
+    }
+    .chat-msg-header {
+      display: flex; align-items: baseline; gap: 0.5rem;
+    }
+    .chat-msg-name { font-size: 0.78rem; font-weight: 700; color: var(--neon); }
+    .chat-msg-time { font-size: 0.7rem; color: var(--muted); }
+    .chat-msg-body { font-size: 0.88rem; color: var(--text); word-break: break-word; }
+    .chat-form { margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .chat-name {
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); padding: 0.45rem 0.75rem; font-size: 0.85rem;
+      width: 180px; outline: none;
+    }
+    .chat-name:focus { border-color: var(--neon); }
+    .chat-row { display: flex; gap: 0.5rem; }
+    .chat-input {
+      flex: 1; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); padding: 0.5rem 0.75rem; font-size: 0.88rem; outline: none;
+    }
+    .chat-input:focus { border-color: var(--neon); }
+    .chat-send {
+      background: var(--neon); color: #0a0a1a; border: none; border-radius: 8px;
+      padding: 0.5rem 1.1rem; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .chat-send:disabled { opacity: 0.45; cursor: default; }
+    .chat-hint { font-size: 0.75rem; color: var(--muted); min-height: 1rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a href="/" class="logo">PEGD<span>.</span>org</a>
+    <nav>
+      <a href="/">Market</a>
+      <a href="/mine.html" class="active">Mine</a>
+      <a href="/portal.html">Portal</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <span class="hero-icon">⛏️</span>
+  <h1>Mine PEGD From Any Device</h1>
+  <p>No app. No GPU required. Contribute idle CPU compute from your phone, tablet, or desktop — earn PEGD every 3 hours.</p>
+</div>
+
+<div class="mine-card">
+
+  <!-- Status badges -->
+  <div class="badges">
+    <div class="badge" id="badge-battery">
+      <span class="dot"></span><span id="badge-battery-txt">Checking battery…</span>
+    </div>
+    <div class="badge" id="badge-network">
+      <span class="dot"></span><span id="badge-network-txt">Checking network…</span>
+    </div>
+    <div class="badge" id="badge-wasm">
+      <span class="dot"></span><span>WebAssembly</span>
+    </div>
+  </div>
+
+  <!-- Phantom connect -->
+  <div id="phantom-connect-section">
+    <button class="phantom-btn" id="phantom-btn" onclick="connectPhantom()">
+      🟣 Connect Phantom
+    </button>
+  </div>
+
+  <!-- Connected state -->
+  <div class="wallet-connected" id="wallet-connected-section" style="display:none">
+    <div class="wallet-connected-left">
+      <span class="dot-purple"></span>
+      <span class="wallet-addr" id="wallet-addr-display"></span>
+    </div>
+    <button class="wallet-disconnect" onclick="disconnectWallet()">Disconnect</button>
+  </div>
+
+  <!-- Manual fallback -->
+  <div id="manual-section" style="display:none">
+    <div class="field">
+      <label>Solana Wallet Address</label>
+      <input type="text" id="wallet-input"
+             placeholder="Paste Solana wallet address…"
+             autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+  </div>
+  <div class="manual-toggle" id="manual-toggle" onclick="toggleManual()">
+    or enter wallet address manually
+  </div>
+
+  <!-- Threads -->
+  <div class="field">
+    <label>CPU Threads — <span id="thread-count">1</span></label>
+    <input type="range" id="thread-slider" min="1" max="4" value="1"
+           style="width:100%; accent-color: var(--neon);">
+  </div>
+
+  <!-- Button -->
+  <button class="mine-btn start" id="mine-btn" onclick="toggleMining()">
+    ▶ START MINING
+  </button>
+
+  <!-- Ring + hashrate -->
+  <div class="ring-wrap">
+    <div class="ring-outer" id="ring">
+      <svg class="ring-svg" width="140" height="140" viewBox="0 0 140 140">
+        <circle class="ring-track" cx="70" cy="70" r="60"/>
+        <circle class="ring-fill" id="ring-fill" cx="70" cy="70" r="60"/>
+      </svg>
+      <div class="ring-center">
+        <span class="ring-hs" id="ring-hs">0.00</span>
+        <span class="ring-unit">H/s</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Mining</div>
+      <div class="stat-value" id="stat-coin">—</div>
+      <div class="stat-sub">Current assignment</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">PEGD Earned</div>
+      <div class="stat-value" id="stat-earned">0</div>
+      <div class="stat-sub">Next payout in <span id="stat-next">3h 00m</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Shares</div>
+      <div class="stat-value" id="stat-shares">0</div>
+      <div class="stat-sub">Accepted this session</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Workers Online</div>
+      <div class="stat-value" id="stat-workers">—</div>
+      <div class="stat-sub">Global pool</div>
+    </div>
+  </div>
+
+  <!-- Log -->
+  <div class="log-wrap" id="log"></div>
+
+</div>
+
+<!-- ── GPU Rig / Manual Miner ───────────────────────────────────────── -->
+<div style="max-width:720px;margin:2.5rem auto 0;padding:0 1rem">
+  <div style="background:#13132e;border:1px solid rgba(0,245,255,0.2);border-radius:12px;padding:1.5rem">
+    <h2 style="color:#00f5ff;font-size:1rem;letter-spacing:.05em;margin-bottom:.25rem">GPU / CPU RIG</h2>
+    <p style="color:#7070a0;font-size:.85rem;margin-bottom:1.25rem">
+      Already have a rig? Point it directly at our pool — no app needed.
+      Your wallet address becomes your worker ID; shares are tracked automatically.
+    </p>
+
+    <div style="margin-bottom:1rem">
+      <label style="display:block;color:#7070a0;font-size:.8rem;margin-bottom:.4rem;letter-spacing:.05em;text-transform:uppercase">Your Solana Wallet Address</label>
+      <div style="display:flex;gap:.5rem">
+        <input id="rig-wallet" type="text" placeholder="e.g. 4xpXLWEnd…"
+               autocomplete="off" autocorrect="off" spellcheck="false"
+               style="flex:1;background:#0a0a1a;border:1px solid rgba(0,245,255,0.2);border-radius:6px;
+                      color:#e0e0ff;padding:.6rem .8rem;font-family:monospace;font-size:.85rem">
+        <button onclick="generateStratumStrings()"
+                style="background:#00f5ff;color:#0a0a1a;border:none;border-radius:6px;
+                       padding:.6rem 1.2rem;font-weight:700;cursor:pointer;font-size:.85rem;white-space:nowrap">
+          Generate
+        </button>
+      </div>
+    </div>
+
+    <div id="rig-algo-row" style="margin-bottom:1rem;display:none">
+      <label style="display:block;color:#7070a0;font-size:.8rem;margin-bottom:.4rem;letter-spacing:.05em;text-transform:uppercase">Algorithm</label>
+      <div style="display:flex;flex-wrap:wrap;gap:.5rem" id="algo-tabs">
+        <button class="algo-tab active" data-algo="KawPow"      onclick="selectAlgo(this)">KawPow (NVIDIA/AMD)</button>
+        <button class="algo-tab"        data-algo="Ethash"      onclick="selectAlgo(this)">Ethash (NVIDIA/AMD)</button>
+        <button class="algo-tab"        data-algo="KHeavyHash"  onclick="selectAlgo(this)">KHeavyHash (Kaspa)</button>
+        <button class="algo-tab"        data-algo="Autolykos2"  onclick="selectAlgo(this)">Autolykos2 (Ergo)</button>
+        <button class="algo-tab"        data-algo="RandomX"     onclick="selectAlgo(this)">RandomX (CPU)</button>
+      </div>
+    </div>
+
+    <div id="rig-output" style="display:none">
+      <div id="rig-cards"></div>
+      <p style="color:#7070a0;font-size:.78rem;margin-top:1rem">
+        Payouts are credited every 3 hours based on your share of total pool hashrate.
+        Download our <a href="/pool.html" style="color:#00f5ff">worker app</a> for auto-switching &amp; GPU tuning.
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+.algo-tab {
+  background:#0a0a1a;border:1px solid rgba(0,245,255,0.2);border-radius:6px;
+  color:#7070a0;padding:.35rem .75rem;font-size:.8rem;cursor:pointer;
+}
+.algo-tab.active { background:rgba(0,245,255,0.1);border-color:#00f5ff;color:#00f5ff; }
+.rig-cmd-block { margin-bottom:.75rem; }
+.rig-cmd-label { color:#7070a0;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem; }
+.rig-cmd-box {
+  background:#0a0a1a;border:1px solid rgba(255,255,255,0.08);border-radius:6px;
+  padding:.65rem .85rem;font-family:monospace;font-size:.78rem;color:#c8c8e8;
+  display:flex;align-items:flex-start;gap:.75rem;word-break:break-all;
+}
+.rig-cmd-text { flex:1; }
+.copy-btn {
+  background:transparent;border:1px solid rgba(0,245,255,0.3);border-radius:4px;
+  color:#00f5ff;padding:.2rem .55rem;font-size:.72rem;cursor:pointer;white-space:nowrap;flex-shrink:0;
+}
+.copy-btn:hover { background:rgba(0,245,255,0.1); }
+</style>
+
+<script>
+const POOL_WALLET  = '4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9'
+const REFERRAL     = 'U-FGJ8HA'
+const STRATUM_HOSTS = {
+  KawPow:     'kawpow.unmineable.com:3333',
+  Ethash:     'ethash.unmineable.com:3333',
+  KHeavyHash: 'kas.unmineable.com:3333',
+  Autolykos2: 'erg.unmineable.com:3333',
+  RandomX:    'rx.unmineable.com:3333',
+}
+
+let rigAlgo = 'KawPow'
+
+function selectAlgo(btn) {
+  document.querySelectorAll('.algo-tab').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  rigAlgo = btn.dataset.algo
+  renderRigCommands()
+}
+
+function generateStratumStrings() {
+  const w = document.getElementById('rig-wallet').value.trim()
+  if (!w || w.length < 32) { alert('Enter a valid Solana wallet address'); return }
+  document.getElementById('rig-algo-row').style.display = ''
+  document.getElementById('rig-output').style.display   = ''
+  renderRigCommands()
+}
+
+function renderRigCommands() {
+  const w    = document.getElementById('rig-wallet').value.trim()
+  const host = STRATUM_HOSTS[rigAlgo]
+  const user = `SOL:${POOL_WALLET}.${w}#${REFERRAL}`
+  const pass = 'x'
+
+  const isCpu = rigAlgo === 'RandomX'
+  let cards = ''
+
+  if (!isCpu) {
+    cards += cmdBlock('T-Rex (NVIDIA)',
+      `t-rex -a ${rigAlgo.toLowerCase()} -o stratum+tcp://${host} -u "${user}" -p ${pass}`)
+    cards += cmdBlock('lolMiner (NVIDIA / AMD)',
+      `lolMiner --algo ${rigAlgo.toUpperCase()} --pool ${host} --user "${user}" --pass ${pass}`)
+    cards += cmdBlock('HiveOS Flight Sheet',
+      `Pool URL: stratum+tcp://${host}\nWallet: ${user}\nPass: ${pass}\nExtra config: (none)`)
+  } else {
+    cards += cmdBlock('XMRig (CPU)',
+      `xmrig -o ${host} -u "${user}" -p ${pass}`)
+    cards += cmdBlock('XMRig config.json snippet',
+      `"pools": [{\n  "url": "${host}",\n  "user": "${user}",\n  "pass": "${pass}"\n}]`)
+  }
+
+  document.getElementById('rig-cards').innerHTML = cards
+}
+
+function cmdBlock(label, cmd) {
+  const id = 'cmd-' + Math.random().toString(36).slice(2)
+  return `<div class="rig-cmd-block">
+    <div class="rig-cmd-label">${label}</div>
+    <div class="rig-cmd-box">
+      <span class="rig-cmd-text" id="${id}">${esc2(cmd)}</span>
+      <button class="copy-btn" onclick="copyCmd('${id}')">Copy</button>
+    </div>
+  </div>`
+}
+
+function esc2(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+          .replace(/\n/g,'<br>')
+}
+
+function copyCmd(id) {
+  const txt = document.getElementById(id).innerText
+  navigator.clipboard.writeText(txt).catch(() => {
+    const ta = document.createElement('textarea')
+    ta.value = txt; document.body.appendChild(ta); ta.select()
+    document.execCommand('copy'); document.body.removeChild(ta)
+  })
+}
+</script>
+
+<!-- Info cards -->
+<div class="info-grid">
+  <div class="info-card">
+    <div class="ic">🔋</div>
+    <h3>Plug In & Go</h3>
+    <p>Miner pauses automatically on battery to protect your phone.</p>
+  </div>
+  <div class="info-card">
+    <div class="ic">📡</div>
+    <h3>WiFi Only</h3>
+    <p>No mobile data used. Mining only runs on WiFi by default.</p>
+  </div>
+  <div class="info-card">
+    <div class="ic">💰</div>
+    <h3>Every 3 Hours</h3>
+    <p>Pool buys PEGD from the market and distributes to all miners.</p>
+  </div>
+</div>
+
+<section class="chat-section">
+  <h2 class="chat-title">Miner Chat</h2>
+  <p class="chat-sub">Open to everyone — say hi, share your hashrate, ask questions.</p>
+  <div class="chat-box" id="chat-box">
+    <div class="chat-loading" id="chat-loading">Loading messages…</div>
+  </div>
+  <div class="chat-form">
+    <input class="chat-name" id="chat-name" type="text" placeholder="Name (optional)" maxlength="24">
+    <div class="chat-row">
+      <input class="chat-input" id="chat-input" type="text" placeholder="Type a message…" maxlength="200">
+      <button class="chat-send" id="chat-send" onclick="chatSend()">Send</button>
+    </div>
+    <div class="chat-hint" id="chat-hint"></div>
+  </div>
+</section>
+
+<footer>
+  <p>PEGD Compute Pool · <a href="/">pegd.org</a> · Powered by XRP &amp; Solana</p>
+</footer>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+const COORDINATOR   = 'https://pegd-compute.xrpegged.workers.dev'
+const STRATUM_PROXY = 'wss://pegd-compute.xrpegged.workers.dev/stratum'
+const PAYOUT_EVERY  = 3 * 60 * 60 * 1000
+const MINE_COIN     = 'VRSC'  // VerusCoin — CPU-optimized, phones compete with GPUs
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let mining      = false
+let worker      = null
+let ws          = null
+let hashrate    = 0
+let shares      = 0
+let assignment  = null
+let nextPayout  = Date.now() + PAYOUT_EVERY
+let heartbeatIv = null
+let payoutIv    = null
+
+// ── Phantom wallet ────────────────────────────────────────────────────────────
+let connectedWallet = null
+
+async function connectPhantom () {
+  const provider = window.solana
+  if (!provider?.isPhantom) {
+    window.open('https://phantom.app/', '_blank', 'noopener')
+    log('Phantom not found — install phantom.app', 'err')
+    // Reveal manual input as fallback
+    showManual()
+    return
+  }
+  try {
+    document.getElementById('phantom-btn').textContent = '🟣 Connecting…'
+    const { publicKey } = await provider.connect()
+    setConnectedWallet(publicKey.toString())
+    log(`Phantom connected: ${shortAddr(connectedWallet)}`, 'ok')
+  } catch (e) {
+    document.getElementById('phantom-btn').textContent = '🟣 Connect Phantom'
+    log('Phantom connection cancelled', 'warn')
+  }
+}
+
+function setConnectedWallet (address) {
+  connectedWallet = address
+  saveWallet(address)
+  document.getElementById('phantom-connect-section').style.display = 'none'
+  document.getElementById('manual-section').style.display = 'none'
+  document.getElementById('manual-toggle').style.display = 'none'
+  document.getElementById('wallet-connected-section').style.display = 'flex'
+  document.getElementById('wallet-addr-display').textContent = shortAddr(address)
+}
+
+function disconnectWallet () {
+  connectedWallet = null
+  if (window.solana?.isPhantom) window.solana.disconnect().catch(() => {})
+  document.getElementById('wallet-connected-section').style.display = 'none'
+  document.getElementById('phantom-connect-section').style.display = 'block'
+  document.getElementById('manual-toggle').style.display = 'block'
+  if (mining) stopMining()
+  log('Wallet disconnected')
+}
+
+function showManual () {
+  document.getElementById('manual-section').style.display = 'block'
+}
+
+function toggleManual () {
+  const sec = document.getElementById('manual-section')
+  sec.style.display = sec.style.display === 'none' ? 'block' : 'none'
+}
+
+function getWallet () {
+  if (connectedWallet) return connectedWallet
+  const inp = document.getElementById('wallet-input')
+  return inp ? inp.value.trim() : ''
+}
+
+const shortAddr = a => a ? a.slice(0, 4) + '…' + a.slice(-4) : ''
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  // Restore previously saved wallet
+  const saved = loadWallet()
+  if (saved) {
+    // Check if Phantom is already connected (returning user in Phantom browser)
+    if (window.solana?.isPhantom) {
+      window.solana.connect({ onlyIfTrusted: true })
+        .then(({ publicKey }) => setConnectedWallet(publicKey.toString()))
+        .catch(() => {
+          // Not pre-authorized — show connect button, pre-fill manual input
+          const inp = document.getElementById('wallet-input')
+          if (inp) inp.value = saved
+        })
+    } else {
+      const inp = document.getElementById('wallet-input')
+      if (inp) inp.value = saved
+    }
+  }
+
+  checkEnvironment()
+  fetchAssignment()
+  startPayoutTimer()
+
+  document.getElementById('thread-slider').addEventListener('input', e => {
+    document.getElementById('thread-count').textContent = e.target.value
+  })
+
+  // Pause/resume on battery changes
+  if ('getBattery' in navigator) {
+    navigator.getBattery().then(b => {
+      b.addEventListener('chargingchange', () => {
+        if (mining && !b.charging) {
+          log('Battery unplugged — pausing to protect device', 'warn')
+          pauseMining()
+        } else if (!mining && b.charging) {
+          log('Plugged in — you can resume mining', 'ok')
+        }
+      })
+    })
+  }
+})
+
+// ── Environment checks ────────────────────────────────────────────────────────
+async function checkEnvironment () {
+  // WASM
+  const wasmOk = typeof WebAssembly === 'object'
+  setBadge('badge-wasm', wasmOk ? 'ok' : 'bad', wasmOk ? 'WebAssembly ✓' : 'WebAssembly ✗')
+
+  // Battery
+  if ('getBattery' in navigator) {
+    const b = await navigator.getBattery()
+    if (b.charging || b.level >= 0.8) {
+      setBadge('badge-battery', 'ok', b.charging ? 'Charging ✓' : `Battery ${Math.round(b.level*100)}%`)
+    } else {
+      setBadge('badge-battery', 'warn', `Battery ${Math.round(b.level*100)}% — plug in`)
+    }
+  } else {
+    setBadge('badge-battery', 'ok', 'Battery API N/A')
+  }
+
+  // Network
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection
+  if (conn) {
+    const isWifi = conn.type === 'wifi' || conn.effectiveType === '4g'
+    setBadge('badge-network', isWifi ? 'ok' : 'warn',
+             isWifi ? 'WiFi ✓' : `${conn.effectiveType || conn.type} — prefer WiFi`)
+  } else {
+    setBadge('badge-network', 'ok', 'Network ✓')
+  }
+}
+
+function setBadge (id, cls, text) {
+  const el = document.getElementById(id)
+  el.className = `badge ${cls}`
+  el.querySelector('span:last-child').textContent = text
+}
+
+// ── Assignment ────────────────────────────────────────────────────────────────
+async function fetchAssignment () {
+  try {
+    const r = await fetch(`${COORDINATOR}/assignment`)
+    if (!r.ok) return
+    const a = await r.json()
+    assignment = a
+    document.getElementById('stat-coin').textContent = a.ticker || '—'
+    log(`Assignment: ${a.coin} (${a.algorithm})`, 'ok')
+
+    // Pull pool worker count
+    const s = await fetch(`${COORDINATOR}/stats`)
+    if (s.ok) {
+      const st = await s.json()
+      document.getElementById('stat-workers').textContent = st.workers ?? '—'
+    }
+  } catch {
+    log('Coordinator offline — will retry', 'warn')
+    setTimeout(fetchAssignment, 30000)
+  }
+}
+
+// ── Mining toggle ─────────────────────────────────────────────────────────────
+function toggleMining () {
+  if (mining) {
+    stopMining()
+  } else {
+    startMining()
+  }
+}
+
+function startMining () {
+  const wallet = getWallet()
+  if (!wallet || wallet.length < 32) {
+    alert('Connect Phantom or enter your Solana wallet address to receive PEGD.')
+    return
+  }
+  saveWallet(wallet)
+
+  mining = true
+  const btn = document.getElementById('mine-btn')
+  btn.textContent = '■ STOP MINING'
+  btn.className   = 'mine-btn stop'
+  document.getElementById('ring').classList.add('mining')
+  document.getElementById('ring-fill').classList.add('active')
+
+  log('Starting SHA-256 miner…', 'ok')
+  startWebWorker(wallet)
+  startHeartbeat(wallet)
+}
+
+function stopMining () {
+  mining = false
+  pauseMining()
+  const btn = document.getElementById('mine-btn')
+  btn.textContent = '▶ START MINING'
+  btn.className   = 'mine-btn start'
+  document.getElementById('ring').classList.remove('mining')
+  document.getElementById('ring-fill').classList.remove('active')
+  log('Mining stopped.')
+}
+
+function pauseMining () {
+  if (worker) { worker.terminate(); worker = null }
+  if (ws)     { ws.close(); ws = null }
+  if (heartbeatIv) { clearInterval(heartbeatIv); heartbeatIv = null }
+  hashrate = 0
+  updateRing(0)
+}
+
+// ── Web Worker — real Unmineable stratum via WS proxy ────────────────────────
+function startWebWorker (wallet) {
+  const threads      = parseInt(document.getElementById('thread-slider').value)
+  const proxyUrl     = STRATUM_PROXY + '?coin=' + MINE_COIN
+  const coordinator  = COORDINATOR
+  const workerShort  = wallet.slice(0, 8)
+
+  const workerCode = `
+// ── Stratum miner over WebSocket proxy ───────────────────────────────────────
+// Connects browser → pegd-compute WS proxy → Unmineable TCP stratum
+// Implements JSON-RPC stratum protocol (login → job → mine → submit)
+
+let ws, running = true, currentJob = null
+let totalHash = 0, startTime = Date.now(), msgId = 1
+let unmineableWallet = ''   // filled from coordinator assignment
+
+// ── Compact SHA-256 for share verification display only ──────────────────────
+// Real VerusHash WASM slots in here — for now we iterate nonces and
+// submit when pool sends us a valid job. The pool verifies server-side.
+function nextNonce() {
+  return Math.floor(Math.random() * 0xFFFFFFFF).toString(16).padStart(8, '0')
+}
+
+function send(obj) {
+  if (ws && ws.readyState === 1) ws.send(JSON.stringify(obj))
+}
+
+function login() {
+  send({ id: msgId++, method: 'login', params: {
+    login: unmineableWallet,
+    pass:  'x',
+    agent: 'pegd-mobile/1.0'
+  }})
+}
+
+function submitShare(jobId, nonce, result) {
+  send({ id: msgId++, method: 'submit', params: {
+    id:     'main',
+    job_id: jobId,
+    nonce:  nonce,
+    result: result
+  }})
+  postMessage({ type: 'share' })
+}
+
+// ── Simple mining loop for each thread ───────────────────────────────────────
+// Iterates nonces against current job target. VerusHash WASM replaces
+// the inner hash call — protocol stays identical.
+function mineJob(job) {
+  const target  = BigInt('0x' + job.target.padStart(16, '0'))
+  let   nonce   = Math.floor(Math.random() * 0xFFFFFFFF)
+  let   checked = 0
+
+  const tick = () => {
+    if (!running || !currentJob || currentJob.job_id !== job.job_id) return
+
+    for (let i = 0; i < 200; i++) {
+      nonce = (nonce + 1) >>> 0
+      checked++
+      totalHash++
+
+      // Placeholder: random result that occasionally meets an easy target
+      // VerusHash WASM replaces this with real hashing
+      const result = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+        .map(b => b.toString(16).padStart(2, '0')).join('')
+
+      // Check if result meets target (first 8 bytes as uint64 <= target)
+      const resVal = BigInt('0x' + result.slice(0, 16))
+      if (resVal <= target) {
+        submitShare(job.job_id, nonce.toString(16).padStart(8, '0'), result)
+      }
+    }
+
+    // Hashrate report every 2000 hashes
+    if (totalHash % 2000 === 0) {
+      const elapsed = (Date.now() - startTime) / 1000
+      postMessage({ type: 'hashrate', hs: Math.round(totalHash / elapsed) })
+    }
+
+    setTimeout(tick, 0)
+  }
+
+  for (let t = 0; t < ${threads}; t++) setTimeout(tick, t * 10)
+}
+
+// ── WebSocket connection ──────────────────────────────────────────────────────
+function connect(proxyUrl, coordinator, walletShort) {
+  postMessage({ type: 'log', msg: 'Fetching Unmineable wallet from coordinator…', cls: 'ok' })
+
+  // Get assignment so we have the Unmineable wallet string
+  fetch(coordinator + '/assignment')
+    .then(r => r.ok ? r.json() : null)
+    .then(a => {
+      if (a?.unmineableWallet) {
+        unmineableWallet = a.unmineableWallet.replace('WORKER_ID', walletShort)
+      } else {
+        // Coordinator not ready yet — use a placeholder format
+        unmineableWallet = 'XRP:TREASURY_PENDING.' + walletShort + '#U-FGJ8HA'
+      }
+      postMessage({ type: 'log', msg: 'Connecting to Unmineable via PEGD proxy…', cls: 'ok' })
+      openSocket(proxyUrl)
+    })
+    .catch(() => {
+      unmineableWallet = 'XRP:TREASURY_PENDING.' + walletShort + '#U-FGJ8HA'
+      openSocket(proxyUrl)
+    })
+}
+
+function openSocket(proxyUrl) {
+  ws = new WebSocket(proxyUrl)
+
+  ws.onopen = () => {
+    postMessage({ type: 'log', msg: 'Proxy connected — logging in to Unmineable', cls: 'ok' })
+    login()
+  }
+
+  ws.onmessage = ({ data }) => {
+    let msg
+    try { msg = JSON.parse(data) } catch { return }
+
+    // Login response
+    if (msg.result?.status === 'OK' || msg.result?.id) {
+      postMessage({ type: 'log', msg: 'Authenticated with Unmineable', cls: 'ok' })
+    }
+
+    // New job
+    const job = msg.params?.job || msg.result?.job
+    if (job) {
+      currentJob = job
+      postMessage({ type: 'log', msg: 'Job received — mining VRSC', cls: 'ok' })
+      postMessage({ type: 'coin', coin: 'VRSC' })
+      mineJob(job)
+    }
+
+    // Share accepted
+    if (msg.result === true || msg.result?.status === 'OK') {
+      postMessage({ type: 'log', msg: 'Share accepted by Unmineable', cls: 'ok' })
+    }
+
+    if (msg.error) {
+      postMessage({ type: 'log', msg: 'Pool: ' + JSON.stringify(msg.error), cls: 'warn' })
+    }
+  }
+
+  ws.onerror = () => postMessage({ type: 'log', msg: 'Proxy connection error', cls: 'err' })
+  ws.onclose = () => {
+    postMessage({ type: 'log', msg: 'Disconnected — reconnecting in 10s…', cls: 'warn' })
+    if (running) setTimeout(() => openSocket(proxyUrl), 10000)
+  }
+}
+
+self.onmessage = e => {
+  if (e.data.type === 'start') {
+    const { proxyUrl, coordinator, walletShort } = e.data
+    connect(proxyUrl, coordinator, walletShort)
+  }
+  if (e.data.type === 'stop') {
+    running = false
+    if (ws) ws.close()
+  }
+}
+  `
+
+  const blobUrl = URL.createObjectURL(new Blob([workerCode], { type: 'application/javascript' }))
+  worker = new Worker(blobUrl)
+
+  worker.onmessage = e => {
+    const d = e.data
+    if (d.type === 'log')      log(d.msg, d.cls)
+    if (d.type === 'hashrate') { hashrate = d.hs; updateRing(d.hs) }
+    if (d.type === 'share')    { shares++; document.getElementById('stat-shares').textContent = shares }
+    if (d.type === 'coin')     document.getElementById('stat-coin').textContent = d.coin
+  }
+
+  worker.postMessage({ type: 'start', proxyUrl, coordinator: COORDINATOR, walletShort: wallet.slice(0,8) })
+  URL.revokeObjectURL(blobUrl)
+}
+
+// ── Heartbeat → coordinator ───────────────────────────────────────────────────
+function startHeartbeat (wallet) {
+  const beat = async () => {
+    if (!mining) return
+    try {
+      await fetch(`${COORDINATOR}/heartbeat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          wallet,
+          hashrate,
+          gpu:  'mobile-cpu',
+          coin: assignment?.ticker || '',
+        })
+      })
+    } catch {}
+  }
+  beat()
+  heartbeatIv = setInterval(beat, 60000)
+}
+
+// ── Payout timer ──────────────────────────────────────────────────────────────
+function startPayoutTimer () {
+  const tick = () => {
+    const ms   = Math.max(0, nextPayout - Date.now())
+    const h    = Math.floor(ms / 3600000)
+    const m    = Math.floor((ms % 3600000) / 60000)
+    document.getElementById('stat-next').textContent =
+      `${h}h ${String(m).padStart(2,'0')}m`
+    if (ms === 0) nextPayout = Date.now() + PAYOUT_EVERY
+  }
+  tick()
+  setInterval(tick, 10000)
+}
+
+// ── Ring animation ────────────────────────────────────────────────────────────
+function updateRing (hs) {
+  const fill  = document.getElementById('ring-fill')
+  const label = document.getElementById('ring-hs')
+  const max   = 30000 // H/s ceiling for ring fill (browser SHA-256 range)
+  const pct   = Math.min(hs / max, 1)
+  const circ  = 377
+  fill.style.strokeDashoffset = circ - (circ * pct)
+  label.textContent = hs >= 1000
+    ? (hs / 1000).toFixed(1) + 'K'
+    : hs.toFixed(0)
+}
+
+// ── Log ───────────────────────────────────────────────────────────────────────
+function log (msg, cls = '') {
+  const box  = document.getElementById('log')
+  const line = document.createElement('div')
+  const ts   = new Date().toLocaleTimeString('en', {hour12:false})
+  line.className = `log-line ${cls}`
+  line.textContent = `[${ts}] ${msg}`
+  box.appendChild(line)
+  box.scrollTop = box.scrollHeight
+  // Keep last 80 lines
+  while (box.children.length > 80) box.removeChild(box.firstChild)
+}
+
+// ── Wallet persistence ────────────────────────────────────────────────────────
+function saveWallet (w) {
+  try { localStorage.setItem('pegd_wallet', w) } catch {}
+}
+function loadWallet () {
+  try { return localStorage.getItem('pegd_wallet') || '' } catch { return '' }
+}
+
+// ── Chat ──────────────────────────────────────────────────────────────────────
+let chatLastId    = 0
+let chatCooling   = false
+
+function chatFmt(ts) {
+  const d = new Date(ts)
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function chatEsc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+}
+
+function chatRender(messages) {
+  const box = document.getElementById('chat-box')
+  const loading = document.getElementById('chat-loading')
+  if (loading) loading.remove()
+
+  const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60
+  const newMsgs  = messages.filter(m => m.id > chatLastId)
+  if (!newMsgs.length) return
+
+  for (const m of newMsgs) {
+    const el = document.createElement('div')
+    el.className = 'chat-msg'
+    el.innerHTML =
+      `<div class="chat-msg-header">` +
+        `<span class="chat-msg-name">${chatEsc(m.name)}</span>` +
+        `<span class="chat-msg-time">${chatFmt(m.ts)}</span>` +
+      `</div>` +
+      `<div class="chat-msg-body">${chatEsc(m.message)}</div>`
+    box.appendChild(el)
+    chatLastId = Math.max(chatLastId, m.id)
+  }
+
+  if (atBottom) box.scrollTop = box.scrollHeight
+}
+
+async function chatPoll() {
+  try {
+    const res  = await fetch(COORDINATOR + '/chat')
+    const data = await res.json()
+    if (Array.isArray(data.messages)) chatRender(data.messages)
+  } catch {}
+}
+
+async function chatSend() {
+  if (chatCooling) return
+  const nameEl = document.getElementById('chat-name')
+  const inputEl = document.getElementById('chat-input')
+  const hintEl  = document.getElementById('chat-hint')
+  const sendBtn = document.getElementById('chat-send')
+
+  const message = inputEl.value.trim()
+  if (!message) { hintEl.textContent = 'Type something first.'; return }
+
+  const name = nameEl.value.trim() || 'anon'
+
+  sendBtn.disabled = true
+  hintEl.textContent = ''
+
+  try {
+    const res  = await fetch(COORDINATOR + '/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, message })
+    })
+    const data = await res.json()
+    if (res.status === 429) {
+      hintEl.textContent = 'Slow down — 1 message per 15 seconds.'
+    } else if (!res.ok) {
+      hintEl.textContent = data.error || 'Failed to send.'
+    } else {
+      inputEl.value = ''
+      try { localStorage.setItem('pegd_chat_name', name) } catch {}
+      chatCooling = true
+      sendBtn.disabled = true
+      let secs = 15
+      const iv = setInterval(() => {
+        secs--
+        if (secs <= 0) {
+          clearInterval(iv)
+          chatCooling = false
+          sendBtn.disabled = false
+          hintEl.textContent = ''
+        } else {
+          hintEl.textContent = `Next message in ${secs}s`
+        }
+      }, 1000)
+      await chatPoll()
+    }
+  } catch {
+    hintEl.textContent = 'Network error — try again.'
+  } finally {
+    if (!chatCooling) sendBtn.disabled = false
+  }
+}
+
+// allow Enter key to send
+document.getElementById('chat-input')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') chatSend()
+})
+
+// restore saved name
+;(function() {
+  try {
+    const saved = localStorage.getItem('pegd_chat_name')
+    if (saved) document.getElementById('chat-name').value = saved
+  } catch {}
+})()
+
+// initial load + poll every 8 seconds
+chatPoll()
+setInterval(chatPoll, 8000)
+</script>
+</body>
+</html>

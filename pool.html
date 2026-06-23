@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XRPEGGED Compute Pool</title>
+  <style>
+    :root {
+      --bg:#07071a; --surface:#0d0d22; --card:#13132e; --border:#1e1e42;
+      --neon:#00f5ff; --neon2:#a855f7; --green:#22c55e; --yellow:#f0b90b;
+      --red:#ef4444; --text:#c8c8e8; --muted:#555577;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;min-height:100vh;}
+
+    nav{background:var(--surface);border-bottom:1px solid var(--border);
+        display:flex;align-items:center;gap:2rem;padding:0 2rem;height:56px;}
+    nav a{color:var(--muted);text-decoration:none;font-size:0.9rem;}
+    nav a:hover,nav a.active{color:var(--neon);}
+    .nav-logo{color:var(--neon);font-weight:800;font-size:1.2rem;letter-spacing:2px;margin-right:1rem;}
+
+    .page{max-width:1100px;margin:0 auto;padding:2rem 1rem 4rem;}
+
+    /* ── Section label ── */
+    .section-head{display:flex;align-items:baseline;gap:1rem;margin:2rem 0 1rem;}
+    .section-head h2{font-size:1.05rem;color:var(--text);font-weight:700;}
+    .section-head span{font-size:0.72rem;color:var(--muted);}
+
+    /* ── Stat grid ── */
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+               gap:1px;background:var(--border);border:1px solid var(--border);
+               border-radius:10px;overflow:hidden;margin-bottom:1.5rem;}
+    .stat-cell{background:var(--card);padding:1rem 1.25rem;display:flex;flex-direction:column;gap:3px;}
+    .stat-label{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+    .stat-val{font-size:1.35rem;font-weight:700;color:var(--neon);font-variant-numeric:tabular-nums;}
+    .stat-sub{font-size:0.7rem;color:var(--muted);}
+    .stat-val.green{color:var(--green);}
+    .stat-val.yellow{color:var(--yellow);}
+    .stat-val.muted{color:var(--muted);}
+
+    /* ── Assignment cards ── */
+    .assign-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+    .assign-card{background:var(--card);border:1px solid var(--border);border-radius:10px;
+                 padding:1.25rem 1.25rem 1.25rem 1.5rem;position:relative;overflow:hidden;}
+    .assign-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;}
+    .assign-gpu::before{background:var(--neon);}
+    .assign-cpu::before{background:var(--yellow);}
+    .assign-tag{font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.4rem;}
+    .assign-gpu .assign-tag{color:var(--neon);}
+    .assign-cpu .assign-tag{color:var(--yellow);}
+    .assign-coin{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;}
+    .assign-algo{font-size:0.8rem;margin-bottom:0.4rem;}
+    .assign-gpu .assign-algo{color:var(--neon);}
+    .assign-cpu .assign-algo{color:var(--yellow);}
+    .assign-note{font-size:0.7rem;color:var(--muted);}
+    @media(max-width:600px){.assign-grid{grid-template-columns:1fr;}}
+
+    /* ── Progress bar ── */
+    .progress-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1.5rem;}
+    .progress-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.75rem;}
+    .progress-title{font-size:0.85rem;font-weight:700;color:var(--text);}
+    .progress-pct{font-size:1.1rem;font-weight:800;color:var(--yellow);}
+    .progress-track{height:10px;background:var(--border);border-radius:100px;overflow:hidden;}
+    .progress-fill{height:100%;background:linear-gradient(90deg,var(--neon),var(--neon2));
+                   border-radius:100px;transition:width 0.8s ease;}
+    .progress-labels{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--muted);margin-top:6px;}
+
+    /* ── Tables ── */
+    .table{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+    .table-row{display:grid;align-items:center;padding:0.65rem 1rem;
+               border-bottom:1px solid var(--border);font-size:0.82rem;gap:0.5rem;}
+    .table-row:last-child{border-bottom:none;}
+    .table-row.head{background:var(--surface);font-size:0.68rem;color:var(--muted);
+                    text-transform:uppercase;letter-spacing:1px;font-weight:600;}
+    .table-row:not(.head):hover{background:#16163a;}
+    .table-row.you{border-left:3px solid var(--neon);}
+
+    .leaderboard-row{grid-template-columns:40px 1fr 110px 100px 90px 110px;}
+    .history-row-grid{grid-template-columns:1fr 100px 90px 90px;}
+    .worker-row{grid-template-columns:1fr 90px 120px 80px;}
+    .active-miner-row{grid-template-columns:1fr 180px 110px 80px;}
+
+    .c-neon{color:var(--neon);}
+    .c-green{color:var(--green);}
+    .c-yellow{color:var(--yellow);}
+    .c-neon2{color:var(--neon2);}
+    .c-muted{color:var(--muted);}
+    .mono{font-family:monospace;}
+    .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;}
+    .dot.on{background:var(--green);box-shadow:0 0 6px var(--green);}
+    .dot.off{background:var(--muted);}
+    .pulse{animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+    /* ── Your card ── */
+    .your-card{background:var(--card);border:1px solid var(--border);border-radius:10px;
+               padding:1.5rem;display:flex;flex-wrap:wrap;gap:1.5rem;align-items:center;margin-bottom:1.5rem;}
+    .your-stat{display:flex;flex-direction:column;gap:2px;min-width:110px;}
+    .your-stat .v{font-size:1.4rem;font-weight:700;color:var(--neon);}
+    .your-stat .l{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+
+    .btn{display:inline-block;padding:0.6rem 1.4rem;border-radius:6px;font-weight:600;
+         font-size:0.88rem;cursor:pointer;border:none;}
+    .btn-neon{background:var(--neon);color:#07071a;}
+    .btn-ghost{background:transparent;color:var(--neon);border:1px solid var(--border);}
+    .btn-ghost:hover{border-color:var(--neon);}
+
+    /* ── Get started ── */
+    .code-block{background:#07071a;border:1px solid var(--border);border-radius:6px;
+                padding:0.75rem 1rem;font-family:monospace;font-size:0.82rem;
+                color:var(--text);white-space:pre;overflow-x:auto;}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+    .info-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;}
+    .info-card h3{color:var(--neon);font-size:0.9rem;margin-bottom:0.75rem;}
+    .info-card ul{list-style:none;font-size:0.82rem;color:var(--muted);line-height:2;}
+
+    .badge-row{display:flex;flex-wrap:wrap;gap:0.5rem;padding:1rem;
+               background:var(--card);border:1px solid var(--border);border-radius:8px;font-size:0.78rem;}
+    .badge{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+           padding:3px 10px;color:var(--muted);}
+    .badge strong{color:var(--text);}
+
+    @media(max-width:700px){
+      .leaderboard-row{grid-template-columns:32px 1fr 90px 80px;}
+      .leaderboard-row .c-neon2,.leaderboard-row .c-green{display:none;}
+      .worker-row{grid-template-columns:1fr 80px 100px 60px;}
+      .info-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">XRPEGGED</span>
+  <a href="/">Home</a>
+  <a href="/pool.html" class="active">Compute Pool</a>
+  <a href="#get-started">Get Started</a>
+</nav>
+
+<div class="page">
+
+  <!-- ── Unmineable Pool Status ── -->
+  <div class="section-head" style="margin-top:0;">
+    <h2>Unmineable Pool</h2>
+    <span>treasury balance · releases to pool at 0.05 SOL threshold</span>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-cell">
+      <div class="stat-label">Pool Balance</div>
+      <div class="stat-val" id="um-balance">—</div>
+      <div class="stat-sub">treasury SOL accumulated</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Payout Threshold</div>
+      <div class="stat-val yellow" id="um-threshold">0.05 SOL</div>
+      <div class="stat-sub">Unmineable minimum</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Active Workers</div>
+      <div class="stat-val" id="um-worker-count">—</div>
+      <div class="stat-sub">GPU + CPU · confirmed by Unmineable</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Next $PEGD Cycle</div>
+      <div class="stat-val" id="countdown">—</div>
+      <div class="stat-sub">every 3 hours</div>
+    </div>
+  </div>
+
+  <!-- Progress to Unmineable payout -->
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-title">Treasury Progress to SOL Release</span>
+      <span class="progress-pct" id="um-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="um-bar" style="width:0%"></div></div>
+    <div class="progress-labels">
+      <span>0 SOL</span>
+      <span id="um-bal-label">0 / 0.05 SOL</span>
+      <span>0.05 SOL → released</span>
+    </div>
+  </div>
+
+  <!-- ── Current Assignment ── -->
+  <div class="section-head">
+    <h2>Current Assignment</h2>
+    <span>GPU and CPU mine simultaneously · switches by block time</span>
+  </div>
+
+  <div class="assign-grid">
+    <div class="assign-card assign-gpu">
+      <div class="assign-tag">GPU</div>
+      <div class="assign-coin" id="a-gpu-coin">—</div>
+      <div class="assign-algo" id="a-gpu-algo">—</div>
+      <div class="assign-note" id="a-gpu-note">loading…</div>
+    </div>
+    <div class="assign-card assign-cpu">
+      <div class="assign-tag">CPU</div>
+      <div class="assign-coin" id="a-cpu-coin">RandomX → SOL</div>
+      <div class="assign-algo">XMRig · rx.unmineable.com</div>
+      <div class="assign-note">always on · runs alongside GPU</div>
+    </div>
+  </div>
+
+  <!-- Unmineable workers -->
+  <div class="section-head">
+    <h2>Active Workers</h2>
+    <span>confirmed by Unmineable · GPU in MH/s · CPU in H/s</span>
+  </div>
+
+  <div class="table" id="workers-table">
+    <div class="table-row head worker-row">
+      <div>Worker</div><div>Algorithm</div><div>Hashrate</div><div>Status</div>
+    </div>
+    <div class="table-row worker-row" style="grid-column:1/-1;justify-content:center;padding:1.5rem;color:var(--muted);">Loading…</div>
+  </div>
+
+  <!-- ── Internal Pool Stats ── -->
+  <div class="section-head">
+    <h2>XRPEGGED Compute Pool</h2>
+    <span>internal share tracking · resets each $PEGD cycle</span>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-cell"><div class="stat-label">Active Miners</div><div class="stat-val" id="s-miners">—</div><div class="stat-sub">last 10 min</div></div>
+    <div class="stat-cell"><div class="stat-label">Pool GPU MH/s</div><div class="stat-val" id="s-hashrate">—</div><div class="stat-sub">self-reported · GPU only</div></div>
+    <div class="stat-cell"><div class="stat-label">Treasury SOL</div><div class="stat-val" id="s-sol">—</div><div class="stat-sub">queued for $PEGD buyback</div></div>
+    <div class="stat-cell"><div class="stat-label">Operator Fee</div><div class="stat-val muted">0.75%</div><div class="stat-sub">retained by treasury</div></div>
+  </div>
+
+  <!-- ── Active Miners ── -->
+  <div class="section-head">
+    <h2>Active Miners</h2>
+    <span>XRPEGGED Compute Pool · last 10 min</span>
+  </div>
+
+  <div class="table" id="active-miners-table">
+    <div class="table-row head active-miner-row">
+      <div>Miner</div><div>GPU</div><div>Hashrate</div><div>Last Seen</div>
+    </div>
+    <div class="table-row" style="grid-column:1/-1;padding:1.5rem;color:var(--muted);text-align:center;">Loading…</div>
+  </div>
+
+  <!-- ── Your Stats ── -->
+  <div class="section-head">
+    <h2>Your Stats</h2>
+    <span id="your-wallet-display"></span>
+  </div>
+
+  <div class="your-card" id="your-card">
+    <div class="c-muted">Connect Phantom to see your share, rank, and pending $PEGD.</div>
+    <button class="btn btn-neon" id="connect-btn" onclick="connectWallet()">Connect Phantom</button>
+  </div>
+
+  <!-- ── Leaderboard ── -->
+  <div class="section-head">
+    <h2>Leaderboard</h2>
+    <span>by share-seconds · resets each $PEGD cycle</span>
+  </div>
+
+  <div class="table" id="board">
+    <div class="table-row head leaderboard-row">
+      <div>#</div><div>Wallet</div><div class="c-neon">Hashrate</div>
+      <div>Share-sec</div><div class="c-neon2">Pool %</div><div class="c-green">Pending $PEGD</div>
+    </div>
+    <div class="table-row" style="grid-column:1/-1;padding:2rem;color:var(--muted);text-align:center;">Loading…</div>
+  </div>
+
+  <!-- ── Payout History ── -->
+  <div class="section-head">
+    <h2>Payout History</h2>
+    <span>last 50 distributions</span>
+  </div>
+
+  <div class="table" id="history">
+    <div class="table-row head history-row-grid">
+      <div>Wallet</div><div class="c-green">$PEGD</div><div>Pool Share</div><div class="c-muted">When</div>
+    </div>
+    <div class="table-row" style="grid-column:1/-1;padding:1.5rem;color:var(--muted);text-align:center;">Loading…</div>
+  </div>
+
+  <!-- ── Get Started ── -->
+  <div class="section-head" id="get-started">
+    <h2>Start Mining</h2>
+    <span>One command. GPU + CPU mine simultaneously.</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;margin-bottom:1.5rem;">
+    <div style="background:var(--card);border:2px solid var(--neon);border-radius:12px;padding:2rem;text-align:center;">
+      <p style="color:var(--muted);font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.75rem;">Linux terminal</p>
+      <div class="code-block" style="display:inline-block;font-size:0.9rem;cursor:pointer;border-color:var(--neon);padding:0.85rem 1rem;"
+           onclick="copyInstall()" title="Click to copy">curl -fsSL https://pegd.org/install.sh | bash</div>
+      <p id="copy-linux-confirm" style="color:var(--green);font-size:0.8rem;margin-top:0.5rem;opacity:0;transition:opacity 0.3s;">Copied!</p>
+    </div>
+    <div style="background:var(--card);border:2px solid var(--neon2);border-radius:12px;padding:2rem;text-align:center;">
+      <p style="color:var(--muted);font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.75rem;">Windows PowerShell</p>
+      <div class="code-block" style="display:inline-block;font-size:0.9rem;cursor:pointer;border-color:var(--neon2);padding:0.85rem 1rem;"
+           onclick="copyWindowsInstall()" title="Click to copy">irm https://pegd.org/install.ps1 | iex</div>
+      <p id="copy-windows-confirm" style="color:var(--green);font-size:0.8rem;margin-top:0.5rem;opacity:0;transition:opacity 0.3s;">Copied!</p>
+      <p style="font-size:0.72rem;color:var(--muted);margin-top:0.5rem;"><a href="/install.ps1" style="color:var(--neon2);">Review the installer first</a>. Windows Security may flag mining binaries.</p>
+    </div>
+  </div>
+
+  <div class="info-grid" style="margin-bottom:1rem;">
+    <div class="info-card">
+      <h3>What it mines</h3>
+      <ul>
+        <li>⚡ NVIDIA GPU → T-Rex (KawPow and others)</li>
+        <li>⚡ AMD GPU → lolMiner</li>
+        <li>⚡ GPU + CPU mine simultaneously</li>
+        <li>🧠 CPU → XMRig RandomX (runs alongside any GPU)</li>
+        <li>🪟 Windows 10/11 → automatic Python + desktop shortcut</li>
+        <li>🔄 Auto-switches GPU coin based on block time</li>
+        <li>🎯 Auto-tunes intensity for your card</li>
+        <li>🌙 TOU scheduling (off-peak only)</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>How $PEGD accumulates</h3>
+      <ul>
+        <li>📊 Your hashrate earns share-seconds in the pool</li>
+        <li>🏦 Mined coins route to Unmineable pool treasury</li>
+        <li>💸 Unmineable releases SOL to treasury at 0.05 SOL threshold</li>
+        <li>🔄 Treasury SOL converts to $PEGD via buyback every 3h</li>
+        <li>👛 $PEGD distributes to miners by share-seconds</li>
+        <li>🔑 No sign-up — wallet address is your ID</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="badge-row">
+    <span class="badge"><strong>Cycle</strong> every 3 hours</span>
+    <span class="badge"><strong>Operator fee</strong> 0.75%</span>
+    <span class="badge"><strong>Referral</strong> U-FGJ8HA (built-in)</span>
+    <span class="badge"><strong>Pool wallet</strong> 4xpXLWEn…E5C9</span>
+    <span class="badge"><strong>Token</strong> $PEGD</span>
+  </div>
+
+</div>
+
+<script>
+const COORDINATOR   = 'https://pegd-compute.xrpegged.workers.dev'
+const UM_WALLET     = '4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9'
+const UM_COIN       = 'SOL'
+let umUuid          = null
+let connectedWallet = null
+
+// ── Utils ─────────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+function fmt(n) {
+  if (n == null) return '—'
+  if (n >= 1e9)  return (n/1e9).toFixed(2) + 'B'
+  if (n >= 1e6)  return (n/1e6).toFixed(2) + 'M'
+  if (n >= 1e3)  return (n/1e3).toFixed(1) + 'K'
+  return Math.floor(n).toLocaleString()
+}
+function timeAgo(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000)
+  if (s < 60)    return s + 's ago'
+  if (s < 3600)  return Math.floor(s/60) + 'm ago'
+  if (s < 86400) return Math.floor(s/3600) + 'h ago'
+  return Math.floor(s/86400) + 'd ago'
+}
+function fmtDuration(s) {
+  if (s < 60)   return s + 's'
+  if (s < 3600) return Math.floor(s/60) + 'm'
+  return Math.floor(s/3600) + 'h ' + Math.floor((s%3600)/60) + 'm'
+}
+
+// ── Countdown ─────────────────────────────────────────────────────────────────
+function nextPayoutMs() {
+  const now  = new Date(), h = now.getUTCHours()
+  const next = new Date(now)
+  next.setUTCHours((Math.floor(h / 3) + 1) * 3 % 24, 0, 0, 0)
+  if (next <= now) next.setUTCDate(next.getUTCDate() + 1)
+  return next - now
+}
+function fmtCountdown(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000))
+  return [Math.floor(s/3600), Math.floor((s%3600)/60), s%60]
+    .map(n => String(n).padStart(2,'0')).join(':')
+}
+setInterval(() => {
+  document.getElementById('countdown').textContent = fmtCountdown(nextPayoutMs())
+}, 1000)
+
+// ── Assignment ────────────────────────────────────────────────────────────────
+async function loadAssignment() {
+  try {
+    const a = await fetch(`${COORDINATOR}/assignment`).then(r => r.json())
+    if (a.error) return
+
+    // GPU card
+    const ticker = esc(a.ticker || a.coin || '—')
+    const algo   = esc(a.algorithm || '—')
+    document.getElementById('a-gpu-coin').textContent = `${ticker} → SOL`
+    document.getElementById('a-gpu-algo').textContent = algo + ' · kawpow.unmineable.com'
+    const msUntil = a.nextRefreshAt ? Math.max(0, Math.round((a.nextRefreshAt - Date.now()) / 1000)) : null
+    document.getElementById('a-gpu-note').textContent = msUntil != null
+      ? `switches in ~${fmtDuration(msUntil)} · block-time based`
+      : 'block-time based switching'
+
+    // CPU card — always RandomX → SOL but confirm from cpuAssignment if present
+    if (a.cpuAssignment?.payoutCoin) {
+      document.getElementById('a-cpu-coin').textContent =
+        `RandomX → ${esc(a.cpuAssignment.payoutCoin)}`
+    }
+  } catch {}
+}
+
+// ── Unmineable ────────────────────────────────────────────────────────────────
+async function loadUnmineable() {
+  try {
+    const res  = await fetch(`https://api.unmineable.com/v4/address/${UM_WALLET}?coin=${UM_COIN}`)
+    const data = await res.json()
+    if (!data.success) return
+    const d = data.data
+    umUuid = d.uuid
+
+    const bal    = parseFloat(d.balance || 0)
+    const thresh = parseFloat(d.payment_threshold || 0.05)
+    const pct    = Math.min(bal / thresh * 100, 100)
+
+    document.getElementById('um-balance').textContent   = bal.toFixed(6) + ' SOL'
+    document.getElementById('um-threshold').textContent = thresh + ' SOL'
+    document.getElementById('um-pct').textContent       = pct.toFixed(1) + '%'
+    document.getElementById('um-bar').style.width       = pct + '%'
+    document.getElementById('um-bal-label').textContent = `${bal.toFixed(6)} / ${thresh} SOL`
+  } catch {}
+
+  if (!umUuid) return
+  try {
+    const res  = await fetch(`https://api.unmineable.com/v4/account/${umUuid}/workers`)
+    const data = await res.json()
+    if (!data.success) return
+
+    const allWorkers = []
+    for (const [algo, info] of Object.entries(data.data)) {
+      for (const w of (info.workers || [])) {
+        allWorkers.push({ ...w, algo })
+      }
+    }
+
+    document.getElementById('um-worker-count').textContent =
+      allWorkers.length ? allWorkers.length : '—'
+
+    const tbody = document.getElementById('workers-table')
+    const head  = `<div class="table-row head worker-row">
+      <div>Worker</div><div>Algorithm</div><div>Hashrate</div><div>Status</div>
+    </div>`
+
+    if (!allWorkers.length) {
+      tbody.innerHTML = head + `<div class="table-row" style="grid-column:1/-1;padding:1.5rem;color:var(--muted);text-align:center;">No workers seen by Unmineable yet</div>`
+      return
+    }
+
+    tbody.innerHTML = head + allWorkers.map(w => {
+      const isCpu = (w.name || '').includes('-cpu')
+      const rhr   = parseFloat(w.rhr || 0)
+      const rhrStr = isCpu
+        ? Math.round(rhr).toLocaleString() + ' H/s'
+        : rhr.toFixed(2) + ' MH/s'
+      const algoColor = isCpu ? 'c-yellow' : 'c-neon'
+      return `<div class="table-row worker-row">
+        <div class="mono c-neon">${esc(w.name)}</div>
+        <div class="${algoColor}" style="font-size:0.78rem;">${esc(w.algo || '—')}</div>
+        <div class="${algoColor}">${rhrStr}</div>
+        <div><span class="dot ${w.online ? 'on pulse' : 'off'}"></span>${w.online ? 'Online' : 'Offline'}</div>
+      </div>`
+    }).join('')
+  } catch {}
+}
+
+// ── Coordinator stats ─────────────────────────────────────────────────────────
+async function loadCoordStats() {
+  try {
+    const [stats, pending] = await Promise.all([
+      fetch(`${COORDINATOR}/stats`).then(r => r.json()),
+      fetch(`${COORDINATOR}/pending-payout`).then(r => r.json()).catch(() => ({})),
+    ])
+    document.getElementById('s-miners').textContent  = stats.workers ?? '—'
+    document.getElementById('s-hashrate').textContent =
+      stats.totalHashrate != null ? stats.totalHashrate.toFixed(1) + ' MH/s' : '—'
+    document.getElementById('s-sol').textContent =
+      pending.solSpent != null ? pending.solSpent.toFixed(4) + ' SOL' : '0 SOL'
+  } catch {}
+}
+
+// ── Leaderboard + Active Miners ───────────────────────────────────────────────
+async function loadLeaderboard() {
+  const el  = document.getElementById('board')
+  const aml = document.getElementById('active-miners-table')
+  try {
+    const rows = await fetch(`${COORDINATOR}/leaderboard`).then(r => r.json())
+
+    const active = rows.filter(w => w.active)
+    const amHead = `<div class="table-row head active-miner-row">
+      <div>Miner</div><div>GPU</div><div>Hashrate</div><div>Last Seen</div>
+    </div>`
+    if (!active.length) {
+      aml.innerHTML = amHead + `<div class="table-row" style="grid-column:1/-1;padding:1.5rem;color:var(--muted);text-align:center;">No active miners right now</div>`
+    } else {
+      aml.innerHTML = amHead + active.map(w => {
+        const isYou = connectedWallet && w.wallet === connectedWallet
+        const short = w.wallet.slice(0,6) + '…' + w.wallet.slice(-4)
+        const ago   = w.lastSeen ? timeAgo(w.lastSeen) : '—'
+        return `<div class="table-row active-miner-row${isYou ? ' you' : ''}">
+          <div class="mono" title="${esc(w.wallet)}">${isYou ? '<span class="dot on pulse"></span>' : ''}<span class="c-neon">${short}</span></div>
+          <div class="c-muted" style="font-size:0.78rem;">${esc(w.gpu || '—')}</div>
+          <div class="c-neon">${w.hashrate.toFixed(2)} MH/s</div>
+          <div class="c-muted">${ago}</div>
+        </div>`
+      }).join('')
+    }
+
+    const lbHead = `<div class="table-row head leaderboard-row">
+      <div>#</div><div>Wallet</div><div class="c-neon">Hashrate</div>
+      <div>Share-sec</div><div class="c-neon2">Pool %</div><div class="c-green">Pending $PEGD</div>
+    </div>`
+    if (!rows.length) {
+      el.innerHTML = lbHead + `<div class="table-row" style="grid-column:1/-1;padding:2rem;color:var(--muted);text-align:center;">No miners yet — be the first!</div>`
+      return
+    }
+    el.innerHTML = lbHead + rows.map(w => {
+      const isYou = connectedWallet && w.wallet === connectedWallet
+      const short = w.wallet.slice(0,6) + '…' + w.wallet.slice(-4)
+      const hr    = w.active ? w.hashrate.toFixed(2) + ' MH/s' : '<span class="c-muted">offline</span>'
+      const pegd  = w.pendingPegd > 0 ? fmt(Math.floor(w.pendingPegd / 1e6)) : '—'
+      const rank  = w.rank <= 3 ? `<span class="c-yellow">${w.rank}</span>` : w.rank
+      return `<div class="table-row leaderboard-row${isYou ? ' you' : ''}">
+        <div style="text-align:center;">${rank}</div>
+        <div class="mono" title="${esc(w.wallet)}">${isYou ? '<span class="dot on pulse"></span>' : ''}${short}</div>
+        <div class="c-neon">${hr}</div>
+        <div>${fmt(w.shareSeconds)}</div>
+        <div class="c-neon2">${(w.poolShare * 100).toFixed(2)}%</div>
+        <div class="c-green">${pegd}</div>
+      </div>`
+    }).join('')
+  } catch {
+    el.innerHTML  = `<div class="table-row" style="grid-column:1/-1;padding:2rem;color:var(--muted);text-align:center;">Failed to load</div>`
+    aml.innerHTML = `<div class="table-row" style="grid-column:1/-1;padding:1.5rem;color:var(--muted);text-align:center;">Failed to load</div>`
+  }
+}
+
+// ── History ───────────────────────────────────────────────────────────────────
+async function loadHistory() {
+  const el = document.getElementById('history')
+  try {
+    const rows = await fetch(`${COORDINATOR}/payouts`).then(r => r.json())
+    const head = `<div class="table-row head history-row-grid">
+      <div>Wallet</div><div class="c-green">$PEGD</div><div>Pool Share</div><div class="c-muted">When</div>
+    </div>`
+    if (!rows.length) {
+      el.innerHTML = head + `<div class="table-row" style="grid-column:1/-1;padding:1.5rem;color:var(--muted);text-align:center;">No distributions yet — first cycle runs when treasury reaches 0.05 SOL on Unmineable.</div>`
+      return
+    }
+    el.innerHTML = head + rows.slice(0, 50).map(p => `
+      <div class="table-row history-row-grid">
+        <div class="mono" title="${esc(p.wallet)}">${esc(p.wallet.slice(0,6))}…${esc(p.wallet.slice(-4))}</div>
+        <div class="c-green">${fmt(Math.floor((p.pegdEarned || 0) / 1e6))}</div>
+        <div>${((p.share || 0) * 100).toFixed(2)}%</div>
+        <div class="c-muted">${timeAgo(p.timestamp)}</div>
+      </div>`).join('')
+  } catch {}
+}
+
+// ── Your stats ────────────────────────────────────────────────────────────────
+async function loadYourStats(wallet) {
+  const el = document.getElementById('your-card')
+  try {
+    const m = await fetch(`${COORDINATOR}/miner?wallet=${encodeURIComponent(wallet)}`).then(r => r.json())
+    if (!m.found) {
+      el.innerHTML = `<div class="c-muted">Wallet <code>${esc(wallet.slice(0,8))}…</code> not seen in pool yet — start the worker app.</div>`
+      return
+    }
+    const hr   = m.active ? m.hashrate.toFixed(2) + ' MH/s' : 'offline'
+    const pegd = fmt(Math.floor((m.pendingPegd || 0) / 1e6))
+    el.innerHTML = `
+      <div class="your-stat"><div class="v">#${m.rank}</div><div class="l">Rank</div></div>
+      <div class="your-stat"><div class="v">${(m.poolShare * 100).toFixed(3)}%</div><div class="l">Pool Share</div></div>
+      <div class="your-stat"><div class="v">${fmt(m.shareSeconds)}</div><div class="l">Share-sec</div></div>
+      <div class="your-stat"><div class="v">${hr}</div><div class="l">Hashrate</div></div>
+      <div class="your-stat"><div class="v" style="color:var(--green)">${pegd}</div><div class="l">Pending $PEGD</div></div>
+      <div class="your-stat"><div class="v" style="color:var(--neon2);font-size:0.9rem">${esc(m.gpu || '—')}</div><div class="l">GPU</div></div>
+      <button class="btn btn-ghost" onclick="disconnectWallet()">Disconnect</button>`
+  } catch {}
+}
+
+// ── Wallet ────────────────────────────────────────────────────────────────────
+async function connectWallet() {
+  if (!window.solana?.isPhantom) { alert('Install Phantom at phantom.app'); return }
+  try {
+    const { publicKey } = await window.solana.connect()
+    connectedWallet = publicKey.toString()
+    document.getElementById('your-wallet-display').textContent =
+      connectedWallet.slice(0,8) + '…' + connectedWallet.slice(-4)
+    localStorage.setItem('pegd_pool_wallet', connectedWallet)
+    await loadYourStats(connectedWallet)
+    await loadLeaderboard()
+  } catch {}
+}
+
+function disconnectWallet() {
+  connectedWallet = null
+  localStorage.removeItem('pegd_pool_wallet')
+  document.getElementById('your-wallet-display').textContent = ''
+  document.getElementById('your-card').innerHTML = `
+    <div class="c-muted">Connect Phantom to see your share, rank, and pending $PEGD.</div>
+    <button class="btn btn-neon" onclick="connectWallet()">Connect Phantom</button>`
+  loadLeaderboard()
+}
+
+function copyInstall() {
+  navigator.clipboard.writeText('curl -fsSL https://pegd.org/install.sh | bash').then(() => {
+    const el = document.getElementById('copy-linux-confirm')
+    el.style.opacity = 1
+    setTimeout(() => el.style.opacity = 0, 2000)
+  })
+}
+
+function copyWindowsInstall() {
+  navigator.clipboard.writeText('irm https://pegd.org/install.ps1 | iex').then(() => {
+    const el = document.getElementById('copy-windows-confirm')
+    el.style.opacity = 1
+    setTimeout(() => el.style.opacity = 0, 2000)
+  })
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+  document.getElementById('countdown').textContent = fmtCountdown(nextPayoutMs())
+
+  const saved = localStorage.getItem('pegd_pool_wallet')
+  if (saved && window.solana?.isPhantom) {
+    try {
+      const { publicKey } = await window.solana.connect({ onlyIfTrusted: true })
+      connectedWallet = publicKey.toString()
+      document.getElementById('your-wallet-display').textContent =
+        connectedWallet.slice(0,8) + '…' + connectedWallet.slice(-4)
+      loadYourStats(connectedWallet)
+    } catch {}
+  }
+
+  await Promise.all([
+    loadAssignment(),
+    loadUnmineable(),
+    loadCoordStats(),
+    loadLeaderboard(),
+    loadHistory(),
+  ])
+  setInterval(() => Promise.all([
+    loadAssignment(),
+    loadUnmineable(),
+    loadCoordStats(),
+    loadLeaderboard(),
+    loadHistory(),
+  ]), 60000)
+}
+
+init()
+</script>
+</body>
+</html>

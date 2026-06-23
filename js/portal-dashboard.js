@@ -75,6 +75,11 @@
 
     onSuccessfulAuth()
 
+    // Load compute worker stats for the signed-in wallet (Solana address only)
+    if (data.session.rail === 'solana') {
+      loadComputeStats(data.session.address).catch(() => {})
+    }
+
     // Load and surface Shipping Terminal automatically if Chairman has pending work
     loadShippingTerminal().catch(() => {})
 
@@ -209,6 +214,44 @@
     await fetch('/api/portal/logout', { method: 'POST', credentials: 'include' })
     location.reload()
   })
+
+  async function loadComputeStats(wallet) {
+    const COMPUTE = 'https://pegd-compute.xrpegged.workers.dev'
+    const [minerRes, statsRes] = await Promise.all([
+      fetch(`${COMPUTE}/miner?wallet=${encodeURIComponent(wallet)}`).then(r => r.json()).catch(() => null),
+      fetch(`${COMPUTE}/stats`).then(r => r.json()).catch(() => null),
+    ])
+
+    if (!minerRes?.found) {
+      document.getElementById('cm-status').textContent = 'No worker seen'
+      document.getElementById('cm-lastseen').textContent = 'Start pegd-worker.py to begin earning'
+      return
+    }
+
+    const active = minerRes.active
+    const hs = minerRes.hashrate || 0
+    const hsText = hs >= 1 ? fmt(hs, 2) + ' MH/s' : fmt(hs * 1000, 1) + ' KH/s'
+
+    document.getElementById('cm-status').textContent = active ? '🟢 Active' : '⚫ Idle'
+    document.getElementById('cm-status').style.color = active ? 'var(--ok)' : 'var(--muted)'
+    document.getElementById('cm-hashrate').textContent = active ? hsText : '—'
+    document.getElementById('cm-pending').textContent = fmt(minerRes.pendingPegd || 0, 2) + ' PEGD'
+    document.getElementById('cm-rank').textContent = minerRes.rank != null ? '#' + minerRes.rank : '—'
+    document.getElementById('cm-share').textContent = minerRes.poolShare != null
+      ? (minerRes.poolShare * 100).toFixed(2) + '%' : '—'
+    document.getElementById('cm-gpu').textContent = minerRes.gpu || '—'
+
+    if (minerRes.lastSeen) {
+      const ago = Math.round((Date.now() - minerRes.lastSeen) / 1000)
+      const agoText = ago < 60 ? ago + 's ago' : ago < 3600 ? Math.floor(ago / 60) + 'm ago' : Math.floor(ago / 3600) + 'h ago'
+      document.getElementById('cm-lastseen').textContent = 'Last heartbeat: ' + agoText
+    }
+
+    if (statsRes) {
+      document.getElementById('cm-pool').textContent =
+        `Pool: ${statsRes.workers ?? '—'} workers · ${fmt(statsRes.totalHashrate, 2)} MH/s total · ${statsRes.currentCoin || '—'}`
+    }
+  }
 
   // Periodic re-check (keeps HUD fresh; will naturally show gate again on 401/expiry)
   setInterval(() => {

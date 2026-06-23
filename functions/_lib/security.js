@@ -12,6 +12,7 @@ const RATE_RULES = [
   { prefix: '/api/portal/directives', limit: 30, windowSec: 60 },
   { prefix: '/api/portal/dashboard', limit: 20, windowSec: 60 },
   { prefix: '/api/officers/brief', limit: 24, windowSec: 60 },
+  { prefix: '/api/xrpl', limit: 80, windowSec: 60 },
   { prefix: '/api/solana', limit: 80, windowSec: 60 },
   { prefix: '/api/xumm/', limit: 40, windowSec: 60 },
 ]
