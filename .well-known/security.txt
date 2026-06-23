@@ -1,5 +1,6 @@
 Contact: mailto:xrpegged@proton.me
+Expires: 2027-06-23T00:00:00.000Z
 Preferred-Languages: en
 Canonical: https://pegd.org/.well-known/security.txt
-Policy: https://pegd.org
+Policy: https://pegd.org/disclaimer.html
 Acknowledgments: XRPEGGED responsible disclosure — report commerce, wallet, or PII issues before public disclosure.
