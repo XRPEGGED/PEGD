@@ -87,7 +87,10 @@
   <p class="section-group-title">Mining / Compute Pool</p>
 
   <h2>How does the compute pool work?</h2>
-  <p>Run the PEGD worker on any machine with a GPU or CPU. Your machine mines through <a href="https://unmineable.com" target="_blank" rel="noopener">Unmineable</a> under the PEGD pool — Unmineable tracks your hashrate and share of the total work contributed. Every 3 hours the PEGD treasury collects the pool earnings and distributes PEGD tokens back to each worker proportional to their share. Download the worker from the <a href="/mine.html">Mine page</a>.</p>
+  <p>Run the PEGD worker on any machine with a GPU or CPU. Your machine mines through <a href="https://unmineable.com" target="_blank" rel="noopener">Unmineable</a> under the PEGD pool — Unmineable tracks your share of the total work contributed (measured in share-seconds). Every 3 hours the treasury distributes $PEGD directly to miners proportional to their share-seconds. Download the worker from the <a href="/mine.html">Mine page</a>.</p>
+
+  <h2>Where does the treasury PEGD come from?</h2>
+  <p>Mining earns SOL via Unmineable, which accumulates in the treasury. The system automatically buys $PEGD with that SOL when the price dips — specifically, when the current PEGD/SOL rate is 10% more favourable than the recent average, or when 0.1 SOL has accumulated regardless of price. This means the treasury refills at better-than-average prices over time. You can watch the live SOL balance and buyback status on the <a href="/pool.html">Pool page</a>.</p>
 
   <h2>What algorithm should I mine with?</h2>
   <p>The worker selects the most profitable algorithm automatically. If you are configuring manually: NVIDIA and AMD GPUs work best with KawPow or Ethash; CPU-only machines should use RandomX. All algorithms pay out to the same PEGD pool.</p>

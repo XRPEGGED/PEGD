@@ -225,8 +225,8 @@
   <div class="stat-grid">
     <div class="stat-cell"><div class="stat-label">Active Miners</div><div class="stat-val" id="s-miners">—</div><div class="stat-sub">last 10 min</div></div>
     <div class="stat-cell"><div class="stat-label">Pool GPU MH/s</div><div class="stat-val" id="s-hashrate">—</div><div class="stat-sub">self-reported · GPU only</div></div>
-    <div class="stat-cell"><div class="stat-label">Treasury SOL</div><div class="stat-val" id="s-sol">—</div><div class="stat-sub">queued for $PEGD buyback</div></div>
-    <div class="stat-cell"><div class="stat-label">Operator Fee</div><div class="stat-val muted">0.75%</div><div class="stat-sub">retained by treasury</div></div>
+    <div class="stat-cell"><div class="stat-label">Treasury PEGD</div><div class="stat-val" id="s-pegd">—</div><div class="stat-sub">available to pay miners</div></div>
+    <div class="stat-cell"><div class="stat-label">SOL for Buyback</div><div class="stat-val" id="s-sol">—</div><div class="stat-sub" id="s-sol-sub">accumulating · auto-buys on dip</div></div>
   </div>
 
   <!-- ── Active Miners ── -->
@@ -320,10 +320,10 @@
       <h3>How $PEGD accumulates</h3>
       <ul>
         <li>📊 Your hashrate earns share-seconds in the pool</li>
-        <li>🏦 Mined coins route to Unmineable pool treasury</li>
-        <li>💸 Unmineable releases SOL to treasury at 0.05 SOL threshold</li>
-        <li>🔄 Treasury SOL converts to $PEGD via buyback every 3h</li>
-        <li>👛 $PEGD distributes to miners by share-seconds</li>
+        <li>🏦 Mined coins route to Unmineable — SOL pays out to treasury at 0.05 SOL threshold</li>
+        <li>👛 Every 3h the treasury distributes $PEGD directly to miners by share-seconds</li>
+        <li>🤖 Earned SOL accumulates and auto-buys $PEGD on dips to refill treasury</li>
+        <li>📈 Buyback triggers at 0.1 SOL, or earlier if price drops 10%+ below recent average</li>
         <li>🔑 No sign-up — wallet address is your ID</li>
       </ul>
     </div>
@@ -479,15 +479,28 @@ async function loadUnmineable() {
 // ── Coordinator stats ─────────────────────────────────────────────────────────
 async function loadCoordStats() {
   try {
-    const [stats, pending] = await Promise.all([
-      fetch(`${COORDINATOR}/stats`).then(r => r.json()),
-      fetch(`${COORDINATOR}/pending-payout`).then(r => r.json()).catch(() => ({})),
-    ])
-    document.getElementById('s-miners').textContent  = stats.workers ?? '—'
+    const stats = await fetch(`${COORDINATOR}/stats`).then(r => r.json())
+
+    document.getElementById('s-miners').textContent   = stats.workers ?? '—'
     document.getElementById('s-hashrate').textContent =
       stats.totalHashrate != null ? stats.totalHashrate.toFixed(1) + ' MH/s' : '—'
-    document.getElementById('s-sol').textContent =
-      pending.solSpent != null ? pending.solSpent.toFixed(4) + ' SOL' : '0 SOL'
+
+    const pegdHuman = stats.treasuryPegd != null ? (stats.treasuryPegd / 1e6).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '—'
+    document.getElementById('s-pegd').textContent = stats.treasuryPegd != null ? pegdHuman + ' PEGD' : '—'
+
+    const solAmt = stats.accumulatedBuybackSol ?? 0
+    document.getElementById('s-sol').textContent = solAmt.toFixed(4) + ' SOL'
+
+    const subEl = document.getElementById('s-sol-sub')
+    if (stats.buybackPending) {
+      subEl.textContent = '⏳ buyback queued — executing next cycle'
+    } else if (stats.lastBuybackAt) {
+      const ago = Math.round((Date.now() - stats.lastBuybackAt) / 60000)
+      subEl.textContent = `last buyback ${ago < 60 ? ago + 'm ago' : Math.round(ago/60) + 'h ago'} · auto-buys on dip`
+    } else {
+      const pct = stats.buybackThresholdSol ? Math.min(100, Math.round(solAmt / stats.buybackThresholdSol * 100)) : 0
+      subEl.textContent = `${pct}% to next auto-buyback · triggers on dip`
+    }
   } catch {}
 }
 
