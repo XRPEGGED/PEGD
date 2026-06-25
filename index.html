@@ -17,6 +17,11 @@
   <meta name="twitter:description" content="PEGD on Solana. PEGD Market marketplace — USD-priced goods, direct wallet checkout. XRP treasury on XRPL for on-chain reserves proof.">
   <meta name="twitter:image" content="https://placehold.co/1200x630/0a0a1a/00f5ff?text=XRPEGGED">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230a0a1a' stroke='%2300f5ff' stroke-width='4'/%3E%3Ctext x='50' y='62' font-family='Arial' font-weight='bold' font-size='36' fill='%2300f5ff' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://xrplcluster.com">
+  <link rel="preconnect" href="https://api.coingecko.com">
+  <link rel="preconnect" href="https://api.dexscreener.com">
+  <link rel="preconnect" href="https://api.geckoterminal.com">
+  <link rel="dns-prefetch" href="https://api.mainnet-beta.solana.com">
   <style>
     :root {
       --bg: #0a0a1a;
@@ -433,38 +438,15 @@
     /* ── SWAP ── */
     #swap { padding: 6rem 2rem; }
     .swap-container { max-width: 640px; margin: 0 auto; }
-    .xrp-pegd-swap {
+    .xrp-path-card {
       background: var(--bg3); border: 1px solid rgba(0,82,255,0.25);
-      border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1.5rem; text-align: left;
+      border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; text-align: left;
     }
-    .xrp-pegd-swap h3 { margin: 0 0 6px; font-size: 1.05rem; color: var(--neon); }
-    .xrp-pegd-sub { font-size: 0.78rem; color: var(--muted); line-height: 1.45; margin: 0 0 12px; }
-    .xrp-pegd-wallets { display: grid; gap: 8px; margin-bottom: 12px; font-size: 0.72rem; }
-    .xrp-pegd-wallets .lbl { display: block; color: var(--muted); margin-bottom: 2px; }
-    .xrp-pegd-wallets code { word-break: break-all; color: var(--text); font-size: 0.7rem; }
-    .xrp-pegd-label { display: block; font-size: 0.72rem; color: var(--muted); margin: 8px 0 4px; }
-    .xrp-pegd-input, .xrp-pegd-output {
-      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--bg); color: var(--text); font-size: 0.9rem; box-sizing: border-box;
-    }
-    .xrp-pegd-output { display: block; min-height: 2.5rem; line-height: 2.5rem; font-weight: 800; color: var(--gold); }
-    .xrp-pegd-note { font-size: 0.72rem; color: var(--muted); margin: 6px 0 10px; }
-    .xrp-pegd-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-    .xrp-pegd-btn {
-      flex: 1; min-width: 120px; padding: 10px; border: none; border-radius: 8px;
-      font-weight: 700; font-size: 0.78rem; cursor: pointer;
-    }
-    .xrp-pegd-btn.xaman { background: linear-gradient(135deg, #0052ff, #0039b3); color: #fff; }
-    .xrp-pegd-btn.phantom { background: linear-gradient(135deg, #9945ff, #7c3aed); color: #fff; }
-    .xrp-pegd-btn.primary { flex-basis: 100%; background: linear-gradient(135deg, var(--gold), #d4a008); color: var(--bg); }
-    .xrp-pegd-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-    .xrp-pegd-qr { display: block; margin: 12px auto 0; border-radius: 8px; }
-    .xrp-pegd-qr.hidden { display: none; }
-    .xrp-pegd-msg { font-size: 0.78rem; min-height: 1.2rem; margin-top: 10px; }
-    .xrp-pegd-msg.ok { color: #34d399; }
-    .xrp-pegd-msg.err { color: #ff6b8a; }
-    .xrp-pegd-foot { font-size: 0.68rem; color: var(--muted); margin-top: 12px; line-height: 1.4; }
-    .xrp-pegd-foot a { color: var(--neon2); }
+    .xrp-path-card h3 { margin: 0 0 8px; font-size: 0.95rem; color: var(--neon); }
+    .xrp-path-steps { list-style: none; margin: 0; padding: 0; font-size: 0.82rem; color: var(--muted); }
+    .xrp-path-steps li { padding: 5px 0 5px 1.6rem; position: relative; line-height: 1.45; }
+    .xrp-path-steps li::before { content: attr(data-n); position: absolute; left: 0; color: var(--gold); font-weight: 800; }
+    .xrp-path-steps a { color: var(--neon2); font-weight: 600; }
     .swap-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 2.5rem; text-align: center;
@@ -959,7 +941,15 @@
     <div class="swap-container">
       <p class="section-label" style="text-align:center">🚀 Trade PEGD</p>
       <h2>Verify &amp; Trade</h2>
-      <p class="section-sub">PEGD is a real Solana token with a public XRP treasury. Swap XRP→PEGD onsite below, or trade on the curve / Jupiter after graduation.</p>
+      <p class="section-sub">PEGD is a real Solana token with a public XRP treasury. Trade on Moonit (bonding curve) or Jupiter after graduation.</p>
+      <div class="xrp-path-card">
+        <h3>Got XRP? Here's how to get PEGD</h3>
+        <ol class="xrp-path-steps">
+          <li data-n="1">Sell XRP for SOL on any exchange — <a href="https://www.coinbase.com" target="_blank" rel="noopener">Coinbase</a>, <a href="https://www.kraken.com" target="_blank" rel="noopener">Kraken</a>, or <a href="https://www.binance.com" target="_blank" rel="noopener">Binance</a></li>
+          <li data-n="2">Send SOL to your <a href="https://phantom.app" target="_blank" rel="noopener">Phantom wallet</a></li>
+          <li data-n="3">Swap SOL → PEGD on <a href="https://moon.it/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">Moonit</a> (or Jupiter after graduation)</li>
+        </ol>
+      </div>
       <div class="swap-card">
         <div class="trade-status" id="trade-status">
           <strong>Loading trade status…</strong>
@@ -1336,37 +1326,61 @@
     };
   }
 
+  const PRICE_CACHE_KEY = 'pegd_prices_v1';
+  const PRICE_CACHE_TTL = 60_000; // 60s
+
+  function loadCachedPrices() {
+    try {
+      const raw = localStorage.getItem(PRICE_CACHE_KEY);
+      if (!raw) return null;
+      const { ts, prices, meta } = JSON.parse(raw);
+      if (Date.now() - ts > PRICE_CACHE_TTL) return null;
+      if (meta) pegdMeta = meta;
+      return prices;
+    } catch { return null; }
+  }
+
+  function saveCachedPrices(prices) {
+    try {
+      localStorage.setItem(PRICE_CACHE_KEY, JSON.stringify({ ts: Date.now(), prices, meta: pegdMeta }));
+    } catch { /* ignore */ }
+  }
+
   async function fetchPrices() {
     const prices = { XRP: null, SOL: null, PEGD: null };
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/market/prices`);
-      const data = await res.json();
-      if (data?.pricesUsd) Object.assign(prices, data.pricesUsd);
-      if (data?.pegdMeta) pegdMeta = data.pegdMeta;
-    } catch { /* fallback below */ }
-    if (prices.XRP == null || prices.SOL == null) {
-      try {
-        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ripple,solana&vs_currencies=usd');
-        const data = await res.json();
-        prices.XRP = prices.XRP ?? data.ripple?.usd ?? null;
-        prices.SOL = prices.SOL ?? data.solana?.usd ?? null;
-      } catch { /* ignore */ }
-    }
-    if (prices.PEGD == null) {
-      try {
-        const res = await fetch('https://api.dexscreener.com/latest/dex/tokens/' + PEGD_MINT);
-        const data = await res.json();
-        const p = data.pairs?.[0]?.priceUsd;
-        if (p) prices.PEGD = parseFloat(p);
-      } catch { /* ignore */ }
-    }
-    if (prices.PEGD == null || pegdMeta == null) {
-      try {
-        const gecko = await geckoPegdMeta();
-        if (prices.PEGD == null && gecko.price != null) prices.PEGD = gecko.price;
-        if (gecko.meta) pegdMeta = gecko.meta;
-      } catch { /* ignore */ }
-    }
+
+    // Fire all sources in parallel — take first valid result from each
+    const [internal, gecko, dex, coingecko] = await Promise.allSettled([
+      fetch(`${API_BASE_URL}/api/market/prices`, { signal: AbortSignal.timeout(4000) })
+        .then(r => r.json()).catch(() => null),
+      geckoPegdMeta().catch(() => null),
+      fetch(`https://api.dexscreener.com/latest/dex/tokens/${PEGD_MINT}`, { signal: AbortSignal.timeout(4000) })
+        .then(r => r.json()).catch(() => null),
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=ripple,solana&vs_currencies=usd', { signal: AbortSignal.timeout(4000) })
+        .then(r => r.json()).catch(() => null),
+    ]);
+
+    // Internal API (most trusted)
+    const internalData = internal.value;
+    if (internalData?.pricesUsd) Object.assign(prices, internalData.pricesUsd);
+    if (internalData?.pegdMeta) pegdMeta = internalData.pegdMeta;
+
+    // CoinGecko for XRP + SOL
+    const cgData = coingecko.value;
+    prices.XRP = prices.XRP ?? cgData?.ripple?.usd ?? null;
+    prices.SOL = prices.SOL ?? cgData?.solana?.usd ?? null;
+
+    // DexScreener for PEGD
+    const dexData = dex.value;
+    const dexPrice = dexData?.pairs?.[0]?.priceUsd;
+    if (dexPrice) prices.PEGD = prices.PEGD ?? parseFloat(dexPrice);
+
+    // GeckoTerminal for PEGD + meta
+    const geckoData = gecko.value;
+    if (geckoData?.price != null) prices.PEGD = prices.PEGD ?? geckoData.price;
+    if (geckoData?.meta && !pegdMeta) pegdMeta = geckoData.meta;
+
+    saveCachedPrices(prices);
     return prices;
   }
 
@@ -1619,7 +1633,7 @@
     );
   });
 
-  async function loadPublicStats() {
+  async function loadPublicStats(prefetchedPrices) {
     verifyBtn.textContent = 'Refreshing…';
     verifyBtn.disabled = true;
     try {
@@ -1627,7 +1641,7 @@
         xrplAccount(XRP_TREASURY),
         solTreasuryPegd(),
         solTreasurySol(),
-        fetchPrices(),
+        prefetchedPrices ? Promise.resolve(prefetchedPrices) : fetchPrices(),
       ]);
 
       const xrpUsd = xrp != null && prices.XRP ? xrp * prices.XRP : null;
@@ -1783,7 +1797,19 @@
   });
 
   verifyBtn.addEventListener('click', loadStats);
-  loadStats();
+
+  // Show cached prices instantly, then refresh in background
+  const cachedPrices = loadCachedPrices();
+  if (cachedPrices) {
+    // Render with cached data immediately — page feels instant
+    loadPublicStats(cachedPrices);
+  }
+  // Always fetch fresh data (background if cache hit, foreground if not)
+  if (!cachedPrices) {
+    loadStats();
+  } else {
+    setTimeout(() => loadStats(), 0);
+  }
   loadShop();
   restoreHolderSession();
 
