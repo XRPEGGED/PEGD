@@ -447,6 +447,7 @@
     .xrp-path-steps li { padding: 5px 0 5px 1.6rem; position: relative; line-height: 1.45; }
     .xrp-path-steps li::before { content: attr(data-n); position: absolute; left: 0; color: var(--gold); font-weight: 800; }
     .xrp-path-steps a { color: var(--neon2); font-weight: 600; }
+    .xrp-path-note { font-size: 0.72rem; color: var(--muted); margin: 8px 0 0; }
     .swap-card {
       background: var(--card); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 2.5rem; text-align: center;
@@ -943,12 +944,12 @@
       <h2>Verify &amp; Trade</h2>
       <p class="section-sub">PEGD is a real Solana token with a public XRP treasury. Trade on Moonit (bonding curve) or Jupiter after graduation.</p>
       <div class="xrp-path-card">
-        <h3>Got XRP? Here's how to get PEGD</h3>
+        <h3>Got XRP? Swap directly — no CEX needed</h3>
         <ol class="xrp-path-steps">
-          <li data-n="1">Sell XRP for SOL on any exchange — <a href="https://www.coinbase.com" target="_blank" rel="noopener">Coinbase</a>, <a href="https://www.kraken.com" target="_blank" rel="noopener">Kraken</a>, or <a href="https://www.binance.com" target="_blank" rel="noopener">Binance</a></li>
-          <li data-n="2">Send SOL to your <a href="https://phantom.app" target="_blank" rel="noopener">Phantom wallet</a></li>
-          <li data-n="3">Swap SOL → PEGD on <a href="https://moon.it/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">Moonit</a> (or Jupiter after graduation)</li>
+          <li data-n="1">Bridge XRP → wXRP (Solana) via <a href="https://portalbridge.com" target="_blank" rel="noopener">Wormhole Portal</a> — select XRPL → Solana, receive wXRP in Phantom</li>
+          <li data-n="2">Swap wXRP → PEGD on <a href="https://jup.ag/swap/6UpQcMAb5xMzxc7ZfPaVMgx3KqsvKZdT5U718BzD5We2-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">Jupiter</a> — wXRP routes through SOL to PEGD in one click</li>
         </ol>
+        <p class="xrp-path-note">Prefer a CEX? Sell XRP for SOL on <a href="https://www.coinbase.com" target="_blank" rel="noopener">Coinbase</a> or <a href="https://www.kraken.com" target="_blank" rel="noopener">Kraken</a>, then swap SOL → PEGD on <a href="https://moon.it/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">Moonit</a>.</p>
       </div>
       <div class="swap-card">
         <div class="trade-status" id="trade-status">
