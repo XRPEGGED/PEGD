@@ -557,7 +557,7 @@ def build_miner_cmd(miner_key, assignment, wallet, gpu_indices, intensity=80, te
         # register value for Intel/AMD automatically when running with admin/root.
         xmrig_cfg = {
             "donate-level": 0,
-            "randomx": {"wrmsr": True, "rdmsr": True, "1gb-pages": False},
+            "randomx": {"wrmsr": True, "rdmsr": True, "1gb-pages": True},
             "pools": [{
                 "url":  host_port or "rx.unmineable.com:3333",
                 "user": unmineable_u,
