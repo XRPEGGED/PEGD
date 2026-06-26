@@ -92,6 +92,12 @@
     body.portal-authenticated .portal-badge { display: inline-block; }
     .portal-badge.hidden { display: none !important; }
 
+    /* Role-gated content: chairman-only vs all logged-in users */
+    .gated-chairman { display: none; }
+    body.portal-chairman .gated-chairman { display: block; }
+    .gated-holder { display: none; }
+    body.portal-authenticated .gated-holder { display: block; }
+
     /* ── WALLET IDENTICON ── */
     .wallet-indicator {
       display: none;

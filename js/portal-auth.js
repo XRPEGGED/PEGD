@@ -11,18 +11,16 @@
   }
 
   const applySession = (s) => {
-    console.log('applySession called:', s)
     session = s
+    // Remove all role classes first
+    document.body.classList.remove('portal-authenticated', 'portal-chairman', 'portal-holder')
     if (s) {
-      console.log('Session active, adding portal-authenticated class')
       document.body.classList.add('portal-authenticated')
+      document.body.classList.add(s.role === 'chairman' ? 'portal-chairman' : 'portal-holder')
       emit('xrpeg-portal-auth', s)
     } else {
-      console.log('No session, removing portal-authenticated class')
-      document.body.classList.remove('portal-authenticated')
       emit('xrpeg-portal-logout')
     }
-    console.log('Calling updateBadge()')
     updateBadge()
     return session
   }
@@ -270,17 +268,19 @@
     const timer  = floatEl.querySelector('#float-timer')
 
     if (session) {
-      pill.textContent  = '🟣 ' + shortAddr(session.address)
-      pill.style.background = '#14532d'
-      pill.style.borderColor = '#4ade80'
-      pill.style.color = '#4ade80'
-      if (status) status.textContent = 'Chairman · ' + shortAddr(session.address)
+      const isChairman = session.role === 'chairman'
+      const roleLabel  = isChairman ? '👑 Chairman' : '🟣 Holder'
+      pill.textContent      = roleLabel + ' · ' + shortAddr(session.address)
+      pill.style.background  = isChairman ? '#1a1a0a' : '#14532d'
+      pill.style.borderColor = isChairman ? '#fbbf24' : '#4ade80'
+      pill.style.color       = isChairman ? '#fbbf24' : '#4ade80'
+      if (status) status.textContent = roleLabel + ' · ' + shortAddr(session.address)
       if (timer)  timer.textContent  = 'Auto-logout in 10 min of inactivity'
     } else {
-      pill.textContent  = '🔐 Sign In'
-      pill.style.background = '#0f172a'
+      pill.textContent      = '🔐 Sign In'
+      pill.style.background  = '#0f172a'
       pill.style.borderColor = '#1e3a5f'
-      pill.style.color = '#60a5fa'
+      pill.style.color       = '#60a5fa'
       if (status) status.textContent = ''
       if (timer)  timer.textContent  = ''
     }

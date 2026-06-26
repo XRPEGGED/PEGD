@@ -9,8 +9,7 @@ import { consumeChallenge } from '../../_lib/security.js'
 
 export async function onRequestPost({ request, env }) {
   const secret = env.PORTAL_SESSION_SECRET
-  const allowlist = parseAllowlist(env.PORTAL_ALLOWLIST)
-  if (!secret || allowlist.length === 0) {
+  if (!secret) {
     return Response.json({ success: false, error: 'Portal not configured' }, { status: 503 })
   }
 
@@ -36,15 +35,15 @@ export async function onRequestPost({ request, env }) {
     return Response.json({ success: false, error: 'Sign-in challenge expired — try again' }, { status: 401 })
   }
 
-  if (!isAllowed(allowlist, 'solana', address)) {
-    return Response.json({ success: false, error: 'Wallet not authorized' }, { status: 403 })
-  }
+  // Chairman = on allowlist. Everyone else = holder (can sign in, limited access).
+  const allowlist = parseAllowlist(env.PORTAL_ALLOWLIST)
+  const role = isAllowed(allowlist, 'solana', address) ? 'chairman' : 'holder'
 
-  const exp = Date.now() + 4 * 60 * 60 * 1000  // 4h session
-  const token = await signSession({ rail: 'solana', address, role: 'chairman', exp }, secret)
+  const exp = Date.now() + 4 * 60 * 60 * 1000
+  const token = await signSession({ rail: 'solana', address, role, exp }, secret)
 
   return Response.json(
-    { success: true, rail: 'solana', address, role: 'chairman' },
+    { success: true, rail: 'solana', address, role },
     { headers: { 'Set-Cookie': sessionCookie(token) } }
   )
 }
