@@ -164,9 +164,27 @@
     return applySession({ rail: data.rail, address: data.address, role: data.role || 'holder' })
   }
 
+  function getPhantomProvider() {
+    // Prefer Phantom's own namespace — Brave and other wallets don't inject here
+    if (window.phantom?.solana?.isPhantom) return window.phantom.solana
+    // Fall back to legacy window.solana only if it's genuinely Phantom (not Brave)
+    if (window.solana?.isPhantom && !window.solana?.isBraveWallet) return window.solana
+    return null
+  }
+
+  function isMobile() {
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  }
+
   async function verifyPhantom() {
-    const provider = window.solana
-    if (!provider?.isPhantom) {
+    const provider = getPhantomProvider()
+    if (!provider) {
+      if (isMobile()) {
+        // Redirect into Phantom's in-app browser, which will reopen this page with wallet injected
+        const url = encodeURIComponent(window.location.href)
+        window.location.href = `https://phantom.app/ul/browse/${url}?ref=${url}`
+        throw new Error('Opening in Phantom…')
+      }
       window.open('https://phantom.app/', '_blank', 'noopener')
       throw new Error('Phantom not found — install phantom.app')
     }
