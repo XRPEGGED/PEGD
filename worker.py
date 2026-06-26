@@ -556,6 +556,7 @@ def build_miner_cmd(miner_key, assignment, wallet, gpu_indices, intensity=80, te
         # Write a minimal config enabling MSR mod (wrmsr) — XMRig applies the right
         # register value for Intel/AMD automatically when running with admin/root.
         xmrig_cfg = {
+            "donate-level": 0,
             "randomx": {"wrmsr": True, "rdmsr": True, "1gb-pages": False},
             "pools": [{
                 "url":  host_port or "rx.unmineable.com:3333",
