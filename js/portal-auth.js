@@ -242,9 +242,147 @@
     }
   })
 
+  // ── Floating auth widget ──────────────────────────────────────────────────
+
+  const TIMEOUT_MS = 10 * 60 * 1000  // 10 minutes
+  let timeoutHandle = null
+  let floatEl = null
+
+  function resetTimeout() {
+    if (!session) return
+    clearTimeout(timeoutHandle)
+    timeoutHandle = setTimeout(async () => {
+      await logout()
+      if (floatEl) updateFloat()
+      // Show brief notice in the float widget
+      if (floatEl) {
+        const notice = floatEl.querySelector('#float-status')
+        if (notice) { notice.textContent = 'Session timed out'; notice.style.color = '#f87171' }
+      }
+    }, TIMEOUT_MS)
+  }
+
+  function updateFloat() {
+    if (!floatEl) return
+    const pill   = floatEl.querySelector('#float-pill')
+    const panel  = floatEl.querySelector('#float-panel')
+    const status = floatEl.querySelector('#float-status')
+    const timer  = floatEl.querySelector('#float-timer')
+
+    if (session) {
+      pill.textContent  = '🟣 ' + shortAddr(session.address)
+      pill.style.background = '#14532d'
+      pill.style.borderColor = '#4ade80'
+      pill.style.color = '#4ade80'
+      if (status) status.textContent = 'Chairman · ' + shortAddr(session.address)
+      if (timer)  timer.textContent  = 'Auto-logout in 10 min of inactivity'
+    } else {
+      pill.textContent  = '🔐 Sign In'
+      pill.style.background = '#0f172a'
+      pill.style.borderColor = '#1e3a5f'
+      pill.style.color = '#60a5fa'
+      if (status) status.textContent = ''
+      if (timer)  timer.textContent  = ''
+    }
+  }
+
+  function buildFloat() {
+    floatEl = document.createElement('div')
+    floatEl.id = 'pegd-float-auth'
+    floatEl.innerHTML = `
+      <button id="float-pill" style="
+        display:flex;align-items:center;gap:8px;
+        background:#0f172a;border:1px solid #1e3a5f;border-radius:24px;
+        color:#60a5fa;font-family:'Courier New',monospace;font-size:12px;font-weight:600;
+        padding:8px 16px;cursor:pointer;white-space:nowrap;
+        box-shadow:0 4px 20px rgba(0,0,0,0.4);transition:all 0.2s;
+      ">🔐 Sign In</button>
+      <div id="float-panel" style="
+        display:none;position:absolute;bottom:52px;right:0;
+        background:#0f172a;border:1px solid #1e293b;border-radius:12px;
+        padding:16px;min-width:240px;box-shadow:0 8px 32px rgba(0,0,0,0.6);
+      ">
+        <div id="float-status" style="color:#94a3b8;font-size:11px;margin-bottom:12px;word-break:break-all"></div>
+        <button id="float-phantom" style="
+          width:100%;background:#1e3a5f;border:1px solid #2d4f7c;border-radius:8px;
+          color:#60a5fa;font-family:'Courier New',monospace;font-size:12px;
+          padding:8px;cursor:pointer;margin-bottom:8px;
+        ">🟣 Phantom</button>
+        <button id="float-signout" style="
+          display:none;width:100%;background:#1e1e2e;border:1px solid #2d1b3d;border-radius:8px;
+          color:#f87171;font-family:'Courier New',monospace;font-size:12px;
+          padding:8px;cursor:pointer;margin-bottom:8px;
+        ">Sign Out</button>
+        <div id="float-timer" style="color:#475569;font-size:10px;text-align:center"></div>
+      </div>
+    `
+    Object.assign(floatEl.style, {
+      position: 'fixed', bottom: '24px', right: '24px',
+      zIndex: '9999', fontFamily: "'Courier New',monospace",
+    })
+
+    const pill    = floatEl.querySelector('#float-pill')
+    const panel   = floatEl.querySelector('#float-panel')
+    const phantom = floatEl.querySelector('#float-phantom')
+    const signout = floatEl.querySelector('#float-signout')
+
+    let open = false
+    pill.addEventListener('click', () => {
+      open = !open
+      panel.style.display = open ? 'block' : 'none'
+      // Update signout visibility
+      signout.style.display = session ? 'block' : 'none'
+      phantom.style.display = session ? 'none' : 'block'
+    })
+
+    phantom.addEventListener('click', async () => {
+      const status = floatEl.querySelector('#float-status')
+      status.textContent = 'Opening Phantom…'
+      status.style.color = '#94a3b8'
+      try {
+        await window.XrpegPortal.verifyPhantom()
+        open = false
+        panel.style.display = 'none'
+        updateFloat()
+        resetTimeout()
+      } catch (e) {
+        status.textContent = e.message || 'Sign-in failed'
+        status.style.color = '#f87171'
+      }
+    })
+
+    signout.addEventListener('click', async () => {
+      await logout()
+      open = false
+      panel.style.display = 'none'
+      updateFloat()
+    })
+
+    // Close panel when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!floatEl.contains(e.target)) {
+        open = false
+        panel.style.display = 'none'
+      }
+    })
+
+    document.body.appendChild(floatEl)
+    updateFloat()
+  }
+
+  // Reset inactivity timer on any user activity
+  ;['mousemove','keydown','click','scroll','touchstart'].forEach(ev => {
+    document.addEventListener(ev, resetTimeout, { passive: true })
+  })
+
+  // Hook into session changes to update the float
+  window.addEventListener('xrpeg-portal-auth',   () => { updateFloat(); resetTimeout() })
+  window.addEventListener('xrpeg-portal-logout',  () => { clearTimeout(timeoutHandle); updateFloat() })
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => checkSession())
+    document.addEventListener('DOMContentLoaded', () => { checkSession(); buildFloat() })
   } else {
     checkSession()
+    buildFloat()
   }
 })()
