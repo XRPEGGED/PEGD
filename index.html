@@ -712,7 +712,7 @@
     "name": "XRPEGGED",
     "alternateName": "PEGD",
     "description": "XRPEGGED (PEGD) is treasury-backed on XRP and Solana, with PEGD Market marketplace checkout via direct wallet payments.",
-    "url": "https://xrpegged.com"
+    "url": "https://pegd.org"
   }
   </script>
 </head>
@@ -787,24 +787,71 @@
   <section id="how-it-works" style="padding: 6rem 2rem;">
     <div class="section-inner">
       <p class="section-label">How It Works</p>
-      <h2>3 Simple Steps</h2>
-      <p class="section-sub">Start using PEGD Market in minutes</p>
+      <h2>Mine Compute. Earn PEGD.</h2>
+      <p class="section-sub">Your GPU or CPU mines crypto — the pool converts it to PEGD and sends it to your wallet.</p>
       <div class="features-grid" style="max-width: 900px;">
         <div class="feature-card">
-          <div class="feature-icon">1️⃣</div>
-          <h3>Browse Listings</h3>
-          <p>All items priced in USD. No crypto knowledge required to shop.</p>
+          <div class="feature-icon">⛏️</div>
+          <h3>You Mine</h3>
+          <p>Point your GPU or CPU at Unmineable using your Solana wallet as the worker name.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">2️⃣</div>
-          <h3>Choose Payment</h3>
-          <p>Pay with PEGD (preferred), XRP via Xaman, or SOL via Phantom.</p>
+          <div class="feature-icon">🔄</div>
+          <h3>Pool Converts</h3>
+          <p>Mining fees accumulate in the treasury. The pool auto-buys PEGD on the bonding curve.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">3️⃣</div>
-          <h3>Get Your Item</h3>
-          <p>Physical delivery + digital twin (GLB) + on-chain proof (XRPL NFT).</p>
+          <div class="feature-icon">💸</div>
+          <h3>You Earn PEGD</h3>
+          <p>PEGD lands in your Phantom wallet every payout cycle, proportional to your hashrate.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MINE PEGD -->
+  <section id="mine" style="padding: 4rem 2rem; background: rgba(0,245,255,0.03); border-top: 1px solid rgba(0,245,255,0.08); border-bottom: 1px solid rgba(0,245,255,0.08);">
+    <div class="section-inner">
+      <p class="section-label">Start Mining</p>
+      <h2>Connect Your Rig</h2>
+      <p class="section-sub">Works with any CPU or GPU. Takes about 5 minutes to set up.</p>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 960px; margin: 2.5rem auto 0;">
+
+        <!-- CPU -->
+        <div class="feature-card" style="text-align:left;">
+          <div class="feature-icon" style="font-size:1.5rem;">🖥️ CPU Mining</div>
+          <p style="color:#94a3b8; margin: 0.75rem 0 0.5rem; font-size:0.85rem;">Recommended miner: <strong style="color:#e2e8f0;">XMRig</strong></p>
+          <p style="color:#94a3b8; font-size:0.8rem; margin-bottom: 0.75rem;">Pool: <code style="color:#00f5ff;">rx.unmineable.com:3333</code></p>
+          <p style="color:#94a3b8; font-size:0.8rem; margin-bottom: 0.5rem;">Username (replace <code style="color:#fbbf24;">YOUR_WALLET</code> with your Phantom address):</p>
+          <div style="background:#0a0a1a; border: 1px solid #1e293b; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.72rem; color: #00f5ff; word-break: break-all; line-height: 1.5;">
+            SOL:4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9.<span style="color:#fbbf24;">YOUR_WALLET</span>#U-FGJ8HA
+          </div>
+          <p style="color:#475569; font-size: 0.75rem; margin-top: 0.75rem;">Password: <code>x</code> &nbsp;·&nbsp; Algorithm: <code>rx</code></p>
+        </div>
+
+        <!-- GPU -->
+        <div class="feature-card" style="text-align:left;">
+          <div class="feature-icon" style="font-size:1.5rem;">🎮 GPU Mining</div>
+          <p style="color:#94a3b8; margin: 0.75rem 0 0.5rem; font-size:0.85rem;">Recommended miner: <strong style="color:#e2e8f0;">T-Rex</strong> (NVIDIA) or <strong style="color:#e2e8f0;">lolMiner</strong> (AMD)</p>
+          <p style="color:#94a3b8; font-size:0.8rem; margin-bottom: 0.75rem;">Pool: <code style="color:#00f5ff;">ethash.unmineable.com:3333</code></p>
+          <p style="color:#94a3b8; font-size:0.8rem; margin-bottom: 0.5rem;">Username:</p>
+          <div style="background:#0a0a1a; border: 1px solid #1e293b; border-radius: 6px; padding: 0.75rem; font-family: monospace; font-size: 0.72rem; color: #00f5ff; word-break: break-all; line-height: 1.5;">
+            SOL:4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9.<span style="color:#fbbf24;">YOUR_WALLET</span>#U-FGJ8HA
+          </div>
+          <p style="color:#475569; font-size: 0.75rem; margin-top: 0.75rem;">Password: <code>x</code> &nbsp;·&nbsp; Algorithm: <code>ethash</code></p>
+        </div>
+
+      </div>
+
+      <div style="max-width: 960px; margin: 1.5rem auto 0; background: rgba(0,245,255,0.05); border: 1px solid rgba(0,245,255,0.15); border-radius: 8px; padding: 1rem 1.5rem; font-size: 0.85rem; color: #94a3b8; line-height: 1.7;">
+        <strong style="color:#00f5ff;">How payouts work:</strong> The pool wallet collects mined SOL. Every payout cycle, the system quotes your proportional share at the current PEGD/SOL rate and sends PEGD directly to your Phantom wallet. The treasury wallet address (<code style="color:#e2e8f0;">4xpXLWEnd…E5C9</code>) is where pool earnings accumulate — your worker name is your <em>own</em> wallet so we know where to send your cut.
+      </div>
+
+      <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="https://xmrig.com/download" target="_blank" rel="noopener" class="btn-primary" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">Download XMRig</a>
+        <a href="https://github.com/trexminer/T-Rex/releases" target="_blank" rel="noopener" class="btn-secondary" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">Download T-Rex</a>
+        <a href="https://t.me/ChatPegd" target="_blank" rel="noopener" class="btn-secondary" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">💬 Get Help on Telegram</a>
       </div>
     </div>
   </section>
