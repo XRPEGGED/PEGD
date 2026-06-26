@@ -641,25 +641,6 @@
     }
     .shop-img-real img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* ── MEMES ── */
-    #memes { padding: 6rem 2rem; }
-    .meme-header { text-align: center; margin-bottom: 3rem; }
-    .meme-header h2 { color: var(--gold); }
-    .meme-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem; max-width: 1100px; margin: 0 auto;
-    }
-    .meme-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--radius); overflow: hidden;
-      aspect-ratio: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      font-size: 4rem; gap: 0.5rem;
-      transition: transform 0.2s;
-    }
-    .meme-card:hover { transform: scale(1.04); border-color: var(--gold); }
-    .meme-card span { font-size: 0.75rem; color: var(--muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-
     /* ── COMMUNITY ── */
     #community { padding: 6rem 2rem; background: var(--bg2); }
     .community-grid {
@@ -1042,69 +1023,6 @@
         </div>
       </div>
     </div>
-  </section>
-  <!-- MEMES -->
-  <section id="memes">
-    <div class="meme-header">
-      <p class="section-label">🐸 Culture</p>
-      <h2>Culture is Defined by the Holders</h2>
-      <p class="section-sub">PEGD holders decide what XRPEGGED stands for. Through directives, memes, and PEGD market — our culture is whatever the holders make it.</p>
-    </div>
-    <div class="meme-grid" style="max-width:1100px;margin:0 auto;">
-      <div class="meme-card">🐸<span>PEGD Gang</span></div>
-      <div class="meme-card">🚀<span>To The Moon</span></div>
-      <div class="meme-card">💎<span>Diamond Hands</span></div>
-      <div class="meme-card">🦍<span>Ape In</span></div>
-      <div class="meme-card">📈<span>Number Go Up</span></div>
-      <div class="meme-card">🤝<span>XRP Army</span></div>
-      <div class="meme-card">⚡<span>The Standard</span></div>
-      <div class="meme-card">🟣<span>SOL Speed</span></div>
-    </div>
-    <div class="holder-chat-demo" style="max-width:620px;margin:1.25rem auto 0;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:0.75rem 1rem;font-size:0.8rem;line-height:1.35;">
-      <div style="font-weight:700;color:var(--muted);margin-bottom:0.4rem;font-size:0.7rem;letter-spacing:0.5px;">FEATURED HOLDER CHAT — CULTURE IN ACTION (try it — powered by the same AI brief as the officers panel)</div>
-      <div style="margin:0.2rem 0;"><strong>Holder42</strong> (12M $PEGD): Culture is whatever we decide — more memes, less noise. Let's feature holder art in the grid.</div>
-      <div style="margin:0.2rem 0;"><strong>DiamondApe</strong> (8.5M $PEGD): +1. Directives board for culture votes? I move to add a "Holder Memes" tab.</div>
-      <div style="margin:0.2rem 0;"><strong>SOLGhost</strong> (15M $PEGD): +1. Cross-chain memes only. This is our culture now.</div>
-      <div id="cchat-log" style="margin-top:0.5rem;border-top:1px dashed var(--border);padding-top:0.3rem;"></div>
-      <div style="display:flex;gap:4px;margin-top:0.3rem;">
-        <input id="cchat-in" style="flex:1;font-size:0.75rem;padding:2px;" placeholder="Ask the holders (e.g. what memes for our culture?)">
-        <button id="cchat-send" style="font-size:0.75rem;padding:2px 6px;">Send to Board</button>
-      </div>
-    </div>
-    <p style="text-align:center;color:var(--muted);font-size:0.8rem;margin-top:1rem;">Holders shape the culture through the directives board (sign in with treasury-parity $PEGD) and community channels. Submit memes or culture ideas — best ones get featured. 🏆</p>
-    <script>
-      (function(){
-        var log = document.getElementById('cchat-log');
-        var inp = document.getElementById('cchat-in');
-        var send = document.getElementById('cchat-send');
-        if(!log || !inp || !send) return;
-        send.onclick = async function(){
-          var q = inp.value.trim();
-          if(!q) return;
-          log.innerHTML += '<div><strong>You:</strong> ' + q + '</div>';
-          inp.value = '';
-          try{
-            var r = await fetch('/api/officers/brief', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question: q})});
-            var d = await r.json();
-            var resp = 'Board: ';
-            if(d.officers){
-              if(d.officers.ceo) resp += 'CEO: ' + d.officers.ceo + ' ';
-              if(d.officers.cto) resp += 'CTO: ' + d.officers.cto + ' ';
-              if(d.officers.cfo) resp += 'CFO: ' + d.officers.cfo + ' ';
-              if(d.officers.cmo) resp += 'CMO: ' + d.officers.cmo + ' ';
-            } else if(d.error){
-              resp += d.error + ' (sign in via ◎ Officers or /portal.html for full AI board)';
-            } else {
-              resp += 'Thanks for shaping our culture!';
-            }
-            log.innerHTML += '<div><strong>' + resp + '</strong></div>';
-          }catch(e){
-            log.innerHTML += '<div><strong>Board:</strong> Sign in first via the ◎ Officers button or /portal.html to chat with real AI board.</div>';
-          }
-          log.scrollTop = log.scrollHeight;
-        };
-      })();
-    </script>
   </section>
   <!-- GOVERNANCE -->
   <section id="governance">
