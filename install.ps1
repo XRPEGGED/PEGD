@@ -1,187 +1,100 @@
-# PEGD Compute Worker — Windows Installer
-# Run with: irm https://pegd.org/install.ps1 | iex
+$ErrorActionPreference = "Stop"
 
-$WorkerUrl  = "https://pegd.org/worker.py"
+$WorkerUrl = "https://pegd.org/worker.py"
 $InstallDir = Join-Path $env:LOCALAPPDATA "PEGDWorker"
 $WorkerPath = Join-Path $InstallDir "worker.py"
-$LogPath    = Join-Path $InstallDir "startup.log"
 
-Write-Host ""
-Write-Host "  PEGD Compute Worker — Windows Installer" -ForegroundColor Cyan
-Write-Host ""
-
-try {
-
-# ── 1. Find a real Python 3 (not the Windows Store stub) ─────────────────────
 function Resolve-Python {
-    $candidates = @()
-
-    # Python Launcher (py.exe) — most reliable on Windows
-    $py = Get-Command py.exe -ErrorAction SilentlyContinue
-    if ($py) {
+    $launcher = Get-Command py.exe -ErrorAction SilentlyContinue
+    if ($launcher) {
         try {
-            $path = (& py.exe -3 -c "import sys; print(sys.executable)" 2>$null).Trim()
-            if ($path -and (Test-Path $path)) { $candidates += $path }
+            $resolved = (& $launcher.Source -3 -c "import sys; print(sys.executable)" 2>$null).Trim()
+            if ($resolved -and (Test-Path $resolved)) {
+                return $resolved
+            }
         } catch {}
     }
 
-    # python.exe on PATH — skip Windows Store stub (it lives in WindowsApps)
-    $p = Get-Command python.exe -ErrorAction SilentlyContinue
-    if ($p -and $p.Source -notlike "*WindowsApps*") {
+    $python = Get-Command python.exe -ErrorAction SilentlyContinue
+    if ($python) {
         try {
-            $ver = (& $p.Source --version 2>&1).ToString()
-            if ($ver -match "Python 3") { $candidates += $p.Source }
+            & $python.Source -c "import sys" 2>$null
+            if ($LASTEXITCODE -eq 0) {
+                return $python.Source
+            }
         } catch {}
     }
 
-    # Common user-install paths
-    Get-ChildItem "$env:LOCALAPPDATA\Programs\Python\Python3*\python.exe" -ErrorAction SilentlyContinue |
-        Sort-Object FullName -Descending | ForEach-Object { $candidates += $_.FullName }
-
-    Get-ChildItem "C:\Python3*\python.exe" -ErrorAction SilentlyContinue |
-        Sort-Object FullName -Descending | ForEach-Object { $candidates += $_.FullName }
-
-    # Return first one that actually works
-    foreach ($c in $candidates) {
-        try {
-            $out = (& $c -c "import sys; print(sys.version)" 2>$null).Trim()
-            if ($out -match "^3\.") { return $c }
-        } catch {}
+    $pattern = Join-Path $env:LOCALAPPDATA "Programs\Python\Python*\python.exe"
+    $localPython = Get-ChildItem $pattern -ErrorAction SilentlyContinue |
+        Sort-Object FullName -Descending |
+        Select-Object -First 1
+    if ($localPython) {
+        return $localPython.FullName
     }
+
     return $null
 }
 
-Write-Host "  [1/5] Looking for Python 3..." -NoNewline
+Write-Host ""
+Write-Host "PEGD Compute Worker - Windows Installer" -ForegroundColor Cyan
+Write-Host ""
 
 $PythonExe = Resolve-Python
-
 if (-not $PythonExe) {
-    Write-Host " not found." -ForegroundColor Yellow
     $winget = Get-Command winget.exe -ErrorAction SilentlyContinue
     if (-not $winget) {
-        throw @"
-
-Python 3 is not installed and winget is not available.
-
-Install Python 3 from:
-  https://www.python.org/downloads/windows/
-
-Make sure to check "Add Python to PATH" during installation, then rerun this command.
-"@
+        throw "Python 3 was not found. Install it from https://python.org/downloads/windows/ and rerun this command."
     }
-    Write-Host "  Installing Python 3.12 via winget..." -ForegroundColor Yellow
-    & winget install --id Python.Python.3.12 --exact --scope user --accept-package-agreements --accept-source-agreements
-    if ($LASTEXITCODE -ne 0) { throw "Python installation via winget failed (exit $LASTEXITCODE)." }
 
-    # Refresh PATH for this session
-    $env:PATH = [System.Environment]::GetEnvironmentVariable("PATH","Machine") + ";" +
-                [System.Environment]::GetEnvironmentVariable("PATH","User")
+    Write-Host "Installing Python 3 with winget..." -ForegroundColor Yellow
+    & $winget.Source install --id Python.Python.3.12 --exact --scope user --accept-package-agreements --accept-source-agreements
+    if ($LASTEXITCODE -ne 0) {
+        throw "Python installation failed."
+    }
 
     $PythonExe = Resolve-Python
     if (-not $PythonExe) {
-        throw "Python was installed but could not be found. Close this window, open a new PowerShell, and rerun."
+        throw "Python was installed, but Windows has not refreshed PATH yet. Open a new PowerShell window and rerun the installer."
     }
 }
 
-$pyVer = (& $PythonExe --version 2>&1).ToString().Trim()
-Write-Host " $pyVer" -ForegroundColor Green
-Write-Host "  [1/5] Found: $PythonExe" -ForegroundColor DarkGray
-
-# ── 2. Check tkinter ──────────────────────────────────────────────────────────
-Write-Host "  [2/5] Checking tkinter..." -NoNewline
-$tkResult = & $PythonExe -c "import tkinter; print('ok')" 2>&1
-if ($tkResult -notmatch "ok") {
-    throw @"
-
-tkinter is missing from your Python installation.
-
-This usually means Python was installed from the Microsoft Store or
-without the optional Tcl/Tk component.
-
-Fix: Install Python from python.org (NOT the Microsoft Store):
-  https://www.python.org/downloads/windows/
-During setup, ensure "tcl/tk and IDLE" is checked.
-"@
+& $PythonExe -c "import tkinter"
+if ($LASTEXITCODE -ne 0) {
+    throw "This Python installation does not include tkinter. Install Python from python.org with Tcl/Tk enabled."
 }
-Write-Host " ok" -ForegroundColor Green
 
-# ── 3. Download worker ────────────────────────────────────────────────────────
-Write-Host "  [3/5] Creating install directory..." -NoNewline
 New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
-Write-Host " $InstallDir" -ForegroundColor DarkGray
-
-Write-Host "  [3/5] Downloading worker.py..." -NoNewline
-try {
-    Invoke-WebRequest -UseBasicParsing -Uri $WorkerUrl -OutFile $WorkerPath -ErrorAction Stop
-} catch {
-    throw "Download failed: $($_.Exception.Message)`nURL: $WorkerUrl"
-}
-Unblock-File -Path $WorkerPath -ErrorAction SilentlyContinue
-Write-Host " done" -ForegroundColor Green
-
-# ── 4. Desktop shortcut ───────────────────────────────────────────────────────
-Write-Host "  [4/5] Creating desktop shortcut..." -NoNewline
+Write-Host "Downloading PEGD Worker..." -ForegroundColor Cyan
+Invoke-WebRequest -UseBasicParsing -Uri $WorkerUrl -OutFile $WorkerPath
+Unblock-File -Path $WorkerPath
 
 $PythonwExe = Join-Path (Split-Path $PythonExe) "pythonw.exe"
-if (-not (Test-Path $PythonwExe)) { $PythonwExe = $PythonExe }
-
-try {
-    $Desktop      = [Environment]::GetFolderPath("Desktop")
-    $ShortcutPath = Join-Path $Desktop "PEGD Worker.lnk"
-    $Shell        = New-Object -ComObject WScript.Shell
-    $Shortcut     = $Shell.CreateShortcut($ShortcutPath)
-    $Shortcut.TargetPath      = $PythonwExe
-    $Shortcut.Arguments       = "`"$WorkerPath`""
-    $Shortcut.WorkingDirectory = $InstallDir
-    $Shortcut.Description     = "PEGD Compute Pool GPU/CPU Worker"
-    $Shortcut.Save()
-    Write-Host " PEGD Worker.lnk on desktop" -ForegroundColor Green
-} catch {
-    Write-Host " (shortcut skipped: $($_.Exception.Message))" -ForegroundColor Yellow
+if (-not (Test-Path $PythonwExe)) {
+    $PythonwExe = $PythonExe
 }
 
-# ── 5. First launch — use python.exe so startup errors are visible ────────────
-Write-Host "  [5/5] Launching worker..." -ForegroundColor Cyan
+$Quote = [char]34
+$Desktop = [Environment]::GetFolderPath("Desktop")
+$ShortcutPath = Join-Path $Desktop "PEGD Worker.lnk"
+$Shell = New-Object -ComObject WScript.Shell
+$Shortcut = $Shell.CreateShortcut($ShortcutPath)
+$Shortcut.TargetPath = $PythonwExe
+$Shortcut.Arguments = "$Quote$WorkerPath$Quote"
+$Shortcut.WorkingDirectory = $InstallDir
+$Shortcut.IconLocation = "$PythonExe,0"
+$Shortcut.Description = "PEGD Compute Pool GPU/CPU Worker"
+$Shortcut.Save()
+
+# Set "Run as administrator" flag on the shortcut (byte 0x15, bit 0x20)
+# Required for XMRig MSR mod — boosts RandomX hashrate 15-25%
+$bytes = [System.IO.File]::ReadAllBytes($ShortcutPath)
+$bytes[0x15] = $bytes[0x15] -bor 0x20
+[System.IO.File]::WriteAllBytes($ShortcutPath, $bytes)
+
 Write-Host ""
-Write-Host "  NOTE: The GUI window will open. If it closes immediately," -ForegroundColor Yellow
-Write-Host "  check $LogPath for the error." -ForegroundColor Yellow
-Write-Host ""
+Write-Host "Installed. A PEGD Worker shortcut was added to your desktop." -ForegroundColor Green
+Write-Host "Miner binaries download from their official GitHub releases on first start." -ForegroundColor DarkGray
+Write-Host "Windows Security may flag mining software. Review the source before allowing any blocked binary." -ForegroundColor Yellow
 
-# Wrap launch in a small shim that captures any crash to a log file
-$launcher = @"
-import sys, traceback, subprocess, os
-log = open(r'$($LogPath -replace "\\","\\\\")','w')
-try:
-    sys.stdout = sys.stderr = log
-    exec(open(r'$($WorkerPath -replace "\\","\\\\")').read())
-except Exception:
-    traceback.print_exc(file=log)
-    log.flush()
-    import tkinter as tk
-    from tkinter import messagebox
-    root = tk.Tk(); root.withdraw()
-    messagebox.showerror('PEGD Worker Error', traceback.format_exc())
-finally:
-    log.close()
-"@
-$launcherPath = Join-Path $InstallDir "launch.py"
-Set-Content -Path $launcherPath -Value $launcher -Encoding UTF8
-
-Start-Process -FilePath $PythonwExe -ArgumentList "`"$launcherPath`"" -WorkingDirectory $InstallDir
-
-Write-Host "  Installation complete." -ForegroundColor Green
-Write-Host "  Use the desktop shortcut to reopen. Miner binaries download on first start." -ForegroundColor DarkGray
-Write-Host "  If Windows Security blocks a miner binary, add this folder to Defender exclusions:" -ForegroundColor Yellow
-Write-Host "    $InstallDir\miners\" -ForegroundColor Yellow
-Write-Host ""
-
-} catch {
-    Write-Host ""
-    Write-Host "  INSTALLATION FAILED" -ForegroundColor Red
-    Write-Host ""
-    Write-Host $_.Exception.Message -ForegroundColor Red
-    Write-Host ""
-}
-
-Write-Host "Press Enter to close..."
-try { $null = Read-Host } catch {}
+Start-Process -FilePath $PythonwExe -ArgumentList "$Quote$WorkerPath$Quote" -WorkingDirectory $InstallDir

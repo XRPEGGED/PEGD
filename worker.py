@@ -79,6 +79,17 @@ MINER_RELEASES = {
             "bin": "xmrig.exe",
         },
     },
+    "lpminer": {
+        "vendor": "nvidia",   # PearlPow is NVIDIA-only
+        "linux": {
+            "url": "https://pearl.luckypool.io/lpminer/lpminer-0.1.9.tar.gz",
+            "bin": "lpminer",
+        },
+        "windows": {
+            "url": "https://pearl.luckypool.io/lpminer/lpminer-0.1.10.zip",
+            "bin": "lpminer.exe",
+        },
+    },
 }
 
 # Algorithm → miner preference
@@ -93,6 +104,7 @@ ALGO_MINER = {
     "Equihash":    "lolminer",
     "Octopus":     "lolminer",
     "RandomX":     "xmrig",
+    "PearlPow":    "lpminer",
 }
 
 # ── GPU Detection ────────────────────────────────────────────────────────────
@@ -476,6 +488,31 @@ def find_miner_bin(miner_key):
     found = list((MINERS_DIR / miner_key).rglob(binary))
     return found[0] if found else expected
 
+def kill_orphaned_miners():
+    """Kill any miner processes not owned by this worker (left over from a prior session)."""
+    miner_bins = {r[PLATFORM_KEY]["bin"] for r in MINER_RELEASES.values()}
+    my_pid = os.getpid()
+    killed = []
+    try:
+        out = subprocess.check_output(
+            ["ps", "-eo", "pid,ppid,comm"], text=True, stderr=subprocess.DEVNULL
+        )
+        for line in out.splitlines()[1:]:
+            parts = line.split()
+            if len(parts) < 3:
+                continue
+            pid, ppid, comm = int(parts[0]), int(parts[1]), parts[2]
+            if comm in miner_bins and ppid != my_pid:
+                try:
+                    os.kill(pid, 15)  # SIGTERM
+                    killed.append((pid, comm))
+                except OSError:
+                    pass
+    except Exception:
+        pass
+    return killed
+
+
 def miner_popen_kwargs():
     kwargs = {
         "stdout": subprocess.PIPE,
@@ -516,12 +553,25 @@ def build_miner_cmd(miner_key, assignment, wallet, gpu_indices, intensity=80, te
         cpu = detect_cpu()
         requested_threads = cpu_threads if cpu_threads is not None else round(cpu["cores"] * intensity / 100)
         threads = max(1, min(cpu["cores"], int(requested_threads)))
+        # Write a minimal config enabling MSR mod (wrmsr) — XMRig applies the right
+        # register value for Intel/AMD automatically when running with admin/root.
+        xmrig_cfg = {
+            "randomx": {"wrmsr": True, "rdmsr": True, "1gb-pages": False},
+            "pools": [{
+                "url":  host_port or "rx.unmineable.com:3333",
+                "user": unmineable_u,
+                "pass": "x",
+            }],
+            "cpu": {"enabled": True, "max-threads-hint": round(intensity)},
+            "print-time": 15,
+            "colors": False,
+        }
+        cfg_path = bin_path.parent / "xmrig-pegd.json"
+        cfg_path.write_text(json.dumps(xmrig_cfg, indent=2))
         return [
             str(bin_path),
+            "--config", str(cfg_path),
             "--algo",       "rx/0",
-            "--url",        host_port or "rx.unmineable.com:3333",
-            "--user",       unmineable_u,
-            "--pass",       "x",
             "--threads",    str(threads),
             "--no-color",
             "--print-time", "15",
@@ -564,6 +614,14 @@ def build_miner_cmd(miner_key, assignment, wallet, gpu_indices, intensity=80, te
             "--longstats", "60",
         ]
         return cmd
+
+    elif miner_key == "lpminer":
+        # PearlPow (NVIDIA only). lpminer uses --pool and --wallet, no --algo flag needed.
+        return [
+            str(bin_path),
+            "--pool", stratum or "stratum+tcp://pearlpow.unmineable.com:3333",
+            "--wallet", unmineable_u,
+        ]
 
     return []
 
@@ -614,11 +672,14 @@ class PEGDWorker:
         self._build_ui()
         self._apply_theme()
 
+        orphans = kill_orphaned_miners()
         if self.gpus:
             self._log(f"Detected {len(self.gpus)} GPU(s): {', '.join(g['name'] for g in self.gpus)}")
         else:
             self._log("No GPU detected — will mine RandomX on CPU", "warn")
         self._log(f"CPU: {self.cpu['name']} ({self.cpu['cores']} cores)")
+        for pid, name in orphans:
+            self._log(f"Killed orphaned {name} (PID {pid}) from prior session", "warn")
 
         if self.cfg.get("autostart") and self.cfg.get("wallet"):
             self.root.after(1500, self.start_mining)
@@ -1117,6 +1178,7 @@ class PEGDWorker:
         self._kill_miner()
         if not self.assignment:
             return
+
         if not self.gpu_enabled_var.get():
             self._log("[GPU] Mining is disabled — skipping GPU miner", "warn")
             return
