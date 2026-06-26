@@ -316,7 +316,7 @@
         box-shadow:0 4px 20px rgba(0,0,0,0.4);transition:all 0.2s;
       ">🔐 Sign In</button>
       <div id="float-panel" style="
-        display:none;position:absolute;bottom:52px;right:0;
+        display:none;position:absolute;top:52px;right:0;
         background:#0f172a;border:1px solid #1e293b;border-radius:12px;
         padding:16px;min-width:240px;box-shadow:0 8px 32px rgba(0,0,0,0.6);
       ">
@@ -335,7 +335,7 @@
       </div>
     `
     Object.assign(floatEl.style, {
-      position: 'fixed', bottom: '24px', right: '24px',
+      position: 'fixed', top: '12px', right: '24px',
       zIndex: '9999', fontFamily: "'Courier New',monospace",
     })
 

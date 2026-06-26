@@ -96,11 +96,11 @@ export async function verifySession(token, secret) {
 }
 
 export function sessionCookie(token, maxAgeSec = 4 * 60 * 60) {  // 4h to match token exp
-  return `xrpeg_portal=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${maxAgeSec}`
+  return `xrpeg_portal=${token}; Path=/; Domain=.pegd.org; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAgeSec}`
 }
 
 export function clearSessionCookie() {
-  return 'xrpeg_portal=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0'
+  return 'xrpeg_portal=; Path=/; Domain=.pegd.org; HttpOnly; Secure; SameSite=Lax; Max-Age=0'
 }
 
 export async function verifyPhantomMessage(message, signatureInput, address) {
