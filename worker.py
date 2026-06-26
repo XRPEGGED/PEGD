@@ -41,7 +41,7 @@ TUNE_STEPS     = [20, 21, 22, 23, 24]  # T-Rex KawPow is unstable below its norm
 TUNE_WARMUP    = 40   # seconds to stabilize before sampling
 TUNE_SAMPLE    = 15   # seconds to average over
 
-DEFAULT_INTENSITY   = 50   # % of max intensity (0–100)
+DEFAULT_INTENSITY   = 90   # % of max intensity (0–100)
 DEFAULT_TEMP_LIMIT  = 80   # °C — miner pauses above this
 DEFAULT_POWER_LIMIT = 0    # watts — 0 = use card default (>0 requires root on Linux)
 
