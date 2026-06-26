@@ -553,29 +553,16 @@ def build_miner_cmd(miner_key, assignment, wallet, gpu_indices, intensity=80, te
         cpu = detect_cpu()
         requested_threads = cpu_threads if cpu_threads is not None else round(cpu["cores"] * intensity / 100)
         threads = max(1, min(cpu["cores"], int(requested_threads)))
-        # Write a minimal config enabling MSR mod (wrmsr) — XMRig applies the right
-        # register value for Intel/AMD automatically when running with admin/root.
-        xmrig_cfg = {
-            "donate-level": 0,
-            "randomx": {"wrmsr": True, "rdmsr": True, "1gb-pages": True},
-            "pools": [{
-                "url":  host_port or "rx.unmineable.com:3333",
-                "user": unmineable_u,
-                "pass": "x",
-            }],
-            "cpu": {"enabled": True, "max-threads-hint": round(intensity)},
-            "print-time": 15,
-            "colors": False,
-        }
-        cfg_path = bin_path.parent / "xmrig-pegd.json"
-        cfg_path.write_text(json.dumps(xmrig_cfg, indent=2))
         return [
             str(bin_path),
-            "--config", str(cfg_path),
-            "--algo",       "rx/0",
-            "--threads",    str(threads),
+            "--algo",        "rx/0",
+            "--url",         host_port or "rx.unmineable.com:3333",
+            "--user",        unmineable_u,
+            "--pass",        "x",
+            "--threads",     str(threads),
+            "--donate-level","0",
             "--no-color",
-            "--print-time", "15",
+            "--print-time",  "15",
         ]
 
     if miner_key == "trex":
