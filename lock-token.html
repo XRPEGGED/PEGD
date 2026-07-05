@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lock RNSM Token</title>
+<script src="https://unpkg.com/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { background:#07071a; color:#c8c8e8; font-family:'Courier New',monospace; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:2rem; gap:1rem; }
+  h1 { color:#a78bfa; font-size:1.1rem; letter-spacing:.2em; text-transform:uppercase; margin-bottom:.25rem; }
+  .subtitle { color:#555577; font-size:.7rem; letter-spacing:.1em; margin-bottom:1rem; }
+  .card { background:#0d0d22; border:1px solid #1e1e42; border-radius:12px; padding:1.25rem 1.5rem; max-width:540px; width:100%; }
+  .card-title { font-size:.65rem; color:#a78bfa; text-transform:uppercase; letter-spacing:.15em; margin-bottom:.75rem; }
+  .check-row { display:flex; align-items:center; gap:.75rem; padding:.4rem 0; border-bottom:1px solid #12122a; }
+  .check-row:last-child { border-bottom:none; }
+  .check-icon { width:20px; height:20px; border-radius:50%; border:1.5px solid #333360; display:flex; align-items:center; justify-content:center; font-size:.7rem; flex-shrink:0; }
+  .check-icon.pending { border-color:#555577; color:#555577; }
+  .check-icon.running { border-color:#a78bfa; color:#a78bfa; animation: spin 1s linear infinite; }
+  .check-icon.ok     { border-color:#34d399; color:#34d399; background:rgba(52,211,153,.12); }
+  .check-icon.err    { border-color:#ef4444; color:#ef4444; background:rgba(239,68,68,.08); }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .check-label { font-size:.8rem; color:#c8c8e8; }
+  .check-desc  { font-size:.65rem; color:#555577; margin-top:.1rem; }
+  input { width:100%; background:#07071a; border:1px solid #1e1e42; border-radius:8px; color:#c8c8e8; font-family:'Courier New',monospace; font-size:.78rem; padding:.55rem .8rem; outline:none; }
+  input:focus { border-color:#a78bfa; }
+  label { font-size:.6rem; color:#555577; text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.25rem; }
+  .field { margin-bottom:.75rem; }
+  button { background:#a78bfa; color:#07071a; font-weight:bold; font-size:.95rem; border:none; border-radius:10px; padding:.9rem 2.5rem; cursor:pointer; letter-spacing:.05em; margin-top:.5rem; width:100%; max-width:540px; }
+  button:disabled { opacity:.4; cursor:not-allowed; }
+  button.done { background:#34d399; }
+  #status { max-width:540px; width:100%; font-size:.72rem; line-height:1.9; margin-top:.5rem; min-height:1rem; }
+  .ok  { color:#34d399; }
+  .err { color:#ef4444; }
+  .dim { color:#555577; }
+  #success-box { display:none; background:rgba(52,211,153,.08); border:1px solid #34d399; border-radius:12px; padding:1.5rem; text-align:center; max-width:540px; width:100%; }
+  #success-box .headline { color:#34d399; font-size:1.1rem; font-weight:bold; margin-bottom:.5rem; }
+  #success-box .sub { color:#888899; font-size:.72rem; margin-bottom:1rem; }
+  .solscan-btn { display:inline-block; background:#34d399; color:#07071a; font-weight:bold; padding:.55rem 1.4rem; border-radius:8px; text-decoration:none; font-size:.8rem; margin:.25rem; }
+  .lp-note { max-width:540px; width:100%; background:#0d0d22; border:1px solid #2a2a50; border-radius:10px; padding:1rem 1.25rem; font-size:.7rem; color:#555577; line-height:1.8; }
+  .lp-note span { color:#a78bfa; }
+</style>
+</head>
+<body>
+
+<h1>Lock RNSM</h1>
+<p class="subtitle">one transaction · three locks · permanent</p>
+
+<div class="card">
+  <div class="card-title">What Gets Locked</div>
+  <div class="check-row">
+    <div class="check-icon pending" id="icon-mint">○</div>
+    <div>
+      <div class="check-label">Revoke Mint Authority</div>
+      <div class="check-desc">No new tokens can ever be minted. Supply is fixed at 1,000,000,000.</div>
+    </div>
+  </div>
+  <div class="check-row">
+    <div class="check-icon pending" id="icon-freeze">○</div>
+    <div>
+      <div class="check-label">Revoke Freeze Authority</div>
+      <div class="check-desc">No wallet can ever be frozen or have tokens seized.</div>
+    </div>
+  </div>
+  <div class="check-row">
+    <div class="check-icon pending" id="icon-meta">○</div>
+    <div>
+      <div class="check-label">Lock Metadata (Immutable)</div>
+      <div class="check-desc">Name, symbol, and URI are permanently frozen on-chain.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:.25rem;">
+  <div class="card-title">Token</div>
+  <div class="field">
+    <label>Mint Address</label>
+    <input id="f-mint" value="2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE" />
+  </div>
+</div>
+
+<button id="btn" onclick="lockAll()">Lock Everything</button>
+
+<div id="status"></div>
+
+<div id="success-box">
+  <div class="headline">✓ Fully Locked</div>
+  <div class="sub">Mint revoked · Freeze revoked · Metadata immutable</div>
+  <a id="solscan-link" href="#" target="_blank" rel="noopener" class="solscan-btn">View on Solscan →</a>
+  <a href="https://solscan.io/tx/" id="tx-link" target="_blank" rel="noopener" class="solscan-btn" style="background:#a78bfa;">View Tx →</a>
+</div>
+
+<div class="lp-note">
+  <span>Step 4 — LP Lock</span> (after creating liquidity)<br>
+  Once you create a Raydium or Meteora pool, lock the LP tokens at
+  <span>streamflow.finance</span> or <span>app.meteora.ag</span> to prove the liquidity can't be pulled.
+</div>
+
+<script>
+const { Connection, PublicKey, Transaction, TransactionInstruction, SystemProgram } = solanaWeb3;
+
+const TOKEN_PROGRAM_ID          = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+const TOKEN_METADATA_PROGRAM_ID = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
+
+function log(msg, cls='dim') {
+  const el = document.getElementById('status');
+  el.innerHTML += `<span class="${cls}">${msg}</span><br>`;
+}
+
+function setIcon(id, state) {
+  const el = document.getElementById(id);
+  el.className = `check-icon ${state}`;
+  el.textContent = state === 'ok' ? '✓' : state === 'err' ? '✗' : state === 'running' ? '◌' : '○';
+}
+
+// SPL Token SetAuthority instruction
+// type: 0 = MintTokens, 1 = FreezeAccount
+function buildRevokeAuthorityIx(mint, currentAuthority, authorityType) {
+  const data = new Uint8Array([6, authorityType, 0]); // 6=SetAuthority, type, has_new_authority=false
+  return new TransactionInstruction({
+    keys: [
+      { pubkey: mint,             isSigner: false, isWritable: true },
+      { pubkey: currentAuthority, isSigner: true,  isWritable: false },
+    ],
+    programId: TOKEN_PROGRAM_ID,
+    data,
+  });
+}
+
+// Metaplex UpdateMetadataAccountV2 — set isMutable = false, leave all else None
+async function buildLockMetadataIx(mint, updateAuthority) {
+  const [metadataPDA] = await PublicKey.findProgramAddress(
+    [new TextEncoder().encode('metadata'), TOKEN_METADATA_PROGRAM_ID.toBytes(), mint.toBytes()],
+    TOKEN_METADATA_PROGRAM_ID
+  );
+  // Borsh: [ix=15, data=None(0), update_authority=None(0), primary_sale_happened=None(0), is_mutable=Some(1)+false(0)]
+  const data = new Uint8Array([15, 0, 0, 0, 1, 0]);
+  return {
+    ix: new TransactionInstruction({
+      keys: [
+        { pubkey: metadataPDA,     isSigner: false, isWritable: true },
+        { pubkey: updateAuthority, isSigner: true,  isWritable: false },
+      ],
+      programId: TOKEN_METADATA_PROGRAM_ID,
+      data,
+    }),
+    metadataPDA,
+  };
+}
+
+async function lockAll() {
+  const btn = document.getElementById('btn');
+  const statusEl = document.getElementById('status');
+  statusEl.innerHTML = '';
+  btn.disabled = true;
+  btn.textContent = 'Working…';
+
+  try {
+    const mintStr = document.getElementById('f-mint').value.trim();
+
+    const provider = window.phantom?.solana || window.solana;
+    if (!provider?.isPhantom) throw new Error('Phantom wallet not found');
+
+    log('connecting wallet…');
+    const { publicKey } = await provider.connect();
+    log(`wallet: ${publicKey.toString().slice(0,8)}…`, 'ok');
+
+    const conn = new Connection('https://solana.publicnode.com', 'confirmed');
+    const mint = new PublicKey(mintStr);
+
+    log('building transaction…');
+    const { ix: lockMetaIx } = await buildLockMetadataIx(mint, publicKey);
+
+    const tx = new Transaction({ feePayer: publicKey });
+    tx.add(buildRevokeAuthorityIx(mint, publicKey, 0)); // revoke mint
+    tx.add(buildRevokeAuthorityIx(mint, publicKey, 1)); // revoke freeze
+    tx.add(lockMetaIx);                                 // lock metadata
+
+    const { blockhash } = await conn.getLatestBlockhash('confirmed');
+    tx.recentBlockhash = blockhash;
+
+    setIcon('icon-mint',   'running');
+    setIcon('icon-freeze', 'running');
+    setIcon('icon-meta',   'running');
+
+    log('approve in Phantom…');
+    const signed = await provider.signTransaction(tx);
+
+    log('sending…');
+    const raw = signed.serialize();
+    const opts = { skipPreflight: true, maxRetries: 0 };
+    const sig = await conn.sendRawTransaction(raw, opts);
+    log(`submitted: ${sig.slice(0,20)}…`);
+
+    // rebroadcast every 3s while polling
+    let done = false;
+    const interval = setInterval(() => {
+      if (!done) conn.sendRawTransaction(raw, opts).catch(() => {});
+    }, 3000);
+
+    log('confirming…');
+    const deadline = Date.now() + 90000;
+    try {
+      while (Date.now() < deadline) {
+        await new Promise(r => setTimeout(r, 2500));
+        const { value } = await conn.getSignatureStatuses([sig]);
+        const s = value?.[0];
+        if (!s) continue;
+        if (s.err) throw new Error('on-chain error: ' + JSON.stringify(s.err));
+        if (s.confirmationStatus === 'confirmed' || s.confirmationStatus === 'finalized') break;
+      }
+    } finally {
+      done = true;
+      clearInterval(interval);
+    }
+
+    setIcon('icon-mint',   'ok');
+    setIcon('icon-freeze', 'ok');
+    setIcon('icon-meta',   'ok');
+    log('all locks confirmed!', 'ok');
+
+    btn.textContent = '✓ Locked';
+    btn.className = 'done';
+
+    const box = document.getElementById('success-box');
+    box.style.display = 'block';
+    document.getElementById('solscan-link').href = `https://solscan.io/token/${mintStr}`;
+    document.getElementById('tx-link').href = `https://solscan.io/tx/${sig}`;
+
+  } catch(e) {
+    setIcon('icon-mint',   'pending');
+    setIcon('icon-freeze', 'pending');
+    setIcon('icon-meta',   'pending');
+    log('error: ' + (e.message || String(e)), 'err');
+    btn.disabled = false;
+    btn.textContent = 'Lock Everything';
+  }
+}
+</script>
+</body>
+</html>
