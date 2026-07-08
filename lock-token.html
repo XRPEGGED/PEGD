@@ -155,6 +155,7 @@ async function lockAll() {
   btn.disabled = true;
   btn.textContent = 'Working…';
 
+  let hasMintAuth = false, hasFreezeAuth = false;
   try {
     const mintStr = document.getElementById('f-mint').value.trim();
 
@@ -168,13 +169,24 @@ async function lockAll() {
     const conn = new Connection('https://solana.publicnode.com', 'confirmed');
     const mint = new PublicKey(mintStr);
 
+    // check what's actually set on-chain so we only revoke what exists
+    log('checking on-chain authorities…');
+    const mintInfo = await conn.getParsedAccountInfo(mint);
+    const parsed = mintInfo.value?.data?.parsed?.info;
+    if (!parsed) throw new Error('Could not read mint account');
+    hasMintAuth   = parsed.mintAuthority   != null;
+    hasFreezeAuth = parsed.freezeAuthority != null;
+
+    if (!hasMintAuth)   { setIcon('icon-mint',   'ok'); log('mint authority already revoked', 'ok'); }
+    if (!hasFreezeAuth) { setIcon('icon-freeze',  'ok'); log('freeze authority already null — skipping', 'ok'); }
+
     log('building transaction…');
     const { ix: lockMetaIx } = await buildLockMetadataIx(mint, publicKey);
 
     const tx = new Transaction({ feePayer: publicKey });
-    tx.add(buildRevokeAuthorityIx(mint, publicKey, 0)); // revoke mint
-    tx.add(buildRevokeAuthorityIx(mint, publicKey, 1)); // revoke freeze
-    tx.add(lockMetaIx);                                 // lock metadata
+    if (hasMintAuth)   tx.add(buildRevokeAuthorityIx(mint, publicKey, 0)); // revoke mint
+    if (hasFreezeAuth) tx.add(buildRevokeAuthorityIx(mint, publicKey, 1)); // revoke freeze
+    tx.add(lockMetaIx);                                                     // lock metadata
 
     const { blockhash } = await conn.getLatestBlockhash('confirmed');
     tx.recentBlockhash = blockhash;
@@ -214,9 +226,9 @@ async function lockAll() {
       clearInterval(interval);
     }
 
-    setIcon('icon-mint',   'ok');
-    setIcon('icon-freeze', 'ok');
-    setIcon('icon-meta',   'ok');
+    if (hasMintAuth)   setIcon('icon-mint',   'ok');
+    if (hasFreezeAuth) setIcon('icon-freeze', 'ok');
+    setIcon('icon-meta', 'ok');
     log('all locks confirmed!', 'ok');
 
     btn.textContent = '✓ Locked';

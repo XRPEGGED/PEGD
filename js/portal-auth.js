@@ -3,6 +3,34 @@
   const API_BASE_URL = ''; // Use relative URLs - portal functions are on same domain
   let session = null
 
+  const SESSION_KEY = 'pegd_session'
+  const SESSION_TTL = 4 * 60 * 60 * 1000  // 4h, matches server cookie
+
+  function saveLocalSession(s) {
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({ ...s, exp: Date.now() + SESSION_TTL }))
+    } catch {}
+  }
+
+  function loadLocalSession() {
+    try {
+      const raw = localStorage.getItem(SESSION_KEY)
+      if (!raw) return null
+      const s = JSON.parse(raw)
+      if (!s?.exp || Date.now() > s.exp) {
+        localStorage.removeItem(SESSION_KEY)
+        return null
+      }
+      return s
+    } catch {
+      return null
+    }
+  }
+
+  function clearLocalSession() {
+    try { localStorage.removeItem(SESSION_KEY) } catch {}
+  }
+
   const shortAddr = (value) =>
     value && value.length > 12 ? value.slice(0, 6) + '…' + value.slice(-4) : value || ''
 
@@ -12,6 +40,7 @@
 
   const applySession = (s) => {
     session = s
+    if (s) saveLocalSession(s)
     // Remove all role classes first
     document.body.classList.remove('portal-authenticated', 'portal-chairman', 'portal-holder')
     if (s) {
@@ -93,20 +122,35 @@
 
   async function checkSession() {
     console.log('checkSession called')
+
+    // Restore from localStorage immediately so there's no logged-out flash on refresh
+    const cached = loadLocalSession()
+    if (cached) {
+      console.log('Restoring session from localStorage:', cached)
+      applySession(cached)
+    }
+
+    // Server check is authoritative — runs in background after local restore
     try {
       const res = await fetch(`${API_BASE_URL}/api/portal/session`, { credentials: 'include' })
       console.log('Session check response:', res.status)
       const data = await res.json()
       console.log('Session data:', data)
       if (data.success && data.authenticated && data.session) {
-        console.log('Session found, applying:', data.session)
+        console.log('Server confirmed session:', data.session)
         return applySession(data.session)
+      }
+      if (data.success && !data.authenticated) {
+        // Server explicitly says no session — only clear local if it has also expired
+        if (!cached) {
+          console.log('No session found, applying null')
+          return applySession(null)
+        }
+        console.log('Server says unauthenticated but local session still valid — keeping until expiry')
       }
     } catch (err) {
       console.warn('checkSession error:', err)
     }
-    console.log('No session found, applying null')
-    return applySession(null)
   }
 
   async function verifyXumm(payloadId) {
@@ -130,8 +174,13 @@
   }
 
   async function verifyHolderPhantom() {
-    const provider = window.solana
-    if (!provider?.isPhantom) {
+    const provider = getPhantomProvider()
+    if (!provider) {
+      if (isMobile()) {
+        const url = encodeURIComponent(window.location.href)
+        window.location.href = `https://phantom.app/ul/browse/${url}?ref=${url}`
+        throw new Error('Opening in Phantom…')
+      }
       window.open('https://phantom.app/', '_blank', 'noopener')
       throw new Error('Phantom not found — install phantom.app')
     }
@@ -217,15 +266,12 @@
   }
 
   async function logout() {
+    clearLocalSession()
     try {
       await fetch(`${API_BASE_URL}/api/portal/logout`, { method: 'POST', credentials: 'include' })
     } catch {
       /* ignore */
     }
-    localStorage.removeItem('pegd_holder_wallet')
-    localStorage.removeItem('pegd_holder_rail')
-    sessionStorage.removeItem('pegd_holder_wallet')
-    sessionStorage.removeItem('pegd_holder_rail')
     document.body.classList.remove('holders-unlocked')
     return applySession(null)
   }
@@ -260,7 +306,7 @@
 
   // ── Floating auth widget ──────────────────────────────────────────────────
 
-  const TIMEOUT_MS = 10 * 60 * 1000  // 10 minutes
+  const TIMEOUT_MS = 60 * 60 * 1000  // 60 minutes
   let timeoutHandle = null
   let floatEl = null
 
@@ -398,9 +444,9 @@
   window.addEventListener('xrpeg-portal-logout',  () => { clearTimeout(timeoutHandle); updateFloat() })
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { checkSession(); buildFloat() })
+    document.addEventListener('DOMContentLoaded', () => { checkSession(); /*buildFloat()*/ })
   } else {
     checkSession()
-    buildFloat()
+    /*buildFloat()*/
   }
 })()

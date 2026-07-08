@@ -3,26 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>About XRP — Proof Oracle | XRPEGGED</title>
-  <meta name="description" content="Live XRPL intelligence dashboard — network stats, ledger activity, and XRP context from the XRPEGGED Proof Oracle.">
-  <meta name="robots" content="index, follow">
+  <title>PEGD Oracle | XRPEGGED</title>
+  <meta name="description" content="Live PEGD Oracle — active miners, hashrate, leaderboard, payout history, and PEGD price.">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230a0a1a' stroke='%2300f5ff' stroke-width='4'/%3E%3Ctext x='50' y='62' font-family='Arial' font-weight='bold' font-size='36' fill='%2300f5ff' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
   <style>
     :root {
-      --bg: #0a0a1a;
-      --neon: #00f5ff;
-      --muted: #7070a0;
-      --border: rgba(0,245,255,0.15);
+      --bg:     #0a0a1a;
+      --bg2:    #0d0d22;
+      --card:   #0f172a;
+      --border: rgba(0,245,255,0.12);
+      --neon:   #00f5ff;
+      --muted:  #7070a0;
+      --text:   #e2e8f0;
+      --green:  #4ade80;
+      --red:    #f87171;
+      --blue:   #60a5fa;
+      --slate:  #94a3b8;
+      --dim:    #475569;
+      --darker: #64748b;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       background: var(--bg);
-      color: #e0e0ff;
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      color: var(--text);
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
     }
+
+    /* ── topbar ── */
     .topbar {
       flex-shrink: 0;
       display: flex;
@@ -33,37 +45,314 @@
       height: 52px;
       border-bottom: 1px solid var(--border);
       background: rgba(10,10,26,0.95);
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
     }
-    .topbar a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 500;
+    .topbar a        { color: var(--muted); text-decoration: none; font-size: 0.88rem; font-weight: 500; }
+    .topbar a:hover  { color: var(--neon); }
+    .topbar .brand   { color: var(--neon); font-weight: 800; }
+    .topbar .label   { font-size: 0.82rem; color: var(--muted); }
+    .topbar .live-tag {
+      background: #1e3a5f; color: var(--blue);
+      padding: 2px 8px; border-radius: 4px; font-size: 10px;
+      letter-spacing: 1px;
     }
-    .topbar a:hover { color: var(--neon); }
-    .topbar .brand { color: var(--neon); font-weight: 800; }
-    .topbar .label { font-size: 0.82rem; color: var(--muted); }
-    .oracle-frame {
-      flex: 1;
-      width: 100%;
-      border: 0;
-      display: block;
-      min-height: calc(100dvh - 52px);
+
+    /* ── layout ── */
+    main { flex: 1; padding: 20px 24px 48px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+    /* ── section headings ── */
+    .section-head {
+      color: var(--slate); font-size: 10px; text-transform: uppercase;
+      letter-spacing: 2px; margin-bottom: 10px;
+      border-bottom: 1px solid #1e293b; padding-bottom: 8px;
     }
+
+    /* ── metric cards ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .card .label { color: var(--dim); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .card .value { color: #f8fafc; font-size: 18px; font-weight: 700; }
+    .card .sub   { color: var(--darker); font-size: 11px; margin-top: 4px; }
+
+    /* ── tables ── */
+    .section { margin-bottom: 28px; }
+    table   { width: 100%; border-collapse: collapse; }
+    th      { color: var(--dim); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; padding: 5px 10px; border-bottom: 1px solid #1e293b; text-align: left; }
+    td      { padding: 7px 10px; }
+    tr:hover td { background: rgba(15,23,42,0.4); }
+
+    /* ── two-col layout ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+    @media (max-width: 768px) {
+      .two-col { grid-template-columns: 1fr; }
+      .topbar .label { display: none; }
+    }
+
+    /* ── wallet lookup ── */
+    .lookup-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .lookup-row input {
+      flex: 1; background: var(--bg); border: 1px solid #1e293b;
+      border-radius: 4px; color: var(--text); padding: 7px 10px;
+      font-family: monospace; font-size: 12px; outline: none;
+    }
+    .lookup-row input:focus { border-color: var(--neon); }
+    .lookup-row button {
+      background: #1e3a5f; color: var(--blue); border: 1px solid #1e3a5f;
+      border-radius: 4px; padding: 7px 16px; cursor: pointer; font-size: 12px;
+      font-family: monospace;
+    }
+    .lookup-row button:hover { background: #1e4a7f; }
+
+    /* ── status badges ── */
+    .badge-on  { color: var(--green); }
+    .badge-off { color: var(--muted); }
+
+    /* ── footer ── */
+    .page-foot { color: var(--dim); font-size: 10px; text-align: right; padding: 8px 0; }
+    .page-foot a { color: var(--dim); }
+    .page-foot a:hover { color: var(--neon); }
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <a href="/" class="brand">← XRPEGGED</a>
-    <span class="label">About XRP · Proof Oracle</span>
-    <a href="/proof-oracle" target="_blank" rel="noopener">Open full page ↗</a>
-  </header>
-  <iframe
-    class="oracle-frame"
-    src="/proof-oracle"
-    title="Proof Oracle — XRPL Intelligence Dashboard"
-    loading="lazy"
-  ></iframe>
+
+<header class="topbar">
+  <a href="/" class="brand">← XRPEGGED</a>
+  <span class="label">PEGD Oracle</span>
+  <span class="live-tag">LIVE</span>
+</header>
+
+<main>
+
+  <!-- ── PEGD Price ── -->
+  <div class="grid" id="price-grid">
+    <div class="card"><div class="label">Price (DBC)</div><div class="value" id="p-price">—</div><div class="sub" id="p-native">—</div></div>
+    <div class="card"><div class="label">Price Change</div><div class="value" style="font-size:14px" id="p-change5m">—</div><div class="sub" id="p-change-rest">—</div></div>
+    <div class="card"><div class="label">24h Volume</div><div class="value" id="p-vol">—</div><div class="sub" id="p-liq">—</div></div>
+    <div class="card"><div class="label">Market Cap</div><div class="value" id="p-mcap">—</div><div class="sub">Moonshot DBC</div></div>
+  </div>
+
+  <!-- ── Pool Stats ── -->
+  <div class="grid" id="pool-grid">
+    <div class="card"><div class="label">Active Miners</div><div class="value" id="s-workers">—</div><div class="sub">last 10 min</div></div>
+    <div class="card"><div class="label">Pool Hashrate</div><div class="value" id="s-hr">—</div><div class="sub" id="s-coin">—</div></div>
+    <div class="card"><div class="label">Compute Treasury</div><div class="value" id="s-sol">—</div><div class="sub"><a href="https://solscan.io/account/4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9#transfers" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none">history ↗</a></div></div>
+    <div class="card"><div class="label">Treasury PEGD</div><div class="value" id="s-pegd">—</div><div class="sub" id="s-buyback">—</div></div>
+    <div class="card"><div class="label">Last Buyback</div><div class="value" style="font-size:13px" id="s-last-bb">—</div><div class="sub"><a href="https://solscan.io/account/4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9#transfers" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none">view ↗</a></div></div>
+  </div>
+
+  <!-- ── Leaderboard + Payouts ── -->
+  <div class="two-col">
+    <div class="section">
+      <div class="section-head">Miner Leaderboard</div>
+      <table>
+        <thead><tr><th>#</th><th>Wallet</th><th>GPU</th><th style="text-align:right">Pool Share</th><th style="text-align:right">Pending PEGD</th><th>Status</th></tr></thead>
+        <tbody id="leaderboard-body"><tr><td colspan="6" style="color:var(--muted);padding:20px">Loading…</td></tr></tbody>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-head">Recent Payouts</div>
+      <table>
+        <thead><tr><th>Wallet</th><th style="text-align:right">PEGD</th><th style="text-align:right">SOL Value</th><th>When</th></tr></thead>
+        <tbody id="payouts-body"><tr><td colspan="4" style="color:var(--muted);padding:20px">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── Miner Lookup ── -->
+  <div class="section">
+    <div class="section-head">Miner Wallet Lookup</div>
+    <div class="lookup-row">
+      <input id="lookup-addr" placeholder="Paste your Solana wallet to check your mining stats…" autocomplete="off" spellcheck="false">
+      <button type="button" onclick="lookupMiner()">Lookup</button>
+    </div>
+    <div id="lookup-result" style="color:var(--muted);font-size:12px"></div>
+  </div>
+
+  <div class="page-foot" id="page-foot">
+    <a href="javascript:void(0)" onclick="loadAll()">refresh now</a>
+  </div>
+
+</main>
+
+<script>
+const COMPUTE = 'https://pegd-compute.xrpegged.workers.dev'
+const PEGD_MINT = 'BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon'
+
+function fmt(n, dec = 2) {
+  if (n == null || isNaN(n)) return '—'
+  return Number(n).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec })
+}
+function pct(v) {
+  const color = v >= 0 ? 'var(--green)' : 'var(--red)'
+  return `<span style="color:${color}">${v >= 0 ? '+' : ''}${fmt(v, 2)}%</span>`
+}
+function timeAgo(ts) {
+  if (!ts) return '—'
+  const diff = (Date.now() - (typeof ts === 'string' ? new Date(ts) : ts)) / 1000
+  if (diff < 60)    return Math.floor(diff) + 's ago'
+  if (diff < 3600)  return Math.floor(diff / 60) + 'm ago'
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago'
+  return Math.floor(diff / 86400) + 'd ago'
+}
+function shortWallet(w) {
+  return w.slice(0, 6) + '…' + w.slice(-4)
+}
+function hrFmt(mhs) {
+  if (!mhs) return '0 MH/s'
+  if (mhs >= 1000) return fmt(mhs / 1000, 2) + ' GH/s'
+  if (mhs < 0.001) return fmt(mhs * 1000000, 0) + ' H/s'
+  if (mhs < 1)     return fmt(mhs * 1000, 2) + ' KH/s'
+  return fmt(mhs, 2) + ' MH/s'
+}
+
+async function loadPrice() {
+  try {
+    const d    = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${PEGD_MINT}`).then(r => r.json())
+    const pairs = d.pairs || []
+    const dbc   = pairs.find(p => p.dexId === 'meteoradbc') || pairs[0] || {}
+    const priceUsd = parseFloat(dbc.priceUsd || 0)
+    const priceN   = parseFloat(dbc.priceNative || 0)
+
+    document.getElementById('p-price').textContent  = priceUsd ? '$' + priceUsd.toFixed(8) : '—'
+    document.getElementById('p-native').textContent = priceN   ? '◎' + priceN.toFixed(9)  : '—'
+    document.getElementById('p-change5m').innerHTML = pct(dbc.priceChange?.m5 || 0) + ' 5m'
+    document.getElementById('p-change-rest').innerHTML = pct(dbc.priceChange?.h1 || 0) + ' 1h &nbsp; ' + pct(dbc.priceChange?.h24 || 0) + ' 24h'
+    document.getElementById('p-vol').textContent  = '$' + fmt(dbc.volume?.h24 || 0, 0)
+    document.getElementById('p-liq').textContent  = 'Liquidity $' + fmt(dbc.liquidity?.usd || 0, 0)
+    document.getElementById('p-mcap').textContent = dbc.marketCap ? '$' + fmt(dbc.marketCap, 0) : '—'
+  } catch (e) { console.warn('price fetch failed', e) }
+}
+
+async function loadStats() {
+  try {
+    const s = await fetch(`${COMPUTE}/stats`).then(r => r.json())
+    document.getElementById('s-workers').textContent = s.workers ?? '—'
+    document.getElementById('s-hr').textContent      = hrFmt(s.totalHashrate)
+    document.getElementById('s-coin').textContent    = s.currentCoin ? s.currentCoin + ' · ' + (s.currentAlgorithm || '') : '—'
+    document.getElementById('s-pegd').textContent    = s.treasuryPegd != null ? fmt(s.treasuryPegd / 1e6, 0) + ' PEGD' : '—'
+
+    const accum = parseFloat(s.accumulatedBuybackSol || 0)
+    const thresh = parseFloat(s.buybackThresholdSol || 0.1)
+    document.getElementById('s-buyback').textContent = `◎${fmt(accum, 4)} queued / ◎${fmt(thresh, 4)} threshold`
+
+    const lastBb = s.lastBuybackAt ? new Date(s.lastBuybackAt).toISOString().replace('T', ' ').slice(0, 16) + ' UTC' : '—'
+    document.getElementById('s-last-bb').textContent = lastBb
+
+    // Compute treasury SOL via public RPC
+    const rpc = await fetch('https://api.mainnet-beta.solana.com', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getBalance', params: ['4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9', { commitment: 'confirmed' }] })
+    }).then(r => r.json()).catch(() => null)
+    const sol = rpc?.result?.value != null ? rpc.result.value / 1e9 : null
+    document.getElementById('s-sol').textContent = sol != null ? '◎' + fmt(sol, 4) : '—'
+  } catch (e) { console.warn('stats fetch failed', e) }
+}
+
+async function loadLeaderboard() {
+  try {
+    const board = await fetch(`${COMPUTE}/leaderboard`).then(r => r.json())
+    if (!Array.isArray(board) || !board.length) {
+      document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="6" style="color:var(--muted);padding:20px">No miners yet</td></tr>'
+      return
+    }
+    const rows = board.slice(0, 25).map((w, i) => {
+      const medal   = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + '.'
+      const wallet  = `<a href="https://solscan.io/account/${w.wallet}" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none">${shortWallet(w.wallet)}</a>`
+      const gpu     = w.gpu || '—'
+      const share   = fmt(w.poolShare * 100, 2) + '%'
+      const pend    = w.pendingPegd ? fmt(w.pendingPegd / 1e6, 2) : '—'
+      const status  = w.active
+        ? `<span class="badge-on">● Online</span>`
+        : `<span class="badge-off">○ ${timeAgo(w.lastSeen)}</span>`
+      return `<tr>
+        <td style="color:var(--slate)">${medal}</td>
+        <td>${wallet}</td>
+        <td style="color:var(--muted)">${gpu}</td>
+        <td style="text-align:right;color:#f8fafc">${share}</td>
+        <td style="text-align:right;color:var(--neon)">${pend}</td>
+        <td>${status}</td>
+      </tr>`
+    }).join('')
+    document.getElementById('leaderboard-body').innerHTML = rows
+  } catch (e) { console.warn('leaderboard fetch failed', e) }
+}
+
+async function loadPayouts() {
+  try {
+    const payouts = await fetch(`${COMPUTE}/payouts`).then(r => r.json())
+    if (!Array.isArray(payouts) || !payouts.length) {
+      document.getElementById('payouts-body').innerHTML = '<tr><td colspan="4" style="color:var(--muted);padding:20px">No payouts yet</td></tr>'
+      return
+    }
+    const rows = payouts.slice(0, 20).map(p => {
+      const wallet = `<a href="https://solscan.io/account/${p.wallet}" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none">${shortWallet(p.wallet)}</a>`
+      const pegd   = fmt(p.pegdEarned / 1e6, 2)
+      const sol    = p.solValue ? '◎' + fmt(p.solValue, 4) : '—'
+      const when   = timeAgo(p.timestamp)
+      return `<tr>
+        <td>${wallet}</td>
+        <td style="text-align:right;color:var(--neon)">${pegd}</td>
+        <td style="text-align:right;color:var(--slate)">${sol}</td>
+        <td style="color:var(--darker)">${when}</td>
+      </tr>`
+    }).join('')
+    document.getElementById('payouts-body').innerHTML = rows
+  } catch (e) { console.warn('payouts fetch failed', e) }
+}
+
+async function lookupMiner() {
+  const addr = document.getElementById('lookup-addr').value.trim()
+  const out  = document.getElementById('lookup-result')
+  if (!addr) return
+  out.innerHTML = '<span style="color:var(--muted)">Looking up…</span>'
+  try {
+    const d = await fetch(`${COMPUTE}/miner?wallet=${encodeURIComponent(addr)}`).then(r => r.json())
+    if (!d.found) {
+      out.innerHTML = '<span style="color:var(--red)">Wallet not found in pool — have you mined yet?</span>'
+      return
+    }
+    const active = d.active
+      ? '<span style="color:var(--green)">● Online</span>'
+      : '<span style="color:var(--muted)">○ Offline</span>'
+    out.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:8px">
+        <div class="card"><div class="label">Status</div><div class="value" style="font-size:14px">${active}</div><div class="sub">Rank #${d.rank}</div></div>
+        <div class="card"><div class="label">Hashrate</div><div class="value">${hrFmt(d.hashrate)}</div><div class="sub">${d.gpu || '—'}</div></div>
+        <div class="card"><div class="label">Pool Share</div><div class="value">${fmt(d.poolShare * 100, 3)}%</div><div class="sub">${fmt(d.shareSeconds, 0)} share-seconds</div></div>
+        <div class="card"><div class="label">Pending PEGD</div><div class="value" style="color:var(--neon)">${fmt(d.pendingPegd / 1e6, 2)}</div><div class="sub">next distribution</div></div>
+        <div class="card"><div class="label">First Seen</div><div class="value" style="font-size:12px">${d.firstSeen ? timeAgo(d.firstSeen) : '—'}</div><div class="sub">Last: ${timeAgo(d.lastSeen)}</div></div>
+      </div>`
+  } catch (e) {
+    out.innerHTML = '<span style="color:var(--red)">Error: ' + e.message + '</span>'
+  }
+}
+
+async function loadAll() {
+  document.getElementById('page-foot').innerHTML = '<span style="color:var(--muted)">Refreshing…</span>'
+  await Promise.all([loadPrice(), loadStats(), loadLeaderboard(), loadPayouts()])
+  document.getElementById('page-foot').innerHTML =
+    'Last updated: ' + new Date().toUTCString() + ' · <a href="javascript:void(0)" onclick="loadAll()" style="color:var(--dim)">refresh now</a>'
+}
+
+document.getElementById('lookup-addr').addEventListener('keydown', e => e.key === 'Enter' && lookupMiner())
+
+loadAll()
+setTimeout(() => location.reload(), 60000)
+</script>
+
 </body>
 </html>

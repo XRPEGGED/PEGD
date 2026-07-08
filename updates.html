@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XRPEGGED — Updates & Changelog</title>
+  <meta name="description" content="What's new on XRPEGGED — compute pool, browser mining, oracle API, and more.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230a0a1a' stroke='%2300f5ff' stroke-width='4'/%3E%3Ctext x='50' y='62' font-family='Arial' font-weight='bold' font-size='36' fill='%2300f5ff' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg:#07071a; --surface:#0d0d22; --card:#13132e; --border:#1e1e42;
+      --neon:#00f5ff; --neon2:#a855f7; --green:#22c55e; --yellow:#f0b90b;
+      --red:#ef4444; --text:#c8c8e8; --muted:#555577;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;min-height:100vh;}
+
+    nav{background:var(--surface);border-bottom:1px solid var(--border);
+        display:flex;align-items:center;gap:2rem;padding:0 2rem;height:56px;flex-wrap:wrap;}
+    nav a{color:var(--muted);text-decoration:none;font-size:0.9rem;}
+    nav a:hover,nav a.active{color:var(--neon);}
+    .nav-logo{color:var(--neon);font-weight:800;font-size:1.2rem;letter-spacing:2px;margin-right:1rem;}
+
+    .page{max-width:860px;margin:0 auto;padding:2rem 1rem 5rem;}
+
+    .page-hero{margin:2rem 0 2.5rem;}
+    .page-hero h1{font-size:1.6rem;font-weight:800;color:var(--neon);margin-bottom:0.4rem;}
+    .page-hero p{color:var(--muted);font-size:0.9rem;}
+
+    /* ── Entry ── */
+    .entry{display:grid;grid-template-columns:140px 1fr;gap:0 1.5rem;margin-bottom:2.5rem;position:relative;}
+    .entry::before{content:'';position:absolute;left:139px;top:8px;bottom:-2.5rem;width:1px;background:var(--border);}
+    .entry:last-child::before{display:none;}
+    .entry-date{text-align:right;padding-top:3px;}
+    .entry-date .day{font-size:0.78rem;font-weight:700;color:var(--text);}
+    .entry-date .rel{font-size:0.68rem;color:var(--muted);margin-top:2px;}
+    .entry-dot{position:absolute;left:133px;top:6px;width:13px;height:13px;
+               border-radius:50%;background:var(--card);border:2px solid var(--border);z-index:1;}
+    .entry-dot.new{border-color:var(--neon);box-shadow:0 0 6px var(--neon);}
+    .entry-dot.fix{border-color:var(--green);}
+    .entry-dot.launch{border-color:var(--neon2);box-shadow:0 0 6px var(--neon2);}
+
+    .entry-body{padding-left:0;}
+    .entry-tag{display:inline-block;font-size:0.6rem;font-weight:700;letter-spacing:1px;
+               text-transform:uppercase;padding:2px 8px;border-radius:4px;margin-bottom:0.5rem;}
+    .tag-new{background:rgba(0,245,255,0.12);color:var(--neon);}
+    .tag-fix{background:rgba(34,197,94,0.12);color:var(--green);}
+    .tag-launch{background:rgba(168,85,247,0.12);color:var(--neon2);}
+    .tag-improve{background:rgba(240,185,11,0.12);color:var(--yellow);}
+    .tag-security{background:rgba(239,68,68,0.12);color:var(--red);}
+
+    .entry-title{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:0.4rem;line-height:1.3;}
+    .entry-desc{font-size:0.84rem;color:var(--muted);line-height:1.7;margin-bottom:0.75rem;}
+    .entry-desc strong{color:var(--text);}
+
+    .entry-pills{display:flex;flex-wrap:wrap;gap:0.4rem;}
+    .pill{font-size:0.7rem;padding:2px 10px;border-radius:100px;
+          background:var(--surface);border:1px solid var(--border);color:var(--muted);}
+    .pill a{color:inherit;text-decoration:none;}
+    .pill a:hover{color:var(--neon);}
+
+    /* ── Section divider ── */
+    .section-label{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;
+                   margin:2.5rem 0 1.5rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);}
+
+    @media(max-width:600px){
+      .entry{grid-template-columns:1fr;}
+      .entry::before,.entry-dot{display:none;}
+      .entry-date{text-align:left;margin-bottom:0.4rem;}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">XRPEGGED</span>
+  <a href="/">Home</a>
+  <a href="/pool.html">Compute Pool</a>
+  <a href="/mine.html">Mine</a>
+  <a href="/mobile.html">Mobile</a>
+  <a href="/updates.html" class="active">Updates</a>
+  <a href="/governance.html">Governance</a>
+</nav>
+
+<div class="page">
+
+  <div class="page-hero">
+    <h1>Updates</h1>
+    <p>What's new across XRPEGGED — pool, mining, oracle, and site.</p>
+  </div>
+
+  <div class="section-label">June 2026</div>
+
+  <!-- Mobile miner + Phantom -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 28, 2026</div>
+      <div class="rel">today</div>
+    </div>
+    <div class="entry-dot new"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-launch">Launch</span>
+      <div class="entry-title">Android mobile miner — mine XMR on your phone</div>
+      <div class="entry-desc">
+        Native ARM64 APK built with <strong>xmrig + RandomX</strong>, compiled from source via Android NDK.
+        Connects to <strong>rx.unmineable.com:3333</strong> as a foreground service — mines while the screen is off.
+        Phantom wallet sign-in (Mobile Wallet Adapter) proves ownership before mining starts.
+        Earnings flow XMR → Unmineable auto-convert → SOL treasury → PEGD distribution every 3 hours.
+        App includes Mine and About tabs; About tab documents how to update the APK.
+      </div>
+      <div class="entry-pills">
+        <span class="pill"><a href="/mobile.html">mobile.html →</a></span>
+        <span class="pill">RandomX</span>
+        <span class="pill">xmrig ARM64</span>
+        <span class="pill neon" style="border-color:var(--neon2);color:var(--neon2)">Phantom MWA</span>
+        <span class="pill">Android 9+</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SSH tunnel -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 28, 2026</div>
+      <div class="rel">today</div>
+    </div>
+    <div class="entry-dot new"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-new">New</span>
+      <div class="entry-title">Permanent SSH tunnel via Cloudflare — remote dev access</div>
+      <div class="entry-desc">
+        Set up <strong>ssh.pegd.org</strong> via Cloudflare Tunnel (cloudflared systemd service).
+        Allows SSH access to the dev machine from anywhere — including Termux on Android — without port forwarding or VPN.
+        Survives reboots automatically.
+      </div>
+      <div class="entry-pills">
+        <span class="pill">ssh.pegd.org</span>
+        <span class="pill">cloudflared</span>
+        <span class="pill">Termux</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monorepo -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 28, 2026</div>
+      <div class="rel">today</div>
+    </div>
+    <div class="entry-dot new"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-new">New</span>
+      <div class="entry-title">Monorepo scaffold — @pegd/core shared constants</div>
+      <div class="entry-desc">
+        Created <code>pegd/</code> npm workspace with <strong>@pegd/core</strong> package housing shared constants
+        (<code>POOL_XMR</code>, <code>TREASURY_WALLET</code>, <code>REFERRAL</code>, <code>workerName()</code>)
+        and TypeScript types (<code>MinerConfig</code>, <code>MinerStats</code>, <code>MinerIdentity</code>).
+        Apps: mobile (React Native), worker (Hono/Cloudflare), web (Phase 3).
+      </div>
+      <div class="entry-pills">
+        <span class="pill">npm workspaces</span>
+        <span class="pill">TypeScript</span>
+        <span class="pill">Hono (Phase 2)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CSP fix -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 28, 2026</div>
+      <div class="rel">today</div>
+    </div>
+    <div class="entry-dot fix"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-fix">Fix</span>
+      <div class="entry-title">Pool page data now loads correctly</div>
+      <div class="entry-desc">
+        The Content Security Policy was blocking browser requests to <strong>api.unmineable.com</strong>,
+        silently preventing pool balance, active worker count, and the workers table from displaying.
+        Added <code style="color:var(--neon);font-family:monospace;font-size:0.82rem;">api.unmineable.com</code> to
+        <code style="color:var(--neon);font-family:monospace;font-size:0.82rem;">connect-src</code> — all sections now render.
+      </div>
+      <div class="entry-pills">
+        <span class="pill"><a href="/pool.html">pool.html</a></span>
+        <span class="pill">CSP</span>
+        <span class="pill">_headers</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Windows + Linux installer -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 27, 2026</div>
+    </div>
+    <div class="entry-dot new"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-new">New</span>
+      <div class="entry-title">One-command installer — Windows &amp; Linux</div>
+      <div class="entry-desc">
+        The PEGD Compute Worker installs with a single command on both platforms.
+        <strong>Linux:</strong> <code style="color:var(--neon);font-family:monospace;font-size:0.82rem;">curl -fsSL https://pegd.org/install.sh | bash</code><br>
+        <strong>Windows:</strong> <code style="color:var(--neon2);font-family:monospace;font-size:0.82rem;">irm https://pegd.org/install.ps1 | iex</code><br>
+        Both install the same cross-platform <code style="font-family:monospace;font-size:0.82rem;">worker.py</code> GUI app. Auto-detects NVIDIA or AMD GPU,
+        launches T-Rex or lolMiner, and runs XMRig CPU mining alongside any GPU simultaneously.
+        Sends a heartbeat to the coordinator every 2 minutes to log share-seconds.
+      </div>
+      <div class="entry-pills">
+        <span class="pill">install.sh</span>
+        <span class="pill">install.ps1</span>
+        <span class="pill">worker.py</span>
+        <span class="pill"><a href="/pool.html#get-started">Setup guide →</a></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- XMRig CPU mining -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 26, 2026</div>
+    </div>
+    <div class="entry-dot improve"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-improve">Improve</span>
+      <div class="entry-title">XMRig donate-level set to 0 — 100% earnings to pool</div>
+      <div class="entry-desc">
+        XMRig's built-in developer donation (default 1%) is disabled in the bundled config.
+        All CPU RandomX hashrate goes through Unmineable to the treasury.
+        Also enabled <strong>1 GB huge pages</strong> in the Linux setup for ~10–15% RandomX hashrate boost.
+      </div>
+      <div class="entry-pills">
+        <span class="pill">XMRig</span>
+        <span class="pill">RandomX</span>
+        <span class="pill">CPU mining</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Oracle API -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 25, 2026</div>
+    </div>
+    <div class="entry-dot new"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-new">New</span>
+      <div class="entry-title">PEGD Oracle API v1 — public, no auth, open CORS</div>
+      <div class="entry-desc">
+        A public REST API for price, curve progress, treasury balances, trades, and holders.
+        Responses are cached 60 seconds. No API key required.
+      </div>
+      <div class="entry-pills">
+        <span class="pill">GET /v1/price</span>
+        <span class="pill">GET /v1/curve</span>
+        <span class="pill">GET /v1/treasury</span>
+        <span class="pill">GET /v1/trades</span>
+        <span class="pill">GET /v1/holders</span>
+        <span class="pill">GET /v1/stats</span>
+        <span class="pill"><a href="https://pegd-compute.xrpegged.workers.dev/v1" target="_blank" rel="noopener">Docs →</a></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- XRP → PEGD swap -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 24, 2026</div>
+    </div>
+    <div class="entry-dot new"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-new">New</span>
+      <div class="entry-title">XRP → PEGD auto-swap via XRPL memo</div>
+      <div class="entry-desc">
+        Send XRP to the treasury address with a memo containing your Phantom wallet address.
+        The coordinator detects the payment on-chain, calculates a fair PEGD amount at the live rate
+        (2% fee), and queues the distribution for the next payout cycle.
+        Memo format: <code style="font-family:monospace;font-size:0.82rem;color:var(--neon);">xrpegged:swap:v1:xrp-pegd:YOUR_PHANTOM_WALLET</code>
+      </div>
+      <div class="entry-pills">
+        <span class="pill">XRPL</span>
+        <span class="pill">Jupiter Ultra</span>
+        <span class="pill">auto-swap</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three-layer buyback -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 23, 2026</div>
+    </div>
+    <div class="entry-dot new"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-new">New</span>
+      <div class="entry-title">Three-layer treasury buyback system</div>
+      <div class="entry-desc">
+        The treasury now automatically buys back PEGD at three trigger levels:<br>
+        <strong>1. Scheduled</strong> — daily buyback of accumulated SOL.<br>
+        <strong>2. Buffer low</strong> — buys when treasury PEGD drops below 3 cycle payouts (rate-limited to every 6 h).<br>
+        <strong>3. Emergency</strong> — bypasses rate limit when treasury USD value falls critically low.
+      </div>
+      <div class="entry-pills">
+        <span class="pill">Jupiter Ultra</span>
+        <span class="pill">auto-buyback</span>
+        <span class="pill">treasury</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Snapshot bug fix -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 22, 2026</div>
+    </div>
+    <div class="entry-dot fix"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-fix">Fix</span>
+      <div class="entry-title">Snapshot bug — miner earnings no longer silently dropped</div>
+      <div class="entry-desc">
+        When the treasury PEGD balance was too low to cover a distribution cycle, the Unmineable
+        balance snapshot was still advancing, causing that cycle's mined SOL to be lost.
+        The fix holds the snapshot in place and rolls the SOL into the next cycle automatically.
+      </div>
+      <div class="entry-pills">
+        <span class="pill">coordinator</span>
+        <span class="pill">payouts</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Browser mining -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 21, 2026</div>
+    </div>
+    <div class="entry-dot launch"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-launch">Launch</span>
+      <div class="entry-title">Browser mining — earn PEGD from any device</div>
+      <div class="entry-desc">
+        No app, no GPU required. Any phone, tablet, or desktop can contribute CPU compute and
+        earn PEGD by solving a PoW challenge in-browser. The difficulty auto-adjusts based on
+        your device's speed. Payouts use the same 3-hour cycle as the GPU pool.
+      </div>
+      <div class="entry-pills">
+        <span class="pill"><a href="/mine.html">mine.html</a></span>
+        <span class="pill">SHA-256 PoW</span>
+        <span class="pill">auto-difficulty</span>
+        <span class="pill">mobile-friendly</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compute pool launch -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 20, 2026</div>
+    </div>
+    <div class="entry-dot launch"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-launch">Launch</span>
+      <div class="entry-title">XRPEGGED Compute Pool launched</div>
+      <div class="entry-desc">
+        GPU and CPU mining pool that pays out in <strong>$PEGD</strong> every 3 hours.
+        Miners connect to Unmineable via the PEGD Compute Worker — GPU mines the most
+        profitable coin via T-Rex or lolMiner, CPU runs XMRig RandomX simultaneously.
+        All mined SOL flows to the treasury; PEGD is distributed proportionally by share-seconds.
+        Referral code <strong>U-FGJ8HA</strong> is built in — no sign-up required, just a Solana wallet address.
+      </div>
+      <div class="entry-pills">
+        <span class="pill"><a href="/pool.html">pool.html</a></span>
+        <span class="pill">Unmineable</span>
+        <span class="pill">T-Rex</span>
+        <span class="pill">lolMiner</span>
+        <span class="pill">XMRig</span>
+        <span class="pill">3h cycle</span>
+        <span class="pill">ref: U-FGJ8HA</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Worker alerts -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 20, 2026</div>
+    </div>
+    <div class="entry-dot new"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-new">New</span>
+      <div class="entry-title">Worker online / offline Telegram alerts</div>
+      <div class="entry-desc">
+        The coordinator sends a private Telegram alert when any miner comes online or drops offline.
+        Alerts include wallet (truncated), GPU name, and reported hashrate.
+      </div>
+      <div class="entry-pills">
+        <span class="pill">coordinator</span>
+        <span class="pill">Telegram</span>
+        <span class="pill">monitoring</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Direct miner accumulation -->
+  <div class="entry">
+    <div class="entry-date">
+      <div class="day">Jun 20, 2026</div>
+    </div>
+    <div class="entry-dot new"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-new">New</span>
+      <div class="entry-title">Direct miners earn share-seconds via Unmineable worker data</div>
+      <div class="entry-desc">
+        Miners who connect directly to Unmineable without the worker app (using their wallet as
+        the worker name) still accumulate share-seconds. The coordinator polls Unmineable every
+        15 minutes and credits hashrate for any online worker whose name is a valid Solana address.
+      </div>
+      <div class="entry-pills">
+        <span class="pill">coordinator</span>
+        <span class="pill">Unmineable API</span>
+        <span class="pill">direct miners</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<p style="text-align:center;color:#444466;font-size:0.75rem;padding:1.5rem 1rem 2rem;margin-top:1rem;border-top:1px solid #1a1a3a;line-height:1.6">
+  Updates are logged as features ship. All dates are approximate.
+  <a href="/disclaimer.html" style="color:#7070a0">Full disclaimer →</a>
+</p>
+</body>
+</html>

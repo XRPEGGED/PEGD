@@ -10,3 +10,7 @@ MAINTENANCE_UNTIL = "2026-06-13T13:00:00Z"
 [[kv_namespaces]]
 binding = "DIRECTIVES_KV"
 id = "2eacc10a682d4b0c9b1e051694ab8cd9"
+
+[[r2_buckets]]
+binding = "ASSETS_R2"
+bucket_name = "pegd-assets"

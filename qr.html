@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Generator</title>
+  <style>
+    :root {
+      --bg:#07071a; --surface:#0d0d22; --card:#13132e; --border:#1e1e42;
+      --neon:#00f5ff; --text:#c8c8e8; --muted:#555577;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      gap: 1.25rem;
+    }
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--neon);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    textarea {
+      width: 100%;
+      max-width: 520px;
+      height: 110px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.9rem;
+      padding: 0.85rem 1rem;
+      resize: vertical;
+      outline: none;
+      font-family: monospace;
+      transition: border-color 0.15s;
+    }
+    textarea:focus { border-color: var(--neon); }
+    textarea::placeholder { color: var(--muted); }
+    button {
+      background: var(--neon);
+      color: #07071a;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 11px 36px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: opacity 0.15s;
+    }
+    button:hover { opacity: 0.85; }
+    button:active { opacity: 0.7; }
+    #qr-wrap {
+      width: 320px;
+      height: 320px;
+      background: #fff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    #qr-wrap.visible { opacity: 1; }
+    #qr-wrap canvas { border-radius: 8px; }
+    #err {
+      font-size: 0.8rem;
+      color: #ef4444;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>QR Generator</h1>
+  <textarea id="txt" placeholder="Paste text or URL here…" autofocus></textarea>
+  <button onclick="generate()">Generate</button>
+  <span id="err"></span>
+  <div id="qr-wrap">
+    <canvas id="qr"></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <script>
+    const txt   = document.getElementById('txt')
+    const wrap  = document.getElementById('qr-wrap')
+    const canvas = document.getElementById('qr')
+    const err   = document.getElementById('err')
+
+    txt.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); generate() }
+    })
+
+    function generate() {
+      const val = txt.value.trim()
+      if (!val) return
+      err.style.display = 'none'
+      QRCode.toCanvas(canvas, val, { width: 300, margin: 2, color: { dark: '#000000', light: '#ffffff' } }, e => {
+        if (e) {
+          err.textContent = e.message
+          err.style.display = 'block'
+          wrap.classList.remove('visible')
+        } else {
+          wrap.classList.add('visible')
+        }
+      })
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Set Token Metadata</title>
+<script src="https://unpkg.com/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
+<style>
+  body { background:#07071a; color:#c8c8e8; font-family:'Courier New',monospace; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:2rem; gap:1rem; }
+  h1 { color:#a78bfa; font-size:1.1rem; letter-spacing:.2em; text-transform:uppercase; }
+  input { width:100%; max-width:540px; background:#0d0d22; border:1px solid #1e1e42; border-radius:8px; color:#c8c8e8; font-family:'Courier New',monospace; font-size:.82rem; padding:.65rem .9rem; outline:none; box-sizing:border-box; }
+  input:focus { border-color:#a78bfa; }
+  label { font-size:.6rem; color:#555577; text-transform:uppercase; letter-spacing:.12em; display:block; margin-bottom:.25rem; max-width:540px; width:100%; }
+  button { background:#a78bfa; color:#07071a; font-weight:bold; font-size:.9rem; border:none; border-radius:10px; padding:.85rem 2.5rem; cursor:pointer; letter-spacing:.05em; margin-top:.5rem; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  #status { max-width:540px; width:100%; min-height:2rem; font-size:.78rem; line-height:1.8; margin-top:.5rem; }
+  .ok  { color:#34d399; }
+  .err { color:#ef4444; }
+  .dim { color:#555577; }
+  #success-box { display:none; background:rgba(52,211,153,.1); border:1px solid #34d399; border-radius:12px; padding:1.5rem; text-align:center; max-width:540px; width:100%; margin-top:1rem; }
+  #success-box .headline { color:#34d399; font-size:1.2rem; font-weight:bold; margin-bottom:1rem; }
+  #solscan-link { display:inline-block; background:#34d399; color:#07071a; font-weight:bold; padding:.6rem 1.5rem; border-radius:8px; text-decoration:none; font-size:.85rem; }
+</style>
+</head>
+<body>
+
+<h1>Set RNSM Metadata</h1>
+
+<label for="f-mint">Mint Address</label>
+<input id="f-mint" value="2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE" />
+
+<label for="f-name">Name</label>
+<input id="f-name" value="Ransem" />
+
+<label for="f-symbol">Symbol</label>
+<input id="f-symbol" value="RNSM" />
+
+<label for="f-uri">Metadata URI</label>
+<input id="f-uri" value="https://pegd.org/rnsm-metadata.json" />
+
+<button id="btn" onclick="run()">Set Metadata On-Chain</button>
+
+<div id="status"></div>
+<div id="success-box">
+  <div class="headline">✓ Metadata confirmed on-chain</div>
+  <a id="solscan-link" href="#" target="_blank" rel="noopener">View Token on Solscan →</a>
+</div>
+
+<script>
+const { Connection, PublicKey, Transaction, TransactionInstruction, SystemProgram } = solanaWeb3;
+
+const TOKEN_PROGRAM_ID          = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+const TOKEN_METADATA_PROGRAM_ID = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
+const SYSVAR_RENT               = new PublicKey('SysvarRent111111111111111111111111111111111');
+
+function log(msg, cls='dim') {
+  const el = document.getElementById('status');
+  el.innerHTML += `<span class="${cls}">${msg}</span><br>`;
+}
+
+function u8(a,v,i)    { a[i]=v&0xff; }
+function u16le(a,v,i) { a[i]=v&0xff; a[i+1]=(v>>8)&0xff; }
+function borshStr(s)  { const b=new TextEncoder().encode(s); const r=new Uint8Array(4+b.length); r[0]=b.length&0xff; r[1]=(b.length>>8)&0xff; r[2]=(b.length>>16)&0xff; r[3]=(b.length>>24)&0xff; r.set(b,4); return r; }
+
+async function getMetadataPDA(mint) {
+  const [addr] = await PublicKey.findProgramAddress(
+    [new TextEncoder().encode('metadata'), TOKEN_METADATA_PROGRAM_ID.toBytes(), mint.toBytes()],
+    TOKEN_METADATA_PROGRAM_ID
+  );
+  return addr;
+}
+
+function buildCreateMetadataIx(metadataPDA, mint, authority, payer, name, symbol, uri) {
+  const nB=borshStr(name), sB=borshStr(symbol), uB=borshStr(uri);
+  const d=new Uint8Array(1+nB.length+sB.length+uB.length+2+3+1+1);
+  let o=0;
+  u8(d,33,o++);
+  d.set(nB,o); o+=nB.length;
+  d.set(sB,o); o+=sB.length;
+  d.set(uB,o); o+=uB.length;
+  u16le(d,0,o); o+=2;
+  u8(d,0,o++); u8(d,0,o++); u8(d,0,o++); u8(d,1,o++); u8(d,0,o++);
+  return new TransactionInstruction({
+    keys:[
+      {pubkey:metadataPDA, isSigner:false, isWritable:true},
+      {pubkey:mint,        isSigner:false, isWritable:false},
+      {pubkey:authority,   isSigner:true,  isWritable:false},
+      {pubkey:payer,       isSigner:true,  isWritable:true},
+      {pubkey:authority,   isSigner:false, isWritable:false},
+      {pubkey:SystemProgram.programId, isSigner:false, isWritable:false},
+      {pubkey:SYSVAR_RENT, isSigner:false, isWritable:false},
+    ],
+    programId: TOKEN_METADATA_PROGRAM_ID,
+    data: d,
+  });
+}
+
+async function run() {
+  const btn = document.getElementById('btn');
+  const statusEl = document.getElementById('status');
+  statusEl.innerHTML = '';
+  btn.disabled = true;
+  btn.textContent = 'Working…';
+
+  try {
+    const mintStr = document.getElementById('f-mint').value.trim();
+    const name    = document.getElementById('f-name').value.trim();
+    const symbol  = document.getElementById('f-symbol').value.trim();
+    const uri     = document.getElementById('f-uri').value.trim();
+
+    const provider = window.phantom?.solana || window.solana;
+    if (!provider?.isPhantom) throw new Error('Phantom not found');
+
+    log('connecting wallet…');
+    const { publicKey } = await provider.connect();
+    log(`wallet: ${publicKey.toString().slice(0,8)}…`, 'ok');
+
+    log('connecting rpc…');
+    const conn = new Connection('https://solana.publicnode.com', 'confirmed');
+    await conn.getSlot();
+    log('rpc ok', 'ok');
+
+    const mint        = new PublicKey(mintStr);
+    const metadataPDA = await getMetadataPDA(mint);
+
+    log('building transaction…');
+    const tx = new Transaction({ feePayer: publicKey });
+    tx.add(buildCreateMetadataIx(metadataPDA, mint, publicKey, publicKey, name, symbol, uri));
+    const { blockhash } = await conn.getLatestBlockhash('confirmed');
+    tx.recentBlockhash = blockhash;
+
+    log('approve in phantom…');
+    const signed = await provider.signTransaction(tx);
+    const sig    = await conn.sendRawTransaction(signed.serialize(), { skipPreflight: true });
+    log(`submitted: ${sig.slice(0,20)}…`);
+
+    log('waiting for confirmation…');
+    const deadline = Date.now() + 90000;
+    while (Date.now() < deadline) {
+      await new Promise(r => setTimeout(r, 2500));
+      const { value } = await conn.getSignatureStatuses([sig]);
+      const s = value?.[0];
+      if (!s) continue;
+      if (s.err) throw new Error('on-chain error: ' + JSON.stringify(s.err));
+      if (s.confirmationStatus === 'confirmed' || s.confirmationStatus === 'finalized') break;
+    }
+
+    log('confirmed!', 'ok');
+    btn.textContent = '✓ Done';
+    btn.style.background = '#34d399';
+    const box = document.getElementById('success-box');
+    box.style.display = 'block';
+    document.getElementById('solscan-link').href = `https://solscan.io/token/${mintStr}`;
+
+  } catch(e) {
+    log('error: ' + (e.message || String(e)), 'err');
+    btn.disabled = false;
+    btn.textContent = 'Set Metadata On-Chain';
+  }
+}
+</script>
+</body>
+</html>

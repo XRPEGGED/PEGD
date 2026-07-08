@@ -107,6 +107,139 @@ ALGO_MINER = {
     "PearlPow":    "lpminer",
 }
 
+# ── Per-GPU Per-Algo OC Presets ───────────────────────────────────────────────
+# Keyed by substring of GPU name (case-insensitive), then by algo name.
+# core_lock  → nvidia-smi --lock-gpu-clocks (absolute MHz, 0 = skip)
+# mem_offset → nvidia-settings GPUMemoryTransferRateOffsetAllBand (MHz, 0 = skip)
+# power_w    → T-Rex --pl flag in watts (0 = no limit)
+# Presets are auto-applied on every miner start when the user has no manual OC set.
+GPU_OC_PRESETS = {
+    "4090": {
+        "KHeavyHash":  {"core_lock": 2500, "mem_offset":    0, "power_w": 300},
+        "Autolykos2":  {"core_lock": 1600, "mem_offset":  800, "power_w": 250},
+        "Etchash":     {"core_lock": 1050, "mem_offset":  200, "power_w": 250},
+        "Ethash":      {"core_lock": 1050, "mem_offset":  200, "power_w": 250},
+        "KawPow":      {"core_lock": 2100, "mem_offset":  500, "power_w": 320},
+        "FiroPoW":     {"core_lock": 2100, "mem_offset":  500, "power_w": 320},
+        "Octopus":     {"core_lock": 1800, "mem_offset":  500, "power_w": 280},
+        "ZHash":       {"core_lock": 2200, "mem_offset":    0, "power_w": 280},
+        "Equihash":    {"core_lock": 2200, "mem_offset":    0, "power_w": 280},
+        "PearlPow":    {"core_lock": 2000, "mem_offset":  200, "power_w": 280},
+    },
+    "4080": {
+        "KHeavyHash":  {"core_lock": 2400, "mem_offset":    0, "power_w": 250},
+        "Autolykos2":  {"core_lock": 1500, "mem_offset":  800, "power_w": 200},
+        "Etchash":     {"core_lock": 1050, "mem_offset":  200, "power_w": 200},
+        "Ethash":      {"core_lock": 1050, "mem_offset":  200, "power_w": 200},
+        "KawPow":      {"core_lock": 2000, "mem_offset":  500, "power_w": 260},
+        "FiroPoW":     {"core_lock": 2000, "mem_offset":  500, "power_w": 260},
+        "Octopus":     {"core_lock": 1700, "mem_offset":  400, "power_w": 240},
+        "ZHash":       {"core_lock": 2100, "mem_offset":    0, "power_w": 240},
+        "Equihash":    {"core_lock": 2100, "mem_offset":    0, "power_w": 240},
+        "PearlPow":    {"core_lock": 1900, "mem_offset":  200, "power_w": 240},
+    },
+    "4070 Ti": {
+        "KHeavyHash":  {"core_lock": 2100, "mem_offset":    0, "power_w": 200},
+        "Autolykos2":  {"core_lock": 1300, "mem_offset":  800, "power_w": 165},
+        "Etchash":     {"core_lock": 1050, "mem_offset":  200, "power_w": 165},
+        "Ethash":      {"core_lock": 1050, "mem_offset":  200, "power_w": 165},
+        "KawPow":      {"core_lock": 1800, "mem_offset":  500, "power_w": 215},
+        "FiroPoW":     {"core_lock": 1800, "mem_offset":  500, "power_w": 215},
+        "Octopus":     {"core_lock": 1600, "mem_offset":  400, "power_w": 200},
+        "ZHash":       {"core_lock": 1900, "mem_offset":    0, "power_w": 200},
+        "Equihash":    {"core_lock": 1900, "mem_offset":    0, "power_w": 200},
+        "PearlPow":    {"core_lock": 1700, "mem_offset":  200, "power_w": 200},
+    },
+    "3090": {
+        "KHeavyHash":  {"core_lock": 1500, "mem_offset":    0, "power_w": 250},
+        "Autolykos2":  {"core_lock": 1200, "mem_offset": 1000, "power_w": 230},
+        "Etchash":     {"core_lock":  900, "mem_offset":  500, "power_w": 220},
+        "Ethash":      {"core_lock":  900, "mem_offset":  500, "power_w": 220},
+        "KawPow":      {"core_lock": 1350, "mem_offset":  500, "power_w": 250},
+        "FiroPoW":     {"core_lock": 1350, "mem_offset":  500, "power_w": 250},
+        "Octopus":     {"core_lock": 1400, "mem_offset":  400, "power_w": 250},
+        "ZHash":       {"core_lock": 1600, "mem_offset":    0, "power_w": 230},
+        "Equihash":    {"core_lock": 1600, "mem_offset":    0, "power_w": 230},
+        "PearlPow":    {"core_lock": 1500, "mem_offset":  200, "power_w": 240},
+    },
+    "3080": {
+        "KHeavyHash":  {"core_lock": 1400, "mem_offset":    0, "power_w": 200},
+        "Autolykos2":  {"core_lock": 1200, "mem_offset": 1000, "power_w": 200},
+        "Etchash":     {"core_lock":  900, "mem_offset":  500, "power_w": 195},
+        "Ethash":      {"core_lock":  900, "mem_offset":  500, "power_w": 195},
+        "KawPow":      {"core_lock": 1300, "mem_offset":  500, "power_w": 220},
+        "FiroPoW":     {"core_lock": 1300, "mem_offset":  500, "power_w": 220},
+        "Octopus":     {"core_lock": 1300, "mem_offset":  400, "power_w": 220},
+        "ZHash":       {"core_lock": 1500, "mem_offset":    0, "power_w": 210},
+        "Equihash":    {"core_lock": 1500, "mem_offset":    0, "power_w": 210},
+        "PearlPow":    {"core_lock": 1400, "mem_offset":  200, "power_w": 215},
+    },
+    "3070": {
+        "KHeavyHash":  {"core_lock": 1500, "mem_offset":    0, "power_w": 130},
+        "Autolykos2":  {"core_lock": 1200, "mem_offset": 1500, "power_w": 120},
+        "Etchash":     {"core_lock":  900, "mem_offset": 2000, "power_w": 115},
+        "Ethash":      {"core_lock":  900, "mem_offset": 2000, "power_w": 115},
+        "KawPow":      {"core_lock": 1400, "mem_offset": 1200, "power_w": 140},
+        "FiroPoW":     {"core_lock": 1400, "mem_offset": 1200, "power_w": 140},
+        "Octopus":     {"core_lock": 1300, "mem_offset": 1000, "power_w": 135},
+        "ZHash":       {"core_lock": 1700, "mem_offset":  500, "power_w": 130},
+        "Equihash":    {"core_lock": 1700, "mem_offset":  500, "power_w": 130},
+        "PearlPow":    {"core_lock": 1500, "mem_offset":  800, "power_w": 135},
+    },
+    "3060 Ti": {
+        "KHeavyHash":  {"core_lock": 1500, "mem_offset":    0, "power_w": 120},
+        "Autolykos2":  {"core_lock": 1200, "mem_offset": 1500, "power_w": 110},
+        "Etchash":     {"core_lock":  900, "mem_offset": 2000, "power_w": 105},
+        "Ethash":      {"core_lock":  900, "mem_offset": 2000, "power_w": 105},
+        "KawPow":      {"core_lock": 1400, "mem_offset": 1200, "power_w": 130},
+        "FiroPoW":     {"core_lock": 1400, "mem_offset": 1200, "power_w": 130},
+        "Octopus":     {"core_lock": 1300, "mem_offset": 1000, "power_w": 125},
+        "ZHash":       {"core_lock": 1700, "mem_offset":  500, "power_w": 120},
+        "Equihash":    {"core_lock": 1700, "mem_offset":  500, "power_w": 120},
+        "PearlPow":    {"core_lock": 1500, "mem_offset":  800, "power_w": 125},
+    },
+    "7900 XTX": {  # AMD — nvidia-smi/nvidia-settings not applicable; rocm-smi support TODO
+        "KHeavyHash": {"core_lock": 0, "mem_offset": 0, "power_w": 0},
+    },
+    "6800 XT": {   # AMD — nvidia-smi/nvidia-settings not applicable; rocm-smi support TODO
+        "KHeavyHash": {"core_lock": 0, "mem_offset": 0, "power_w": 0},
+    },
+    "A2000": {
+        "KHeavyHash":  {"core_lock": 1200, "mem_offset":    0, "power_w":  65},
+        "Autolykos2":  {"core_lock":  900, "mem_offset":  700, "power_w":  60},
+        "Etchash":     {"core_lock":  700, "mem_offset": 1000, "power_w":  58},
+        "Ethash":      {"core_lock":  700, "mem_offset": 1000, "power_w":  58},
+        "KawPow":      {"core_lock": 1100, "mem_offset":  600, "power_w":  65},
+        "FiroPoW":     {"core_lock": 1100, "mem_offset":  600, "power_w":  65},
+        "Octopus":     {"core_lock": 1000, "mem_offset":  500, "power_w":  63},
+        "ZHash":       {"core_lock": 1300, "mem_offset":    0, "power_w":  62},
+        "Equihash":    {"core_lock": 1300, "mem_offset":    0, "power_w":  62},
+        "PearlPow":    {"core_lock": 1100, "mem_offset":  300, "power_w":  63},
+    },
+    "4000 Ada": {
+        "KHeavyHash":  {"core_lock": 2000, "mem_offset":    0, "power_w": 110},
+        "Autolykos2":  {"core_lock": 1300, "mem_offset":  700, "power_w":  95},
+        "Etchash":     {"core_lock":  900, "mem_offset": 1200, "power_w":  90},
+        "Ethash":      {"core_lock":  900, "mem_offset": 1200, "power_w":  90},
+        "KawPow":      {"core_lock": 1700, "mem_offset":  600, "power_w": 115},
+        "FiroPoW":     {"core_lock": 1700, "mem_offset":  600, "power_w": 115},
+        "Octopus":     {"core_lock": 1500, "mem_offset":  500, "power_w": 110},
+        "ZHash":       {"core_lock": 2000, "mem_offset":    0, "power_w": 105},
+        "Equihash":    {"core_lock": 2000, "mem_offset":    0, "power_w": 105},
+        "PearlPow":    {"core_lock": 1800, "mem_offset":  300, "power_w": 110},
+    },
+}
+
+
+def get_oc_preset(gpu_name, algo):
+    """Return OC preset dict for a GPU + algo, or None if no preset."""
+    name_upper = gpu_name.upper()
+    for model_key, algo_map in GPU_OC_PRESETS.items():
+        if model_key.upper() in name_upper:
+            return algo_map.get(algo)
+    return None
+
+
 # ── GPU Detection ────────────────────────────────────────────────────────────
 
 def detect_gpus():
@@ -1198,18 +1331,34 @@ class PEGDWorker:
             intensity = self.intensity_var.get()
             self.root.after(0, self.tune_lbl.config, {"text": "untuned", "fg": "#444466"})
 
-        core_clock = self.core_clock_var.get()
-        memory_clock = self.memory_clock_var.get()
-        if self.gpus and (core_clock or memory_clock):
-            ok, msg = apply_locked_clocks(core_clock, memory_clock)
-            self._log(msg, "ok" if ok else "warn")
+        manual_core     = self.core_clock_var.get()
+        manual_mem_lock = self.memory_clock_var.get()
+        manual_mem_off  = self.memoc_var.get()
+        preset_power    = 0
 
-        mem_oc = self.memoc_var.get()
-        if mem_oc and memory_clock:
-            self._log("Memory offset ignored while an absolute memory lock is set.", "warn")
-        elif mem_oc:
-            ok, msg = apply_memory_oc(mem_oc)
-            self._log(msg, "ok" if ok else "warn")
+        if self.gpus and not any([manual_core, manual_mem_lock, manual_mem_off]):
+            preset = get_oc_preset(gpu_name, algo)
+            if preset:
+                c = preset.get("core_lock", 0)
+                m = preset.get("mem_offset", 0)
+                preset_power = preset.get("power_w", 0)
+                if c:
+                    ok, msg = apply_locked_clocks(c, 0)
+                    self._log(f"[OC] Core lock {c} MHz — {msg}", "ok" if ok else "warn")
+                if m:
+                    ok, msg = apply_memory_oc(m)
+                    self._log(f"[OC] Mem +{m} MHz — {msg}", "ok" if ok else "warn")
+                if not c and not m:
+                    self._log(f"[OC] No NVIDIA preset for {gpu_name.split()[-1]} / {algo}", "warn")
+        else:
+            if self.gpus and (manual_core or manual_mem_lock):
+                ok, msg = apply_locked_clocks(manual_core, manual_mem_lock)
+                self._log(msg, "ok" if ok else "warn")
+            if manual_mem_off and manual_mem_lock:
+                self._log("Memory offset ignored while an absolute memory lock is set.", "warn")
+            elif manual_mem_off:
+                ok, msg = apply_memory_oc(manual_mem_off)
+                self._log(msg, "ok" if ok else "warn")
 
         zil_addr = self.zil_wallet_var.get().strip() if hasattr(self, 'zil_wallet_var') else ""
         if self.zil_var.get() and not zil_addr:
@@ -1218,7 +1367,7 @@ class PEGDWorker:
                                [g["index"] for g in self.gpus],
                                intensity=intensity,
                                temp_limit=self.temp_limit_var.get(),
-                               power_limit=self.power_limit_var.get(),
+                               power_limit=self.power_limit_var.get() or preset_power,
                                enable_zil=self.zil_var.get(),
                                zil_wallet=zil_addr,
                                cpu_threads=self.cpu_threads_var.get())

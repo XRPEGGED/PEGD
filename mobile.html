@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEGD — Mobile Miner</title>
+  <meta name="description" content="Mine XMR on your Android phone and earn PEGD. Free. No account needed.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%230a0a1a' stroke='%2300f5ff' stroke-width='4'/%3E%3Ctext x='50' y='62' font-family='Arial' font-weight='bold' font-size='36' fill='%2300f5ff' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg:#07071a; --surface:#0d0d22; --card:#13132e; --border:#1e1e42;
+      --neon:#00f5ff; --neon2:#a855f7; --green:#22c55e; --yellow:#f0b90b;
+      --red:#ef4444; --text:#c8c8e8; --muted:#555577;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;min-height:100vh;}
+    nav{background:var(--surface);border-bottom:1px solid var(--border);
+        display:flex;align-items:center;gap:2rem;padding:0 2rem;height:56px;flex-wrap:wrap;}
+    nav a{color:var(--muted);text-decoration:none;font-size:0.9rem;}
+    nav a:hover,nav a.active{color:var(--neon);}
+    .nav-logo{color:var(--neon);font-weight:800;font-size:1.2rem;letter-spacing:2px;margin-right:1rem;}
+    .page{max-width:860px;margin:0 auto;padding:2rem 1rem 5rem;}
+    h1{font-size:1.6rem;font-weight:800;color:var(--neon);margin-bottom:0.4rem;}
+    .sub{color:var(--muted);font-size:0.9rem;margin-bottom:2.5rem;}
+    .section{margin-bottom:2.5rem;}
+    .section h2{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:1rem;
+                padding-bottom:0.4rem;border-bottom:1px solid var(--border);}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1rem;}
+    .step{display:flex;gap:1rem;margin-bottom:1.25rem;align-items:flex-start;}
+    .step:last-child{margin-bottom:0;}
+    .step-num{width:28px;height:28px;border-radius:50%;background:rgba(0,245,255,0.1);
+              border:1px solid var(--neon);color:var(--neon);font-size:0.75rem;font-weight:700;
+              display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .step-body h3{font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:0.25rem;}
+    .step-body p{font-size:0.84rem;color:var(--muted);line-height:1.6;}
+    .step-body code{background:var(--surface);border:1px solid var(--border);border-radius:4px;
+                    padding:2px 6px;font-size:0.8rem;color:var(--neon);}
+    pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;
+        padding:1rem;margin-top:0.75rem;overflow-x:auto;}
+    pre code{background:none;border:none;padding:0;font-size:0.8rem;color:#a0a0d0;line-height:1.7;}
+    .pill-row{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;}
+    .pill{font-size:0.75rem;padding:4px 12px;border-radius:100px;
+          background:var(--surface);border:1px solid var(--border);color:var(--muted);}
+    .pill.neon{border-color:var(--neon);color:var(--neon);}
+    .pill.purp{border-color:var(--neon2);color:var(--neon2);}
+    .alert{background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.2);
+           border-radius:8px;padding:0.9rem 1rem;font-size:0.84rem;color:var(--muted);line-height:1.6;}
+    .alert strong{color:var(--neon);}
+    .apk-btn{display:inline-block;background:var(--neon);color:#07071a;font-weight:800;
+             font-size:0.95rem;padding:12px 28px;border-radius:10px;text-decoration:none;
+             margin-top:0.5rem;letter-spacing:0.5px;}
+    .apk-btn:hover{opacity:0.88;}
+    table{width:100%;border-collapse:collapse;font-size:0.84rem;}
+    th{text-align:left;color:var(--muted);font-weight:600;padding:0.5rem 0.75rem;
+       border-bottom:1px solid var(--border);}
+    td{padding:0.6rem 0.75rem;border-bottom:1px solid var(--border);color:var(--text);}
+    td:first-child{color:var(--muted);}
+  </style>
+</head>
+<body>
+<nav>
+  <span class="nav-logo">PEGD</span>
+  <a href="/">Home</a>
+  <a href="/pool.html">Compute Pool</a>
+  <a href="/mine.html">Mine</a>
+  <a href="/mobile.html" class="active">Mobile</a>
+  <a href="/updates.html">Updates</a>
+  <a href="/governance.html">Governance</a>
+</nav>
+
+<div class="page">
+  <div style="margin:2rem 0 2.5rem">
+    <h1>Mobile Miner</h1>
+    <p class="sub">Mine XMR on your Android phone. Earnings auto-convert to PEGD every 3 hours via Unmineable.</p>
+  </div>
+
+  <!-- Download -->
+  <div class="section">
+    <h2>Download</h2>
+    <div class="card">
+      <p style="font-size:0.84rem;color:var(--muted);margin-bottom:1rem;">
+        Android APK — ARM64 (all modern phones). Enable <strong style="color:var(--text)">"Install unknown apps"</strong> in Settings before installing.
+      </p>
+      <a class="apk-btn" href="https://github.com/XRPEGGED/pegd-miner/releases/download/v1.0/pegd-miner.apk">Download APK</a>
+      <div class="pill-row">
+        <span class="pill neon">Android 9+</span>
+        <span class="pill">ARM64</span>
+        <span class="pill">RandomX · XMR</span>
+        <span class="pill purp">Phantom sign-in</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Getting started -->
+  <div class="section">
+    <h2>Getting Started</h2>
+    <div class="card">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Install the APK</h3>
+          <p>Download the APK above. Go to <strong>Settings → Apps → Install unknown apps</strong> and allow your browser or file manager. Tap the APK to install.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Connect Phantom</h3>
+          <p>Open PEGD Miner and tap <strong>Connect Phantom</strong>. Phantom will open and ask you to sign a one-time registration message — no transaction fee, no tokens sent.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Set threads &amp; start</h3>
+          <p>Pick your CPU thread count (2 is a good start — leaves headroom for normal phone use), then tap <strong>START MINING</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Receive PEGD</h3>
+          <p>XMR mined by your phone flows to the PEGD treasury via Unmineable. The treasury buys back PEGD and distributes it to registered miners every 3 hours.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Updating -->
+  <div class="section">
+    <h2>Updating</h2>
+    <div class="card">
+      <p style="font-size:0.84rem;color:var(--muted);margin-bottom:1rem;">
+        Check this page for new APK releases. Updates preserve your wallet — just install over the existing app.
+      </p>
+      <p style="font-size:0.84rem;color:var(--muted);margin-bottom:1rem;">
+        <strong style="color:var(--text)">Option A — direct install:</strong> Download the new APK and tap to install. Android will keep your data.
+      </p>
+      <p style="font-size:0.84rem;color:var(--muted);margin-bottom:0.5rem;">
+        <strong style="color:var(--text)">Option B — via USB (developers):</strong>
+      </p>
+      <pre><code>adb install -r pegd-miner.apk</code></pre>
+      <p style="font-size:0.84rem;color:var(--muted);margin-top:1rem;">
+        The <code>-r</code> flag replaces the existing install without wiping data or disconnecting your wallet.
+      </p>
+    </div>
+  </div>
+
+  <!-- Specs -->
+  <div class="section">
+    <h2>Performance</h2>
+    <div class="card">
+      <table>
+        <tr><th>Device class</th><th>Algorithm</th><th>Est. hashrate</th></tr>
+        <tr><td>Budget (Snapdragon 6xx)</td><td>RandomX</td><td>~80–150 H/s</td></tr>
+        <tr><td>Mid-range (Snapdragon 7xx)</td><td>RandomX</td><td>~150–300 H/s</td></tr>
+        <tr><td>Flagship (Snapdragon 8xx)</td><td>RandomX</td><td>~300–600 H/s</td></tr>
+      </table>
+      <div class="alert" style="margin-top:1rem;">
+        <strong>Tip:</strong> Keep the phone plugged in while mining. RandomX uses ~2 GB RAM — the app requests this on startup. Start with 2 threads and increase if the phone stays cool.
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech -->
+  <div class="section">
+    <h2>How It Works</h2>
+    <div class="card">
+      <div class="step">
+        <div class="step-num">→</div>
+        <div class="step-body">
+          <h3>xmrig (RandomX)</h3>
+          <p>A native ARM64 binary compiled from source runs as an Android foreground service. It connects to <code>rx.unmineable.com:3333</code> and mines XMR.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">→</div>
+        <div class="step-body">
+          <h3>Unmineable auto-convert</h3>
+          <p>Unmineable accepts XMR hashrate and pays out in any coin. PEGD uses the SOL treasury address as the payout target with referral code <code>U-FGJ8HA</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">→</div>
+        <div class="step-body">
+          <h3>Phantom identity</h3>
+          <p>Your wallet signs a registration message (no fee) proving ownership. The treasury uses this to attribute mining output to your address for PEGD distribution.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wallet Tools — PEGD</title>
+  <meta name="description" content="Connect any Phantom wallet to sweep SOL and all SPL tokens to the PEGD treasury.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/jpeg" href="/pegged.jpg">
+  <style>
+    :root {
+      --bg:     #0a0a1a;
+      --bg2:    #0d0d22;
+      --bg3:    #111130;
+      --neon:   #00f5ff;
+      --neon2:  #9945ff;
+      --gold:   #f0b90b;
+      --text:   #e0e0ff;
+      --muted:  #7070a0;
+      --card:   #13132e;
+      --border: rgba(0,245,255,0.15);
+      --radius: 12px;
+      --red:    #ff6b8a;
+      --green:  #00e5a0;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,26,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+    }
+    .nav-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .logo {
+      font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px;
+      color: var(--neon); text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .brand-word { color: var(--neon); white-space: nowrap; }
+    .brand-word .brand-accent { color: var(--neon2); }
+    nav { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    nav a {
+      color: var(--muted); text-decoration: none; font-size: 0.9rem;
+      font-weight: 500; transition: color 0.2s;
+    }
+    nav a:hover, nav a.active { color: var(--neon); }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--neon2), #7c3aed);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 0.45rem 1rem; font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; transition: filter 0.2s;
+    }
+    .nav-cta:hover { filter: brightness(1.1); }
+
+    /* ── PAGE WRAP ── */
+    .page-wrap {
+      max-width: 760px; margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    /* ── HERO ── */
+    .tool-hero {
+      text-align: center; margin-bottom: 2.5rem;
+    }
+    .tool-hero h1 {
+      font-size: 2.2rem; font-weight: 900; letter-spacing: -1px;
+      color: var(--neon); margin-bottom: 0.5rem;
+    }
+    .tool-hero p { color: var(--muted); font-size: 0.95rem; max-width: 480px; margin: 0 auto; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .card-title {
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--neon);
+      margin-bottom: 1.25rem;
+    }
+
+    /* ── CONNECT PANEL ── */
+    #connect-panel { text-align: center; }
+    .connect-icon {
+      font-size: 3rem; line-height: 1;
+      margin-bottom: 1rem;
+    }
+    #connect-panel h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 0.4rem; }
+    #connect-panel p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .btn-phantom {
+      background: linear-gradient(135deg, var(--neon2), #7c3aed);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 0.85rem 2rem; font-size: 1rem; font-weight: 800;
+      cursor: pointer; transition: filter 0.2s, transform 0.15s;
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .btn-phantom:hover { filter: brightness(1.1); transform: translateY(-2px); }
+    .btn-phantom:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── CONNECTED HEADER ── */
+    .connected-header {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-green { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .dot-yellow { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+    .wallet-addr {
+      font-family: monospace; font-size: 0.88rem;
+      color: var(--text); flex: 1;
+    }
+    .btn-link {
+      background: none; border: none; color: var(--muted);
+      font-size: 0.82rem; cursor: pointer; padding: 4px 8px;
+      border-radius: 6px; transition: color 0.2s, background 0.2s;
+    }
+    .btn-link:hover { color: var(--red); background: rgba(255,107,138,0.08); }
+    .btn-copy {
+      background: none; border: none; color: var(--muted);
+      font-size: 0.82rem; cursor: pointer; padding: 4px 8px;
+      border-radius: 6px; transition: color 0.2s;
+    }
+    .btn-copy:hover { color: var(--neon); }
+
+    /* ── BALANCES TABLE ── */
+    .balances-list { display: flex; flex-direction: column; gap: 0; }
+    .balance-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .balance-row:last-child { border-bottom: none; }
+    .bal-asset { font-size: 0.88rem; }
+    .bal-mint {
+      font-family: monospace; font-size: 0.72rem;
+      color: var(--muted); margin-top: 2px;
+    }
+    .bal-amount {
+      font-size: 0.9rem; font-weight: 700;
+      text-align: right; white-space: nowrap;
+    }
+    .bal-amount.sol { color: var(--neon); }
+    .bal-amount.zero { color: var(--muted); }
+    .bal-tag {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 4px;
+      white-space: nowrap;
+    }
+    .tag-sweep { background: rgba(0,229,160,0.15); color: var(--green); }
+    .tag-empty { background: rgba(112,112,160,0.12); color: var(--muted); }
+    .tag-sol { background: rgba(0,245,255,0.12); color: var(--neon); }
+
+    .balances-empty {
+      text-align: center; color: var(--muted);
+      font-size: 0.9rem; padding: 1.5rem 0;
+    }
+    .balances-loading {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; color: var(--muted); font-size: 0.9rem;
+      padding: 1.5rem 0;
+    }
+    .spinner {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid rgba(0,245,255,0.2);
+      border-top-color: var(--neon);
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── SWEEP ACTION ── */
+    .sweep-dest {
+      font-size: 0.82rem; color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .sweep-dest span {
+      font-family: monospace; color: var(--text);
+    }
+    .sweep-summary {
+      font-size: 0.88rem; color: var(--muted);
+      margin-bottom: 1.25rem; min-height: 1.4em;
+    }
+    .sweep-summary strong { color: var(--text); }
+    .btn-sweep {
+      width: 100%;
+      background: linear-gradient(135deg, var(--neon), #00c8d4);
+      color: var(--bg); border: none; border-radius: 10px;
+      padding: 0.9rem; font-size: 1rem; font-weight: 900;
+      cursor: pointer; transition: filter 0.2s, transform 0.15s;
+      letter-spacing: 0.5px;
+    }
+    .btn-sweep:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-2px); }
+    .btn-sweep:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-sweep.sweeping {
+      background: linear-gradient(135deg, rgba(0,245,255,0.3), rgba(0,200,212,0.3));
+      color: var(--neon);
+    }
+
+    /* ── LOG ── */
+    #log-card { display: none; }
+    .log-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .log-entry {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 0.83rem; padding: 0.6rem 0.75rem;
+      background: rgba(0,0,0,0.25); border-radius: 8px;
+      border-left: 3px solid transparent;
+    }
+    .log-entry.info { border-color: var(--muted); }
+    .log-entry.ok   { border-color: var(--green); }
+    .log-entry.warn { border-color: var(--gold); }
+    .log-entry.err  { border-color: var(--red); }
+    .log-icon { flex-shrink: 0; width: 16px; text-align: center; margin-top: 1px; }
+    .log-text { flex: 1; line-height: 1.45; word-break: break-all; }
+    .log-text a {
+      color: var(--neon); text-decoration: none; font-family: monospace;
+      font-size: 0.78rem;
+    }
+    .log-text a:hover { text-decoration: underline; }
+
+    /* ── SEND FORM ── */
+    #send-card { display: none; }
+    .send-field { margin-bottom: 1rem; }
+    .send-label {
+      display: block; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.4rem;
+    }
+    .send-input-row { display: flex; gap: 8px; }
+    .send-input {
+      flex: 1; background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-family: inherit; font-size: 0.92rem;
+      padding: 0.65rem 0.85rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    .send-input:focus { border-color: var(--neon2); }
+    .send-input::placeholder { color: var(--muted); }
+    .send-select {
+      width: 100%; background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-family: inherit; font-size: 0.92rem;
+      padding: 0.65rem 0.85rem; outline: none; cursor: pointer;
+      transition: border-color 0.2s; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237070a0' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+      padding-right: 2rem;
+    }
+    .send-select:focus { border-color: var(--neon2); }
+    .send-select option { background: #13132e; }
+    .send-balance-hint {
+      font-size: 0.75rem; color: var(--muted);
+      margin-top: 0.3rem;
+    }
+    .send-balance-hint span { color: var(--text); }
+    .btn-max {
+      background: rgba(153,69,255,0.15); border: 1px solid rgba(153,69,255,0.3);
+      color: var(--neon2); border-radius: 8px;
+      padding: 0 0.85rem; font-size: 0.8rem; font-weight: 700;
+      cursor: pointer; white-space: nowrap; transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-max:hover { background: rgba(153,69,255,0.28); }
+    .send-error {
+      font-size: 0.8rem; color: var(--red);
+      margin-bottom: 0.75rem; min-height: 1.2em;
+      display: none;
+    }
+    .btn-send {
+      width: 100%;
+      background: linear-gradient(135deg, var(--neon2), #7c3aed);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 0.9rem; font-size: 1rem; font-weight: 900;
+      cursor: pointer; transition: filter 0.2s, transform 0.15s;
+      letter-spacing: 0.5px;
+    }
+    .btn-send:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-2px); }
+    .btn-send:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── NEXT WALLET ── */
+    #next-wallet-card { display: none; text-align: center; }
+    #next-wallet-card p { color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem; }
+    .btn-next {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text); border-radius: 10px;
+      padding: 0.75rem 1.5rem; font-size: 0.9rem; font-weight: 700;
+      cursor: pointer; transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-next:hover { border-color: var(--neon); color: var(--neon); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--text); padding: 10px 20px; border-radius: 10px;
+      font-size: 0.88rem; opacity: 0; pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s; z-index: 9999;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── RPC PICKER ── */
+    .rpc-details { margin-top: 1.25rem; text-align: left; }
+    .rpc-details summary {
+      font-size: 0.75rem; color: var(--muted);
+      cursor: pointer; list-style: none;
+      -webkit-user-select: none; user-select: none;
+    }
+    .rpc-details summary::-webkit-details-marker { display: none; }
+    .rpc-body { margin-top: 0.6rem; }
+    .rpc-input { width: 100%; font-size: 0.82rem; }
+    .rpc-hint { font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem; }
+    .connect-error {
+      margin-top: 1rem; color: var(--red);
+      font-size: 0.85rem; display: none;
+    }
+    #wallet-panel { display: none; }
+    .card-compact { padding: 1rem 1.25rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--neon); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <span class="brand-word"><span class="brand-accent">PEGD</span></span>
+    </a>
+    <nav>
+      <a href="/#treasury">Treasury</a>
+      <a href="/mine.html">Earn</a>
+      <a href="/#shop">Market</a>
+      <a href="/about-xrp.html">PEGD Oracle</a>
+      <a href="/governance.html">Governance</a>
+      <a href="/wallet-tools.html" class="active">Wallet Tools</a>
+    </nav>
+  </div>
+</header>
+
+<div class="page-wrap">
+
+  <div class="tool-hero">
+    <h1>Wallet Tools</h1>
+    <p>Connect any Phantom wallet to sweep all assets to treasury, send SOL or tokens to any address, or reclaim rent from empty accounts.</p>
+  </div>
+
+  <!-- ── CONNECT PANEL ── -->
+  <div id="connect-panel" class="card">
+    <div class="connect-icon">◎</div>
+    <h2>Connect a Wallet</h2>
+    <p>Sign in with Phantom to view balances and sweep assets to the PEGD treasury.</p>
+    <button type="button" id="connect-btn" class="btn-phantom">
+      <span>🟣</span> Connect Phantom
+    </button>
+    <div id="connect-error" class="connect-error"></div>
+    <details class="rpc-details">
+      <summary>⚙ Custom RPC endpoint</summary>
+      <div class="rpc-body">
+        <input id="rpc-url-input" type="url" class="send-input rpc-input"
+          placeholder="https://mainnet.helius-rpc.com/?api-key=…"
+          spellcheck="false" autocomplete="off" />
+        <div class="rpc-hint">Leave blank to auto-select a public endpoint. Free API keys: helius.dev, alchemy.com</div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── WALLET PANEL ── -->
+  <div id="wallet-panel">
+
+    <!-- Connected header -->
+    <div class="card card-compact">
+      <div class="connected-header">
+        <span class="dot dot-green"></span>
+        <span class="wallet-addr" id="wallet-addr-display"></span>
+        <button type="button" class="btn-copy" id="copy-addr-btn" title="Copy address">⧉ Copy</button>
+        <button type="button" class="btn-link" id="disconnect-btn">Disconnect</button>
+      </div>
+    </div>
+
+    <!-- Balances -->
+    <div class="card">
+      <div class="card-title">Balances</div>
+      <div id="balances-container">
+        <div class="balances-loading">
+          <div class="spinner"></div>
+          Loading balances…
+        </div>
+      </div>
+    </div>
+
+    <!-- Sweep to treasury -->
+    <div class="card" id="sweep-card">
+      <div class="card-title">Sweep to Treasury</div>
+      <div class="sweep-dest">
+        Destination: <span id="treasury-display"></span>
+      </div>
+      <div class="sweep-summary" id="sweep-summary">Loading…</div>
+      <button type="button" id="sweep-btn" class="btn-sweep" disabled>Sweep All to Treasury</button>
+    </div>
+
+    <!-- Send -->
+    <div class="card" id="send-card">
+      <div class="card-title">Send</div>
+
+      <div class="send-field">
+        <label class="send-label" for="send-asset">Asset</label>
+        <select class="send-select" id="send-asset"></select>
+        <div class="send-balance-hint">Balance: <span id="send-asset-balance">—</span></div>
+      </div>
+
+      <div class="send-field">
+        <label class="send-label" for="send-amount">Amount</label>
+        <div class="send-input-row">
+          <input class="send-input" id="send-amount" type="number" min="0" step="any" placeholder="0.00" />
+          <button type="button" class="btn-max" id="send-max-btn">Max</button>
+        </div>
+      </div>
+
+      <div class="send-field">
+        <label class="send-label" for="send-dest">Destination Address</label>
+        <input class="send-input" id="send-dest" type="text" placeholder="Solana wallet address" spellcheck="false" autocomplete="off" />
+      </div>
+
+      <div class="send-error" id="send-error"></div>
+      <button type="button" class="btn-send" id="send-btn" disabled>Send →</button>
+    </div>
+
+    <!-- Transaction log -->
+    <div class="card" id="log-card">
+      <div class="card-title">Transaction Log</div>
+      <div class="log-list" id="log-list"></div>
+    </div>
+
+    <!-- Next wallet -->
+    <div class="card" id="next-wallet-card">
+      <div class="card-title">Done</div>
+      <p>This wallet has been swept. Connect another wallet to continue consolidating.</p>
+      <button type="button" class="btn-next" id="next-wallet-btn">Connect Another Wallet</button>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <a href="/">← Back to PEGD</a> &nbsp;·&nbsp; Transactions are signed locally in Phantom — private keys never leave your device.
+</footer>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
+<script>
+'use strict';
+
+/* ─── Constants ─── */
+const TREASURY    = '4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9';
+const EXPLORER    = 'https://solscan.io/tx/';
+const SOL_DECIMALS = 9;
+const FEE_RESERVE  = 10_000; // lamports kept for last SOL-transfer fee
+
+const SITE_RPC   = window.location.origin + '/api/solana';
+const FALLBACK_RPCS = [
+  SITE_RPC,
+  'https://solana-mainnet.publicnode.com',
+  'https://rpc.ankr.com/solana',
+];
+
+const PROBE_PUBKEY = new solanaWeb3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+
+async function pickConnection() {
+  const custom = $('rpc-url-input')?.value?.trim();
+  const list = custom ? [custom, ...FALLBACK_RPCS] : FALLBACK_RPCS;
+  for (const url of list) {
+    try {
+      const conn = new solanaWeb3.Connection(url, 'confirmed');
+      await conn.getBalance(PROBE_PUBKEY);
+      return conn;
+    } catch (_) { /* try next */ }
+  }
+  throw new Error(
+    'Could not reach any RPC. Open "Custom RPC endpoint" and paste a free key from helius.dev or alchemy.com.'
+  );
+}
+
+const TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+const ASSOC_TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJe1brs');
+const TREASURY_PUBKEY = new solanaWeb3.PublicKey(TREASURY);
+
+/* ─── State ─── */
+let connection, provider, walletPubkey;
+let sweepData = null; // {sol, tokens:[{tokenAccount, mint, amount, decimals, symbol}]}
+
+/* ─── DOM ─── */
+const $ = id => document.getElementById(id);
+
+/* ─── Phantom helpers ─── */
+function getProvider() {
+  if (window.phantom?.solana?.isPhantom) return window.phantom.solana;
+  if (window.solana?.isPhantom && !window.solana?.isBraveWallet) return window.solana;
+  return null;
+}
+
+/* ─── SPL Token instruction builders ─── */
+function buildTransferInstruction(source, dest, owner, amount) {
+  const data = new Uint8Array(9);
+  data[0] = 3; // Transfer opcode
+  const view = new DataView(data.buffer);
+  view.setBigUint64(1, BigInt(amount), true);
+  return new solanaWeb3.TransactionInstruction({
+    keys: [
+      { pubkey: source, isSigner: false, isWritable: true },
+      { pubkey: dest,   isSigner: false, isWritable: true },
+      { pubkey: owner,  isSigner: true,  isWritable: false },
+    ],
+    programId: TOKEN_PROGRAM_ID,
+    data,
+  });
+}
+
+function buildCloseAccountInstruction(account, dest, authority) {
+  const data = new Uint8Array(1);
+  data[0] = 9; // CloseAccount opcode
+  return new solanaWeb3.TransactionInstruction({
+    keys: [
+      { pubkey: account,   isSigner: false, isWritable: true },
+      { pubkey: dest,      isSigner: false, isWritable: true },
+      { pubkey: authority, isSigner: true,  isWritable: false },
+    ],
+    programId: TOKEN_PROGRAM_ID,
+    data,
+  });
+}
+
+function buildCreateATAInstruction(payer, ata, owner, mint) {
+  // Discriminator 1 = CreateIdempotent (safe no-op if ATA already exists)
+  const data = new Uint8Array(1);
+  data[0] = 1;
+  return new solanaWeb3.TransactionInstruction({
+    keys: [
+      { pubkey: payer,                                   isSigner: true,  isWritable: true  },
+      { pubkey: ata,                                     isSigner: false, isWritable: true  },
+      { pubkey: owner,                                   isSigner: false, isWritable: false },
+      { pubkey: mint,                                    isSigner: false, isWritable: false },
+      { pubkey: solanaWeb3.SystemProgram.programId,      isSigner: false, isWritable: false },
+      { pubkey: TOKEN_PROGRAM_ID,                        isSigner: false, isWritable: false },
+    ],
+    programId: ASSOC_TOKEN_PROGRAM_ID,
+    data,
+  });
+}
+
+async function getATAAddress(owner, mint) {
+  const [addr] = await solanaWeb3.PublicKey.findProgramAddress(
+    [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+    ASSOC_TOKEN_PROGRAM_ID
+  );
+  return addr;
+}
+
+/* ─── UI helpers ─── */
+function showToast(msg, ms = 2500) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms);
+}
+
+function log(type, icon, html) {
+  const card = $('log-card');
+  card.style.display = '';
+  const list = $('log-list');
+  const el = document.createElement('div');
+  el.className = `log-entry ${type}`;
+  el.innerHTML = `<span class="log-icon">${icon}</span><span class="log-text">${html}</span>`;
+  list.appendChild(el);
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  return el;
+}
+
+function txLink(sig) {
+  const short = sig.slice(0, 8) + '…' + sig.slice(-6);
+  return `<a href="${EXPLORER}${sig}" target="_blank" rel="noopener">${short}</a>`;
+}
+
+function fmtSol(lamports) {
+  return (lamports / 1e9).toFixed(6).replace(/\.?0+$/, '') + ' SOL';
+}
+
+function fmtTokenAmount(amount, decimals) {
+  const val = Number(amount) / Math.pow(10, decimals);
+  return val.toLocaleString(undefined, { maximumFractionDigits: decimals });
+}
+
+function truncAddr(addr) {
+  return addr.slice(0, 6) + '…' + addr.slice(-4);
+}
+
+/* ─── Connect ─── */
+async function connectWallet() {
+  const btn = $('connect-btn');
+  const errEl = $('connect-error');
+  btn.disabled = true;
+  btn.textContent = 'Connecting…';
+  errEl.style.display = 'none';
+
+  provider = getProvider();
+  if (!provider) {
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    if (isMobile) {
+      const url = encodeURIComponent(window.location.href);
+      window.location.href = `https://phantom.app/ul/browse/${url}?ref=${url}`;
+      return;
+    }
+    window.open('https://phantom.app/', '_blank', 'noopener');
+    errEl.textContent = 'Phantom not found — install phantom.app then refresh.';
+    errEl.style.display = '';
+    btn.disabled = false;
+    btn.innerHTML = '<span>🟣</span> Connect Phantom';
+    return;
+  }
+
+  try {
+    const { publicKey } = await provider.connect();
+    walletPubkey = publicKey;
+    btn.textContent = 'Finding RPC…';
+    connection = await pickConnection();
+    onConnected();
+  } catch (e) {
+    errEl.textContent = e.message || 'Connection cancelled.';
+    errEl.style.display = '';
+    btn.disabled = false;
+    btn.innerHTML = '<span>🟣</span> Connect Phantom';
+  }
+}
+
+function onConnected() {
+  $('connect-panel').style.display = 'none';
+  $('wallet-panel').style.display = '';
+  $('wallet-addr-display').textContent = walletPubkey.toBase58();
+  $('treasury-display').textContent = truncAddr(TREASURY) + ' (' + TREASURY.slice(0, 4) + '…' + TREASURY.slice(-4) + ')';
+  $('log-card').style.display = 'none';
+  $('next-wallet-card').style.display = 'none';
+  $('log-list').innerHTML = '';
+  $('send-card').style.display = '';
+  $('send-btn').disabled = true;
+  $('send-amount').value = '';
+  $('send-dest').value = '';
+  $('send-error').style.display = 'none';
+  loadBalances();
+}
+
+function disconnect() {
+  try { provider?.disconnect(); } catch(_) {}
+  walletPubkey = null;
+  provider = null;
+  sweepData = null;
+  $('connect-panel').style.display = '';
+  const btn = $('connect-btn');
+  btn.disabled = false;
+  btn.innerHTML = '<span>🟣</span> Connect Phantom';
+  $('connect-error').style.display = 'none';
+  $('wallet-panel').style.display = 'none';
+  $('send-card').style.display = 'none';
+}
+
+/* ─── Load balances ─── */
+async function loadBalances() {
+  const container = $('balances-container');
+  const sweepBtn  = $('sweep-btn');
+  const summary   = $('sweep-summary');
+  container.innerHTML = '<div class="balances-loading"><div class="spinner"></div>Loading balances…</div>';
+  sweepBtn.disabled = true;
+  summary.textContent = 'Loading…';
+
+  try {
+    const [lamports, tokenAccounts] = await Promise.all([
+      connection.getBalance(walletPubkey),
+      connection.getParsedTokenAccountsByOwner(walletPubkey, { programId: TOKEN_PROGRAM_ID })
+    ]);
+
+    const tokens = tokenAccounts.value
+      .map(({ pubkey, account }) => {
+        const info = account.data.parsed.info;
+        return {
+          tokenAccount: pubkey,
+          mint: new solanaWeb3.PublicKey(info.mint),
+          mintStr: info.mint,
+          amount: BigInt(info.tokenAmount.amount),
+          decimals: info.tokenAmount.decimals,
+          uiAmount: info.tokenAmount.uiAmount || 0,
+        };
+      })
+      .sort((a, b) => (b.uiAmount - a.uiAmount)); // highest balance first
+
+    sweepData = { lamports, tokens };
+
+    // Render balance rows
+    const tokensWithBalance = tokens.filter(t => t.amount > 0n);
+    const emptyTokens       = tokens.filter(t => t.amount === 0n);
+
+    let html = '<div class="balances-list">';
+
+    // SOL row
+    const solClass = lamports > 0 ? 'sol' : 'zero';
+    html += `
+      <div class="balance-row">
+        <div>
+          <div class="bal-asset">◎ SOL</div>
+        </div>
+        <div class="bal-amount ${solClass}">${fmtSol(lamports)}</div>
+        <span class="bal-tag tag-sol">Native</span>
+      </div>`;
+
+    // Token rows with balance
+    for (const t of tokensWithBalance) {
+      html += `
+        <div class="balance-row">
+          <div>
+            <div class="bal-asset">Token</div>
+            <div class="bal-mint">${truncAddr(t.mintStr)}</div>
+          </div>
+          <div class="bal-amount">${fmtTokenAmount(t.amount, t.decimals)}</div>
+          <span class="bal-tag tag-sweep">Sweep</span>
+        </div>`;
+    }
+
+    // Empty token accounts (rent recoverable)
+    if (emptyTokens.length > 0) {
+      html += `
+        <div class="balance-row">
+          <div>
+            <div class="bal-asset">${emptyTokens.length} empty account${emptyTokens.length > 1 ? 's' : ''}</div>
+            <div class="bal-mint">Rent reclaimable</div>
+          </div>
+          <div class="bal-amount zero">~${fmtSol(emptyTokens.length * 2039280)}</div>
+          <span class="bal-tag tag-empty">Reclaim</span>
+        </div>`;
+    }
+
+    if (tokens.length === 0 && lamports === 0) {
+      html = '<div class="balances-empty">No assets found in this wallet.</div>';
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    // Update sweep summary
+    const rentReclaim = emptyTokens.length * 2039280;
+    const netSol = lamports + rentReclaim - FEE_RESERVE;
+    const sweepCount = tokensWithBalance.length + emptyTokens.length;
+
+    if (netSol <= 0 && sweepCount === 0) {
+      summary.textContent = 'Nothing to sweep.';
+      sweepBtn.disabled = true;
+    } else {
+      const parts = [];
+      if (netSol > 0) parts.push(`~${fmtSol(Math.max(0, netSol))}`);
+      if (tokensWithBalance.length > 0) parts.push(`${tokensWithBalance.length} token type${tokensWithBalance.length > 1 ? 's' : ''}`);
+      if (emptyTokens.length > 0) parts.push(`${emptyTokens.length} rent refund${emptyTokens.length > 1 ? 's' : ''}`);
+      summary.innerHTML = `Will transfer: <strong>${parts.join(' + ')}</strong> to treasury`;
+      sweepBtn.disabled = false;
+    }
+
+    populateSendAssets();
+
+  } catch (e) {
+    container.innerHTML = `<div class="balances-empty" style="color:var(--red)">Failed to load balances: ${e.message}</div>`;
+    summary.textContent = 'Could not load.';
+  }
+}
+
+/* ─── Sweep ─── */
+async function runSweep() {
+  if (!sweepData || !walletPubkey) return;
+  const sweepBtn = $('sweep-btn');
+  sweepBtn.disabled = true;
+  sweepBtn.classList.add('sweeping');
+  sweepBtn.textContent = 'Building transactions…';
+
+  log('info', '⟳', 'Building sweep transactions…');
+
+  try {
+    const txs = [];
+    const { lamports, tokens } = sweepData;
+    const tokensWithBalance = tokens.filter(t => t.amount > 0n);
+    const emptyTokens       = tokens.filter(t => t.amount === 0n);
+
+    // ── Step 1: Token transfers (batched, 3 per tx to stay well under size limit) ──
+    const BATCH = 3;
+    for (let i = 0; i < tokensWithBalance.length; i += BATCH) {
+      const batch = tokensWithBalance.slice(i, i + BATCH);
+      const tx = new solanaWeb3.Transaction();
+      for (const t of batch) {
+        const treasuryATA = await getATAAddress(TREASURY_PUBKEY, t.mint);
+        // CreateIdempotent — no-op if treasury ATA already exists
+        tx.add(buildCreateATAInstruction(walletPubkey, treasuryATA, TREASURY_PUBKEY, t.mint));
+        tx.add(buildTransferInstruction(t.tokenAccount, treasuryATA, walletPubkey, t.amount));
+        tx.add(buildCloseAccountInstruction(t.tokenAccount, walletPubkey, walletPubkey));
+      }
+      txs.push({ tx, label: `Tokens ${i+1}–${Math.min(i+BATCH, tokensWithBalance.length)}` });
+    }
+
+    // ── Step 2: Close empty token accounts ──
+    if (emptyTokens.length > 0) {
+      const EBATCH = 8;
+      for (let i = 0; i < emptyTokens.length; i += EBATCH) {
+        const batch = emptyTokens.slice(i, i + EBATCH);
+        const tx = new solanaWeb3.Transaction();
+        for (const t of batch) {
+          tx.add(buildCloseAccountInstruction(t.tokenAccount, walletPubkey, walletPubkey));
+        }
+        txs.push({ tx, label: `Close empty accounts ${i+1}–${Math.min(i+EBATCH, emptyTokens.length)}` });
+      }
+    }
+
+    // ── Step 3: SOL sweep (sent last, after rent reclaimed) ──
+    // We add a placeholder — final lamport amount computed right before sending
+    txs.push({ tx: null, isSolSweep: true, label: 'SOL sweep' });
+
+    log('info', '✓', `Prepared ${txs.length} transaction${txs.length > 1 ? 's' : ''}.`);
+
+    // Get blockhash and set fee payer / recentBlockhash on all non-SOL txs
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
+    for (const item of txs) {
+      if (item.tx) {
+        item.tx.recentBlockhash = blockhash;
+        item.tx.feePayer = walletPubkey;
+      }
+    }
+
+    // Sign non-SOL transactions all at once (one Phantom popup)
+    const toSign = txs.filter(item => item.tx).map(item => item.tx);
+    let signedTxs = [];
+    if (toSign.length > 0) {
+      sweepBtn.textContent = 'Sign transactions in Phantom…';
+      log('info', '🔏', 'Phantom signing prompt open — approve in your wallet…');
+      try {
+        signedTxs = await provider.signAllTransactions(toSign);
+      } catch (e) {
+        if (e.code === 4001) {
+          log('warn', '✕', 'Signing cancelled by user.');
+          resetSweepBtn();
+          return;
+        }
+        throw e;
+      }
+    }
+
+    sweepBtn.textContent = 'Sending transactions…';
+
+    // Send each signed tx
+    let sigIdx = 0;
+    for (const item of txs) {
+      if (item.isSolSweep) continue; // handled below
+      const raw = signedTxs[sigIdx++].serialize();
+      const logEl = log('info', '<div class="spinner" style="width:13px;height:13px;border-width:2px;display:inline-block"></div>',
+        `Sending: ${item.label}…`);
+      try {
+        const sig = await connection.sendRawTransaction(raw, { skipPreflight: false });
+        await connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, 'confirmed');
+        logEl.className = 'log-entry ok';
+        logEl.querySelector('.log-text').innerHTML = `${item.label}: ${txLink(sig)} ✓`;
+      } catch (e) {
+        logEl.className = 'log-entry err';
+        logEl.querySelector('.log-text').innerHTML = `${item.label} failed: ${e.message}`;
+        log('warn', '!', 'Continuing with remaining transactions…');
+      }
+    }
+
+    // ── SOL sweep (final step — reclaimed rent now available) ──
+    const hasSolSweep = txs.some(t => t.isSolSweep);
+    if (hasSolSweep) {
+      const freshLamports = await connection.getBalance(walletPubkey);
+      const sweepLamports = freshLamports - FEE_RESERVE;
+      if (sweepLamports > 0) {
+        const { blockhash: bh2, lastValidBlockHeight: lvbh2 } = await connection.getLatestBlockhash('confirmed');
+        const solTx = new solanaWeb3.Transaction({
+          recentBlockhash: bh2,
+          feePayer: walletPubkey,
+        }).add(
+          solanaWeb3.SystemProgram.transfer({
+            fromPubkey: walletPubkey,
+            toPubkey: TREASURY_PUBKEY,
+            lamports: sweepLamports,
+          })
+        );
+        const logEl = log('info', '<div class="spinner" style="width:13px;height:13px;border-width:2px;display:inline-block"></div>',
+          `Sweeping ${fmtSol(sweepLamports)} SOL…`);
+        try {
+          sweepBtn.textContent = 'Sign SOL transfer in Phantom…';
+          const signedSol = await provider.signTransaction(solTx);
+          const sig = await connection.sendRawTransaction(signedSol.serialize());
+          await connection.confirmTransaction({ signature: sig, blockhash: bh2, lastValidBlockHeight: lvbh2 }, 'confirmed');
+          logEl.className = 'log-entry ok';
+          logEl.querySelector('.log-text').innerHTML = `SOL sweep: ${txLink(sig)} — ${fmtSol(sweepLamports)} ✓`;
+        } catch (e) {
+          if (e.code === 4001) {
+            logEl.className = 'log-entry warn';
+            logEl.querySelector('.log-text').innerHTML = 'SOL sweep cancelled.';
+          } else {
+            logEl.className = 'log-entry err';
+            logEl.querySelector('.log-text').innerHTML = `SOL sweep failed: ${e.message}`;
+          }
+        }
+      } else {
+        log('info', '—', 'No SOL to sweep (balance covers fees only).');
+      }
+    }
+
+    log('ok', '✓', 'Sweep complete.');
+    sweepBtn.textContent = 'Sweep Complete ✓';
+    $('next-wallet-card').style.display = '';
+
+    // Reload balances to reflect new state
+    await loadBalances();
+
+  } catch (e) {
+    log('err', '✕', `Sweep failed: ${e.message}`);
+    resetSweepBtn();
+  }
+}
+
+function resetSweepBtn() {
+  const sweepBtn = $('sweep-btn');
+  sweepBtn.classList.remove('sweeping');
+  sweepBtn.textContent = 'Sweep All to Treasury';
+  sweepBtn.disabled = false;
+}
+
+/* ─── Send ─── */
+function populateSendAssets() {
+  if (!sweepData) return;
+  const sel = $('send-asset');
+  const prev = sel.value;
+  sel.innerHTML = '';
+
+  const solOpt = document.createElement('option');
+  solOpt.value = '__sol__';
+  solOpt.textContent = `◎ SOL`;
+  sel.appendChild(solOpt);
+
+  for (const t of sweepData.tokens.filter(t => t.amount > 0n)) {
+    const opt = document.createElement('option');
+    opt.value = t.mintStr;
+    opt.textContent = `Token  ${truncAddr(t.mintStr)}`;
+    sel.appendChild(opt);
+  }
+
+  // Restore previous selection if still valid
+  if (prev && [...sel.options].some(o => o.value === prev)) sel.value = prev;
+  onSendAssetChange();
+  $('send-btn').disabled = false;
+}
+
+function onSendAssetChange() {
+  if (!sweepData) return;
+  const val = $('send-asset').value;
+  const hint = $('send-asset-balance');
+  if (val === '__sol__') {
+    hint.textContent = fmtSol(sweepData.lamports);
+  } else {
+    const t = sweepData.tokens.find(t => t.mintStr === val);
+    hint.textContent = t ? fmtTokenAmount(t.amount, t.decimals) : '—';
+  }
+  $('send-amount').value = '';
+}
+
+function getSendMax() {
+  if (!sweepData) return 0;
+  const val = $('send-asset').value;
+  if (val === '__sol__') {
+    return Math.max(0, sweepData.lamports - FEE_RESERVE) / 1e9;
+  }
+  const t = sweepData.tokens.find(t => t.mintStr === val);
+  return t ? Number(t.amount) / Math.pow(10, t.decimals) : 0;
+}
+
+function showSendError(msg) {
+  const el = $('send-error');
+  el.textContent = msg;
+  el.style.display = msg ? '' : 'none';
+}
+
+async function runSend() {
+  showSendError('');
+  const assetVal = $('send-asset').value;
+  const amountStr = $('send-amount').value.trim();
+  const destStr = $('send-dest').value.trim();
+
+  // Validate destination
+  let destPubkey;
+  try {
+    destPubkey = new solanaWeb3.PublicKey(destStr);
+    if (!solanaWeb3.PublicKey.isOnCurve(destPubkey.toBytes())) throw new Error();
+  } catch {
+    showSendError('Invalid destination address.');
+    return;
+  }
+
+  // Validate amount
+  const amount = parseFloat(amountStr);
+  if (!amountStr || isNaN(amount) || amount <= 0) {
+    showSendError('Enter a valid amount.');
+    return;
+  }
+  const max = getSendMax();
+  if (amount > max + 1e-9) {
+    showSendError('Amount exceeds available balance.');
+    return;
+  }
+
+  const btn = $('send-btn');
+  btn.disabled = true;
+  btn.textContent = 'Building transaction…';
+
+  try {
+    const { blockhash, lastValidBlockHeight } = await connection.getLatestBlockhash('confirmed');
+    const tx = new solanaWeb3.Transaction({ recentBlockhash: blockhash, feePayer: walletPubkey });
+
+    let logLabel;
+
+    if (assetVal === '__sol__') {
+      const lamports = Math.floor(amount * 1e9);
+      tx.add(solanaWeb3.SystemProgram.transfer({
+        fromPubkey: walletPubkey,
+        toPubkey: destPubkey,
+        lamports,
+      }));
+      logLabel = `${fmtSol(lamports)} → ${truncAddr(destStr)}`;
+    } else {
+      const tokenEntry = sweepData.tokens.find(t => t.mintStr === assetVal);
+      const mintPubkey = tokenEntry.mint;
+      const rawAmount = BigInt(Math.floor(amount * Math.pow(10, tokenEntry.decimals)));
+      const sourceATA = await getATAAddress(walletPubkey, mintPubkey);
+      const destATA   = await getATAAddress(destPubkey, mintPubkey);
+      // Create dest ATA if needed (idempotent)
+      tx.add(buildCreateATAInstruction(walletPubkey, destATA, destPubkey, mintPubkey));
+      tx.add(buildTransferInstruction(sourceATA, destATA, walletPubkey, rawAmount));
+      logLabel = `${fmtTokenAmount(rawAmount, tokenEntry.decimals)} ${truncAddr(assetVal)} → ${truncAddr(destStr)}`;
+    }
+
+    btn.textContent = 'Sign in Phantom…';
+    const signed = await provider.signTransaction(tx);
+    btn.textContent = 'Sending…';
+    const sig = await connection.sendRawTransaction(signed.serialize());
+    await connection.confirmTransaction({ signature: sig, blockhash, lastValidBlockHeight }, 'confirmed');
+
+    log('ok', '✓', `Sent: ${logLabel} — ${txLink(sig)}`);
+    showToast('Sent!');
+    $('send-amount').value = '';
+    await loadBalances();
+  } catch (e) {
+    if (e.code === 4001) {
+      showSendError('Signing cancelled.');
+    } else {
+      showSendError(e.message);
+      log('err', '✕', `Send failed: ${e.message}`);
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send →';
+  }
+}
+
+/* ─── Event wiring ─── */
+$('connect-btn').addEventListener('click', connectWallet);
+$('disconnect-btn').addEventListener('click', disconnect);
+$('next-wallet-btn').addEventListener('click', disconnect);
+$('sweep-btn').addEventListener('click', runSweep);
+$('copy-addr-btn').addEventListener('click', () => {
+  if (!walletPubkey) return;
+  navigator.clipboard.writeText(walletPubkey.toBase58()).then(() => showToast('Address copied!'));
+});
+$('send-asset').addEventListener('change', onSendAssetChange);
+$('send-max-btn').addEventListener('click', () => {
+  $('send-amount').value = getSendMax().toString();
+});
+$('send-btn').addEventListener('click', runSend);
+</script>
+</body>
+</html>

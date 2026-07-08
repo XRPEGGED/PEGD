@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Token Launcher — Treasurer</title>
+  <script src="https://unpkg.com/@solana/web3.js@1.98.0/lib/index.iife.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg: #04070c; --surface: #080e17; --card: #0c1422;
+      --border: #1e2d40; --purple: #a78bfa; --green: #34d399;
+      --red: #f87171; --muted: #475569; --text: #e2e8f0;
+      --dim: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Courier New', monospace; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Gate ── */
+    #gate { display: none; }
+    .gate-icon { font-size: 3rem; margin-bottom: 1.25rem; }
+    #gate h1 { font-size: 1rem; color: var(--purple); letter-spacing: .2em; text-transform: uppercase; margin-bottom: .3rem; }
+    .gate-sub { font-size: .68rem; color: var(--muted); margin-bottom: 2rem; }
+    .gate-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem 1.5rem; width: 100%; }
+    .gate-card p { font-size: .72rem; color: var(--dim); margin-bottom: 1.5rem; line-height: 1.7; }
+    #gate-btn {
+      width: 100%; padding: .9rem;
+      background: linear-gradient(135deg, #9945ff, #6d28d9);
+      color: #fff; border: none; border-radius: 8px;
+      font-family: 'Courier New', monospace; font-size: .88rem; font-weight: bold;
+      cursor: pointer; letter-spacing: .08em; transition: opacity .15s;
+    }
+    #gate-btn:hover { opacity: .85; }
+    #gate-btn:disabled { opacity: .4; cursor: not-allowed; }
+    #gate-err { font-size: .7rem; color: var(--red); margin-top: .85rem; min-height: 1rem; line-height: 1.5; }
+
+    /* ── App ── */
+    #app { display: block; max-width: 640px; margin: 0 auto; padding: 2.5rem 1rem 5rem; }
+    #app.open { display: block; }
+
+    .topbar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+    .topbar h1 { font-size: 1.1rem; color: var(--purple); letter-spacing: .15em; text-transform: uppercase; }
+    .topbar p { font-size: .62rem; color: var(--muted); margin-top: .2rem; }
+    .badge { font-size: .62rem; background: rgba(167,139,250,.1); border: 1px solid rgba(167,139,250,.3); color: var(--purple); padding: .3rem .75rem; border-radius: 20px; white-space: nowrap; margin-top: .1rem; }
+
+    .section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: .85rem; }
+    .section-label { font-size: .55rem; color: var(--muted); text-transform: uppercase; letter-spacing: .2em; margin-bottom: 1rem; }
+    .field { margin-bottom: .85rem; }
+    .field:last-child { margin-bottom: 0; }
+    label { display: block; font-size: .6rem; color: var(--dim); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .3rem; }
+    input, textarea {
+      width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+      padding: .55rem .75rem; font-family: 'Courier New', monospace; font-size: .82rem;
+      border-radius: 5px; outline: none; transition: border-color .15s;
+    }
+    input:focus, textarea:focus { border-color: var(--purple); }
+    textarea { resize: vertical; min-height: 72px; line-height: 1.55; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .75rem; }
+
+    .img-drop {
+      display: block; border: 2px dashed var(--border); border-radius: 6px;
+      padding: 1.25rem; text-align: center; cursor: pointer; transition: border-color .15s;
+    }
+    .img-drop:hover, .img-drop.drag { border-color: var(--purple); }
+    .img-drop p { font-size: .7rem; color: var(--muted); }
+    .img-drop p span { color: var(--purple); }
+    #imgFile { display: none; }
+    .img-preview { display: none; width: 72px; height: 72px; border-radius: 8px; object-fit: cover; margin: .6rem auto 0; }
+    .img-preview.show { display: block; }
+
+    .dist-pills { display: flex; gap: .5rem; margin-top: .85rem; }
+    .pill { padding: .25rem .7rem; border-radius: 20px; font-size: .65rem; }
+    .pill-p { border: 1px solid var(--purple); color: var(--purple); background: rgba(167,139,250,.07); }
+    .pill-g { border: 1px solid var(--green); color: var(--green); background: rgba(52,211,153,.07); }
+
+    #launchBtn {
+      width: 100%; padding: 1rem; margin-bottom: .75rem;
+      background: var(--purple); color: var(--bg);
+      border: none; border-radius: 8px;
+      font-family: 'Courier New', monospace; font-size: .95rem; font-weight: bold;
+      cursor: pointer; letter-spacing: .08em; transition: all .15s;
+    }
+    #launchBtn:hover:not(:disabled) { background: #c4b5fd; }
+    #launchBtn:disabled { opacity: .35; cursor: not-allowed; }
+
+    /* ── Terminal log ── */
+    .term-header {
+      background: #111827; border: 1px solid var(--border); border-radius: 8px 8px 0 0;
+      padding: .55rem 1rem; display: flex; align-items: center; gap: .5rem;
+    }
+    .term-dots { display: flex; gap: .4rem; }
+    .term-dot { width: 11px; height: 11px; border-radius: 50%; }
+    .d-r { background: #ef4444; } .d-y { background: #f59e0b; } .d-g { background: #22c55e; }
+    .term-title { font-size: .65rem; color: var(--muted); margin-left: .5rem; letter-spacing: .05em; }
+    .term-body {
+      background: #020508; border: 1px solid var(--border); border-top: none;
+      border-radius: 0 0 8px 8px; padding: 1rem 1.25rem;
+      min-height: 140px; max-height: 260px; overflow-y: auto;
+      font-size: .74rem; line-height: 2;
+    }
+    .l { margin: 0; display: flex; gap: .5rem; }
+    .l .ts { color: #1e3a5f; flex-shrink: 0; }
+    .l .msg { }
+    .l.dim  .msg { color: var(--muted); }
+    .l.info .msg { color: #94a3b8; }
+    .l.step .msg { color: var(--purple); }
+    .l.ok   .msg { color: var(--green); }
+    .l.err  .msg { color: var(--red); }
+    .l.warn .msg { color: #f59e0b; }
+    .l a    { color: #60a5fa; text-decoration: none; }
+    .l a:hover { text-decoration: underline; }
+    .cursor { display: inline-block; width: 7px; height: 13px; background: var(--green); animation: blink 1s step-end infinite; vertical-align: middle; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── Warning card ── */
+    .warn-card { border-color: rgba(245,158,11,.3); background: rgba(245,158,11,.04); }
+    .warn-label { color: #f59e0b; }
+    .warn-body { font-size: .75rem; color: #94a3b8; line-height: 1.8; }
+    .warn-body strong { color: #f59e0b; }
+    .warn-ok { color: #34d399; font-weight: bold; }
+
+    /* ── Genesis Certificate ── */
+    #genesis {
+      display: none; max-width: 640px; margin: 0 auto; padding: 2rem 1rem 6rem;
+    }
+    #genesis.open { display: block; }
+
+    .cert {
+      background: linear-gradient(145deg, #080e17, #0c1422);
+      border: 1px solid var(--border); border-radius: 16px;
+      padding: 2.5rem 2rem; position: relative; overflow: hidden;
+    }
+    .cert::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top left, rgba(167,139,250,.06) 0%, transparent 60%),
+                  radial-gradient(ellipse at bottom right, rgba(52,211,153,.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cert-header { text-align: center; margin-bottom: 2rem; }
+    .cert-eyebrow { font-size: .6rem; letter-spacing: .3em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+    .cert-logo-wrap {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--surface); border: 2px solid var(--purple);
+      margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; overflow: hidden;
+    }
+    .cert-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .cert-logo-wrap .cert-logo-placeholder { font-size: 2rem; }
+    .cert-name { font-size: 2rem; font-weight: bold; color: var(--purple); letter-spacing: .05em; }
+    .cert-symbol { font-size: .8rem; color: var(--muted); letter-spacing: .2em; margin-top: .2rem; }
+    .cert-chain { display: inline-flex; align-items: center; gap: .4rem; margin-top: .6rem; font-size: .65rem; color: var(--green); border: 1px solid rgba(52,211,153,.3); padding: .2rem .7rem; border-radius: 20px; }
+
+    .cert-divider { border: none; border-top: 1px solid var(--border); margin: 1.75rem 0; }
+
+    .cert-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.75rem; }
+    @media(max-width:520px){ .cert-grid { grid-template-columns: 1fr; } }
+
+    .cert-field label { font-size: .55rem; color: var(--muted); text-transform: uppercase; letter-spacing: .15em; display: block; margin-bottom: .3rem; }
+    .cert-field .val { font-size: .8rem; color: var(--text); word-break: break-all; line-height: 1.5; }
+    .cert-field .val.mono { font-family: 'Courier New', monospace; font-size: .72rem; }
+    .cert-field .val.big { font-size: 1.1rem; color: var(--purple); font-weight: bold; }
+
+    .cert-mint-row { display: flex; gap: 1.5rem; align-items: flex-start; margin-bottom: 1.75rem; }
+    .cert-mint-info { flex: 1; }
+    .cert-mint-info label { font-size: .55rem; color: var(--muted); text-transform: uppercase; letter-spacing: .15em; display: block; margin-bottom: .4rem; }
+    .cert-mint-addr { font-family: 'Courier New', monospace; font-size: .7rem; color: var(--text); word-break: break-all; line-height: 1.6; margin-bottom: .5rem; }
+    .cert-mint-link { font-size: .65rem; color: #60a5fa; text-decoration: none; }
+    .cert-mint-link:hover { text-decoration: underline; }
+    #cert-qr { flex-shrink: 0; }
+    #cert-qr canvas { border-radius: 6px; }
+
+    .cert-supply-bar { margin-bottom: 1.75rem; }
+    .cert-supply-bar label { font-size: .55rem; color: var(--muted); text-transform: uppercase; letter-spacing: .15em; display: block; margin-bottom: .75rem; }
+    .bar-track { height: 10px; background: var(--surface); border-radius: 99px; overflow: hidden; margin-bottom: .5rem; }
+    .bar-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--green)); border-radius: 99px; }
+    .bar-legend { display: flex; justify-content: space-between; font-size: .65rem; }
+    .bar-legend span:first-child { color: var(--purple); }
+    .bar-legend span:last-child  { color: var(--green); }
+
+    .cert-txs { margin-bottom: 1.75rem; }
+    .cert-txs label { font-size: .55rem; color: var(--muted); text-transform: uppercase; letter-spacing: .15em; display: block; margin-bottom: .6rem; }
+    .tx-row { display: flex; align-items: center; gap: .75rem; margin-bottom: .4rem; font-size: .72rem; }
+    .tx-badge { font-size: .55rem; background: rgba(167,139,250,.12); border: 1px solid rgba(167,139,250,.3); color: var(--purple); padding: .15rem .5rem; border-radius: 4px; flex-shrink: 0; }
+    .tx-row a { color: #60a5fa; text-decoration: none; word-break: break-all; }
+    .tx-row a:hover { text-decoration: underline; }
+
+    .cert-stamp {
+      text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--border);
+      font-size: .62rem; color: var(--muted); line-height: 2;
+    }
+    .cert-stamp strong { color: var(--text); }
+
+    .cert-actions { display: flex; gap: .75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    .cert-actions button, .cert-actions a {
+      flex: 1; padding: .75rem; border-radius: 8px; font-family: 'Courier New', monospace;
+      font-size: .8rem; font-weight: bold; cursor: pointer; text-align: center;
+      text-decoration: none; letter-spacing: .05em; border: none; transition: opacity .15s;
+    }
+    .btn-sol { background: var(--purple); color: var(--bg); }
+    .btn-sol:hover { opacity: .85; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+    .btn-outline:hover { border-color: var(--purple); color: var(--purple); }
+
+    /* ── Metadata Panel ── */
+    #meta-panel {
+      max-width: 640px; margin: 2rem auto; padding: 1.5rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    }
+    #meta-panel h2 { color: var(--purple); font-size: 1rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1rem; }
+    #meta-panel .field { margin-bottom: .9rem; }
+    #meta-panel label { display: block; font-size: .65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-bottom: .3rem; }
+    #meta-panel input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: 'Courier New', monospace; font-size: .8rem; padding: .6rem .8rem; outline: none; }
+    #meta-panel input:focus { border-color: var(--purple); }
+    #meta-panel .btn-set { width: 100%; margin-top: .5rem; padding: .8rem; background: var(--purple); color: var(--bg); border: none; border-radius: 8px; font-family: 'Courier New', monospace; font-weight: bold; font-size: .85rem; cursor: pointer; letter-spacing: .05em; }
+    #meta-panel .btn-set:hover { opacity: .85; }
+    #meta-log { margin-top: .75rem; font-family: 'Courier New', monospace; font-size: .72rem; color: var(--muted); max-height: 140px; overflow-y: auto; }
+    #meta-log .ok   { color: var(--green); }
+    #meta-log .err  { color: #ef4444; }
+    #meta-log .step { color: var(--purple); }
+
+    /* ── Print ── */
+    @media print {
+      body { background: #fff; color: #000; }
+      #app, #gate, .cert-actions { display: none !important; }
+      #genesis { display: block !important; padding: 0; }
+      .cert { border: 1px solid #ccc; background: #fff; }
+      .cert-name { color: #4c1d95; }
+      .cert-mint-link, .tx-row a { color: #1d4ed8; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Gate ── -->
+<div id="gate">
+  <div class="gate-icon">🔐</div>
+  <h1>Token Launcher</h1>
+  <p class="gate-sub">Treasurer access only</p>
+  <div class="gate-card">
+    <p>Connect your Phantom wallet to verify treasurer access before launching.</p>
+    <button id="gate-btn" type="button" onclick="gateConnect()">Connect Phantom</button>
+    <p id="gate-err"></p>
+  </div>
+</div>
+
+<!-- ── App ── -->
+<div id="app">
+  <div class="topbar">
+    <div>
+      <h1>Token Launcher</h1>
+      <p>Create · Mint · Distribute on Solana</p>
+    </div>
+    <span class="badge" id="treasurer-badge">Treasurer</span>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Token Identity</div>
+    <div class="row2">
+      <div class="field"><label>Name</label><input id="tokenName" type="text" placeholder="Ransem" value="Ransem" maxlength="32" /></div>
+      <div class="field"><label>Symbol</label><input id="tokenSymbol" type="text" placeholder="RNSM" value="RNSM" maxlength="10" /></div>
+    </div>
+    <div class="field"><label>Description</label><textarea id="tokenDesc" maxlength="500">AllTheMoney in the bag. now.
+
+last warning.
+
+$RANSEM
+85%/15% ansem/xrp-holders</textarea></div>
+    <div class="field">
+      <label for="imgFile">Image</label>
+      <input type="file" id="imgFile" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewImage(this)" />
+      <label class="img-drop" for="imgFile" id="imgDrop">
+        <p><span>Click to upload</span> or drag &amp; drop — PNG, JPG, WebP · max 5MB</p>
+        <img id="imgPreview" class="img-preview" alt="" />
+      </label>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Links &amp; Socials</div>
+    <div class="row3">
+      <div class="field"><label>Website</label><input id="tokenWebsite" type="url" placeholder="https://…" /></div>
+      <div class="field"><label>Twitter / X</label><input id="tokenTwitter" type="text" placeholder="@handle" /></div>
+      <div class="field"><label>Telegram</label><input id="tokenTelegram" type="text" placeholder="@group" /></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Supply</div>
+    <div class="row2">
+      <div class="field"><label>Total Supply</label><input id="tokenSupply" type="number" value="1000000000" min="1" /></div>
+      <div class="field"><label>Decimals</label><input id="tokenDecimals" type="number" value="6" min="0" max="9" /></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Distribution</div>
+    <div class="field"><label>Recipient — 85% of supply</label><input id="recipientAddress" type="text" value="GV6UUmNxz2RpKxmNAPadYKb7uQpszwqQAu3qLJxVdC52" /></div>
+    <div class="field"><label>Treasury — 15% remainder</label><input id="treasuryAddress" type="text" value="fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb" /></div>
+    <div class="dist-pills">
+      <span class="pill pill-p">85% → Recipient</span>
+      <span class="pill pill-g">15% → Treasury</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">RPC Endpoint</div>
+    <div class="field"><input id="rpcUrl" type="text" value="https://rpc.ankr.com/solana" /></div>
+  </div>
+
+  <div class="section warn-card">
+    <div class="section-label warn-label">Phantom warnings — expected</div>
+    <p class="warn-body">
+      Phantom will show <strong>"This dApp could be malicious"</strong> and <strong>"Domain is new"</strong> because pegd.pages.dev is not yet in Phantom's verified registry. This is normal for any new site.<br><br>
+      <strong>"Failed to simulate"</strong> is also expected — token creation transactions are complex and Phantom cannot pre-simulate them. This does not mean the transaction will fail.<br><br>
+      Click <span class="warn-ok">Confirm (unsafe)</span> on both popups to proceed. You will see two Phantom approval requests — TX 1 creates the token, TX 2 distributes the supply.
+    </p>
+  </div>
+
+  <button id="launchBtn" type="button" onclick="launchToken()">Launch Token</button>
+
+  <div class="term-header">
+    <div class="term-dots"><div class="term-dot d-r"></div><div class="term-dot d-y"></div><div class="term-dot d-g"></div></div>
+    <span class="term-title">pegd-launcher — token genesis</span>
+  </div>
+  <div class="term-body" id="log">
+    <p class="l dim"><span class="ts">00:00:00</span><span class="msg">$ ready to launch<span class="cursor"></span></span></p>
+  </div>
+</div>
+
+<!-- ── Add On-Chain Metadata ── -->
+<div id="meta-panel">
+  <h2>Add On-Chain Metadata</h2>
+  <div class="field">
+    <label for="upd-mint">Mint Address</label>
+    <input id="upd-mint" title="Mint address" placeholder="Paste mint address from genesis certificate" />
+  </div>
+  <div class="field">
+    <label for="upd-name">Token Name</label>
+    <input id="upd-name" title="Token name" value="Ransem" />
+  </div>
+  <div class="field">
+    <label for="upd-symbol">Symbol</label>
+    <input id="upd-symbol" title="Token symbol" value="RNSM" />
+  </div>
+  <div class="field">
+    <label for="upd-uri">Metadata URI</label>
+    <input id="upd-uri" title="Metadata URI" value="https://pegd.org/rnsm-metadata.json" />
+  </div>
+  <button class="btn-set" id="meta-btn" type="button" onclick="setMetadata()">Set Metadata On-Chain</button>
+  <div id="meta-log"></div>
+</div>
+
+<!-- ── Genesis Certificate ── -->
+<div id="genesis">
+  <div class="cert" id="cert">
+    <div class="cert-header">
+      <div class="cert-eyebrow">Token Genesis Certificate</div>
+      <div class="cert-logo-wrap" id="cert-logo-wrap">
+        <span class="cert-logo-placeholder" id="cert-logo-placeholder">🪙</span>
+        <img id="cert-logo-img" class="hidden" alt="" />
+      </div>
+      <div class="cert-name" id="cert-name">—</div>
+      <div class="cert-symbol" id="cert-symbol">—</div>
+      <div><span class="cert-chain">◎ Solana Mainnet</span></div>
+    </div>
+
+    <hr class="cert-divider">
+
+    <div class="cert-mint-row">
+      <div class="cert-mint-info">
+        <label>Mint Address</label>
+        <div class="cert-mint-addr" id="cert-mint-addr">—</div>
+        <a class="cert-mint-link" id="cert-mint-link" href="#" target="_blank" rel="noopener">View on Solscan →</a>
+      </div>
+      <div id="cert-qr"></div>
+    </div>
+
+    <div class="cert-grid">
+      <div class="cert-field">
+        <label>Total Supply</label>
+        <div class="val big" id="cert-supply">—</div>
+      </div>
+      <div class="cert-field">
+        <label>Decimals</label>
+        <div class="val big" id="cert-decimals">—</div>
+      </div>
+      <div class="cert-field">
+        <label>Recipient (85%)</label>
+        <div class="val mono" id="cert-recip">—</div>
+      </div>
+      <div class="cert-field">
+        <label>Treasury (15%)</label>
+        <div class="val mono" id="cert-treasury">—</div>
+      </div>
+    </div>
+
+    <div class="cert-supply-bar">
+      <label>Supply Distribution</label>
+      <div class="bar-track"><div class="bar-fill" style="width:85%"></div></div>
+      <div class="bar-legend"><span id="cert-bar-l">— RNSM · Recipient</span><span id="cert-bar-r">— RNSM · Treasury</span></div>
+    </div>
+
+    <div class="cert-txs">
+      <label>On-Chain Transactions</label>
+      <div class="tx-row"><span class="tx-badge">TX 1</span><a id="cert-tx1" href="#" target="_blank" rel="noopener">—</a></div>
+      <div class="tx-row"><span class="tx-badge">TX 2</span><a id="cert-tx2" href="#" target="_blank" rel="noopener">—</a></div>
+    </div>
+
+    <div class="cert-stamp">
+      Launched by <strong id="cert-launcher">—</strong><br>
+      <strong id="cert-date">—</strong> · Solana Mainnet<br>
+      Mint authority revocable · Metadata on-chain via Metaplex
+    </div>
+  </div>
+
+  <div class="cert-actions">
+    <a class="btn-sol" id="cert-solscan-btn" href="#" target="_blank" rel="noopener">View on Solscan</a>
+    <button class="btn-outline" onclick="window.print()">Print Certificate</button>
+    <button class="btn-outline" onclick="document.getElementById('genesis').classList.remove('open'); document.getElementById('app').classList.add('open');">New Token</button>
+  </div>
+</div>
+
+<script>
+const {
+  Connection, PublicKey, Transaction, TransactionInstruction,
+  SystemProgram, Keypair
+} = solanaWeb3;
+
+const TREASURER_WALLETS = new Set([
+  'fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb',
+  '4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9',
+]);
+
+const TOKEN_PROGRAM_ID            = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+const TOKEN_METADATA_PROGRAM_ID   = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
+const MINT_SIZE = 82;
+
+let walletPubkey = null;
+
+// ── gate ────────────────────────────────────────────────────────────────────
+
+function getProvider() {
+  if (window.phantom?.solana?.isPhantom) return window.phantom.solana;
+  if (window.solana?.isPhantom)          return window.solana;
+  return null;
+}
+
+function openApp(publicKey) {
+  const address = publicKey.toString();
+  walletPubkey = publicKey;
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').classList.add('open');
+  document.getElementById('treasurer-badge').textContent = `Treasurer · ${address.slice(0,4)}…${address.slice(-4)}`;
+}
+
+async function gateConnect() {
+  const btn = document.getElementById('gate-btn');
+  const err = document.getElementById('gate-err');
+  err.textContent = ''; btn.disabled = true; btn.textContent = 'Connecting…';
+  try {
+    const provider = getProvider();
+    if (!provider) throw new Error('Phantom not found — install it at phantom.com');
+    const { publicKey } = await provider.connect();
+    const address = publicKey.toString();
+    if (!TREASURER_WALLETS.has(address)) throw new Error('Access denied — wallet not authorized.');
+    openApp(publicKey);
+  } catch (e) {
+    err.textContent = e.message || 'Connection failed.';
+    btn.disabled = false; btn.textContent = 'Connect Phantom';
+  }
+}
+
+// Auto-reconnect on load if Phantom already trusted this site
+window.addEventListener('load', async () => {
+  const provider = getProvider();
+  if (!provider) return;
+  try {
+    const { publicKey } = await provider.connect({ onlyIfTrusted: true });
+    if (publicKey && TREASURER_WALLETS.has(publicKey.toString())) {
+      openApp(publicKey);
+    }
+  } catch {
+    // Not previously trusted or wrong account — user clicks Connect manually
+  }
+});
+
+// ── set on-chain metadata ────────────────────────────────────────────────────
+
+async function setMetadata() {
+  const logEl = document.getElementById('meta-log');
+  function mlog(msg, cls='') {
+    if (!logEl) { alert(msg); return; }
+    const p = document.createElement('p');
+    p.className = cls; p.innerHTML = msg;
+    logEl.appendChild(p);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+  if (logEl) logEl.innerHTML = '';
+  const metaBtn = document.getElementById('meta-btn');
+  if (metaBtn) { metaBtn.disabled = true; metaBtn.textContent = 'Working…'; metaBtn.style.background = ''; }
+
+  let success = false;
+  try {
+    const mintStr = (document.getElementById('upd-mint')?.value || '').trim();
+    const name    = (document.getElementById('upd-name')?.value || '').trim();
+    const symbol  = (document.getElementById('upd-symbol')?.value || '').trim();
+    const uri     = (document.getElementById('upd-uri')?.value || '').trim();
+
+    if (!mintStr) throw new Error('paste the mint address first');
+    if (!name || !symbol || !uri) throw new Error('fill in all fields');
+
+    const provider = getProvider();
+    if (!provider) throw new Error('Phantom not found — install it at phantom.app');
+
+    let pubkey = walletPubkey;
+    if (!pubkey) {
+      mlog('connecting wallet…', 'step');
+      const r = await provider.connect();
+      pubkey = r.publicKey;
+      walletPubkey = pubkey;
+    }
+
+    mlog('connecting rpc…', 'step');
+    let conn;
+    for (const rpc of ['https://solana.publicnode.com', 'https://api.mainnet-beta.solana.com']) {
+      try { const c = new Connection(rpc, 'confirmed'); await c.getSlot(); conn = c; break; } catch {}
+    }
+    if (!conn) throw new Error('all rpc endpoints failed');
+
+    mlog('building transaction…', 'step');
+    const mint        = new PublicKey(mintStr);
+    const metadataPDA = await getMetadataPDA(mint);
+    const tx = new Transaction({ feePayer: pubkey });
+    tx.add(createMetadataV3(metadataPDA, mint, pubkey, pubkey, name, symbol, uri));
+    const { blockhash } = await conn.getLatestBlockhash('confirmed');
+    tx.recentBlockhash = blockhash;
+
+    mlog('approve in phantom…', 'step');
+    const signed = await provider.signTransaction(tx);
+    const sig    = await conn.sendRawTransaction(signed.serialize(), { skipPreflight: true });
+    mlog(`submitted → ${sig.slice(0,20)}…`, '');
+
+    const deadline = Date.now() + 90_000;
+    while (Date.now() < deadline) {
+      await new Promise(r => setTimeout(r, 2500));
+      const { value } = await conn.getSignatureStatuses([sig]);
+      const s = value?.[0];
+      if (!s) continue;
+      if (s.err) throw new Error(`on-chain error: ${JSON.stringify(s.err)}`);
+      if (s.confirmationStatus === 'confirmed' || s.confirmationStatus === 'finalized') break;
+    }
+
+    success = true;
+    if (metaBtn) { metaBtn.textContent = '✓ Metadata Set'; metaBtn.style.background = 'var(--green)'; metaBtn.disabled = true; }
+    if (logEl) {
+      logEl.innerHTML = '';
+      const banner = document.createElement('div');
+      banner.style.cssText = 'background:rgba(52,211,153,.12);border:1px solid var(--green);border-radius:10px;padding:1rem;text-align:center;margin-top:.5rem';
+      banner.innerHTML = `<div style="color:var(--green);font-size:1.1rem;font-weight:bold;margin-bottom:.5rem">✓ Metadata confirmed on-chain</div>
+        <a href="https://solscan.io/token/${mintStr}" target="_blank" rel="noopener"
+           style="display:inline-block;background:var(--green);color:#07071a;font-weight:bold;padding:.5rem 1.2rem;border-radius:8px;text-decoration:none;font-size:.8rem;margin-top:.25rem">
+          View Token on Solscan →
+        </a>`;
+      logEl.appendChild(banner);
+    }
+  } catch(e) {
+    mlog(`error: ${e.message || String(e)}`, 'err');
+  } finally {
+    if (!success && metaBtn) { metaBtn.disabled = false; metaBtn.textContent = 'Set Metadata On-Chain'; metaBtn.style.background = ''; }
+  }
+}
+
+// ── image preview ────────────────────────────────────────────────────────────
+
+function previewImage(input) {
+  const preview = document.getElementById('imgPreview');
+  const file    = input.files?.[0];
+  if (!file) return;
+  preview.src = URL.createObjectURL(file);
+  preview.classList.add('show');
+}
+
+const drop = document.getElementById('imgDrop');
+['dragenter','dragover'].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.classList.add('drag'); }));
+drop.addEventListener('dragleave', () => drop.classList.remove('drag'));
+drop.addEventListener('drop', ev => {
+  ev.preventDefault();
+  drop.classList.remove('drag');
+  const file = ev.dataTransfer?.files?.[0];
+  if (!file) return;
+  const input = document.getElementById('imgFile');
+  const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files;
+  previewImage(input);
+});
+
+// ── terminal log ─────────────────────────────────────────────────────────────
+
+function ts() {
+  const d = new Date();
+  return [d.getHours(), d.getMinutes(), d.getSeconds()].map(n => String(n).padStart(2,'0')).join(':');
+}
+
+function log(msg, cls = 'info') {
+  const el = document.getElementById('log');
+  // remove cursor from last line
+  el.querySelectorAll('.cursor').forEach(c => c.remove());
+  const p = document.createElement('p');
+  p.className = `l ${cls}`;
+  p.innerHTML = `<span class="ts">${ts()}</span><span class="msg">${msg}<span class="cursor"></span></span>`;
+  el.appendChild(p);
+  el.scrollTop = el.scrollHeight;
+}
+
+// ── instruction helpers ──────────────────────────────────────────────────────
+
+function u8(a,v,i)    { a[i]=v&0xff; }
+function u16le(a,v,i) { a[i]=v&0xff; a[i+1]=(v>>8)&0xff; }
+function u32le(a,v,i) { for(let k=0;k<4;k++) a[i+k]=(v>>(8*k))&0xff; }
+function u64le(a,v,i) { const b=BigInt(v); for(let k=0;k<8;k++) a[i+k]=Number((b>>BigInt(8*k))&0xffn); }
+
+function borshString(str) {
+  const bytes = new TextEncoder().encode(str);
+  const out   = new Uint8Array(4+bytes.length);
+  u32le(out, bytes.length, 0); out.set(bytes, 4); return out;
+}
+
+async function getATA(mint, owner) {
+  const [addr] = await PublicKey.findProgramAddress(
+    [owner.toBytes(), TOKEN_PROGRAM_ID.toBytes(), mint.toBytes()],
+    ASSOCIATED_TOKEN_PROGRAM_ID
+  );
+  return addr;
+}
+
+async function getMetadataPDA(mint) {
+  const [addr] = await PublicKey.findProgramAddress(
+    [new TextEncoder().encode('metadata'), TOKEN_METADATA_PROGRAM_ID.toBytes(), mint.toBytes()],
+    TOKEN_METADATA_PROGRAM_ID
+  );
+  return addr;
+}
+
+function initMint2(mint, decimals, authority) {
+  const d = new Uint8Array(35);
+  u8(d,20,0); u8(d,decimals,1); d.set(authority.toBytes(),2); u8(d,0,34);
+  return new TransactionInstruction({ keys:[{pubkey:mint,isSigner:false,isWritable:true}], programId:TOKEN_PROGRAM_ID, data:d });
+}
+
+function createMetadataV3(metadataPDA, mint, mintAuthority, payer, name, symbol, uri) {
+  const SYSVAR_RENT = new PublicKey('SysvarRent111111111111111111111111111111111');
+  const namB=borshString(name), symB=borshString(symbol), uriB=borshString(uri);
+  const d = new Uint8Array(1+namB.length+symB.length+uriB.length+2+3+1+1);
+  let o=0;
+  u8(d,33,o++); d.set(namB,o); o+=namB.length; d.set(symB,o); o+=symB.length; d.set(uriB,o); o+=uriB.length;
+  u16le(d,0,o); o+=2; u8(d,0,o++); u8(d,0,o++); u8(d,0,o++); u8(d,1,o++); u8(d,0,o++);
+  return new TransactionInstruction({
+    keys:[
+      {pubkey:metadataPDA,isSigner:false,isWritable:true},
+      {pubkey:mint,isSigner:false,isWritable:false},
+      {pubkey:mintAuthority,isSigner:true,isWritable:false},
+      {pubkey:payer,isSigner:true,isWritable:true},
+      {pubkey:mintAuthority,isSigner:false,isWritable:false},
+      {pubkey:SystemProgram.programId,isSigner:false,isWritable:false},
+      {pubkey:SYSVAR_RENT,isSigner:false,isWritable:false},
+    ],
+    programId:TOKEN_METADATA_PROGRAM_ID, data:d,
+  });
+}
+
+function createATA(payer, ata, owner, mint) {
+  return new TransactionInstruction({
+    keys:[
+      {pubkey:payer,isSigner:true,isWritable:true},
+      {pubkey:ata,isSigner:false,isWritable:true},
+      {pubkey:owner,isSigner:false,isWritable:false},
+      {pubkey:mint,isSigner:false,isWritable:false},
+      {pubkey:SystemProgram.programId,isSigner:false,isWritable:false},
+      {pubkey:TOKEN_PROGRAM_ID,isSigner:false,isWritable:false},
+    ],
+    programId:ASSOCIATED_TOKEN_PROGRAM_ID, data:new Uint8Array(0),
+  });
+}
+
+function mintTo(mint, dest, authority, amount) {
+  const d=new Uint8Array(9); u8(d,7,0); u64le(d,amount,1);
+  return new TransactionInstruction({
+    keys:[{pubkey:mint,isSigner:false,isWritable:true},{pubkey:dest,isSigner:false,isWritable:true},{pubkey:authority,isSigner:true,isWritable:false}],
+    programId:TOKEN_PROGRAM_ID, data:d,
+  });
+}
+
+function transfer(src, dest, owner, amount) {
+  const d=new Uint8Array(9); u8(d,3,0); u64le(d,amount,1);
+  return new TransactionInstruction({
+    keys:[{pubkey:src,isSigner:false,isWritable:true},{pubkey:dest,isSigner:false,isWritable:true},{pubkey:owner,isSigner:true,isWritable:false}],
+    programId:TOKEN_PROGRAM_ID, data:d,
+  });
+}
+
+// ── genesis certificate ──────────────────────────────────────────────────────
+
+function showGenesis({ name, symbol, mint, supply, decimals, recip, treasury, sig1, sig2, imgSrc }) {
+  const fmt = n => Number(n).toLocaleString();
+  const recipAmt   = Math.floor(supply * 0.85);
+  const treasAmt   = supply - recipAmt;
+
+  document.getElementById('cert-name').textContent    = name;
+  document.getElementById('cert-symbol').textContent  = `${symbol} · Solana SPL Token`;
+  document.getElementById('cert-supply').textContent  = fmt(supply);
+  document.getElementById('cert-decimals').textContent = decimals;
+  document.getElementById('cert-recip').textContent   = recip;
+  document.getElementById('cert-treasury').textContent = treasury;
+  document.getElementById('cert-mint-addr').textContent = mint;
+  document.getElementById('cert-bar-l').textContent   = `${fmt(recipAmt)} ${symbol} · Recipient`;
+  document.getElementById('cert-bar-r').textContent   = `${fmt(treasAmt)} ${symbol} · Treasury`;
+  document.getElementById('cert-launcher').textContent = walletPubkey.toString().slice(0,8) + '…' + walletPubkey.toString().slice(-8);
+  document.getElementById('cert-date').textContent    = new Date().toUTCString();
+
+  const solscanToken = `https://solscan.io/token/${mint}`;
+  document.getElementById('cert-mint-link').href      = solscanToken;
+  document.getElementById('cert-solscan-btn').href    = solscanToken;
+
+  document.getElementById('cert-tx1').href      = `https://solscan.io/tx/${sig1}`;
+  document.getElementById('cert-tx1').textContent = sig1;
+  document.getElementById('cert-tx2').href      = `https://solscan.io/tx/${sig2}`;
+  document.getElementById('cert-tx2').textContent = sig2;
+
+  // logo
+  if (imgSrc) {
+    document.getElementById('cert-logo-placeholder').style.display = 'none';
+    const img = document.getElementById('cert-logo-img');
+    img.src = imgSrc; img.style.display = 'block';
+  }
+
+  // QR code — wrapped so a CDN failure can't block the cert from opening
+  try {
+    const qrWrap = document.getElementById('cert-qr');
+    qrWrap.innerHTML = '';
+    const canvas = document.createElement('canvas');
+    qrWrap.appendChild(canvas);
+    await QRCode.toCanvas(canvas, mint, { width: 100, margin: 1, color: { dark: '#a78bfa', light: '#0c1422' } });
+  } catch {}
+
+  document.getElementById('app').classList.remove('open');
+  document.getElementById('genesis').classList.add('open');
+  document.getElementById('genesis').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ── launch ────────────────────────────────────────────────────────────────────
+
+async function launchToken() {
+  const name      = document.getElementById('tokenName').value.trim();
+  const symbol    = document.getElementById('tokenSymbol').value.trim();
+  const desc      = document.getElementById('tokenDesc').value.trim();
+  const website   = document.getElementById('tokenWebsite').value.trim();
+  const twitter   = document.getElementById('tokenTwitter').value.trim();
+  const telegram  = document.getElementById('tokenTelegram').value.trim();
+  const supplyRaw = parseInt(document.getElementById('tokenSupply').value);
+  const decimals  = parseInt(document.getElementById('tokenDecimals').value);
+  const recipStr  = document.getElementById('recipientAddress').value.trim();
+  const treasStr  = document.getElementById('treasuryAddress').value.trim();
+  const rpcUrl    = document.getElementById('rpcUrl').value.trim();
+  const imgFile   = document.getElementById('imgFile').files?.[0] || null;
+  const imgSrc    = imgFile ? URL.createObjectURL(imgFile) : null;
+
+  if (!name || !symbol) { log('name and symbol required', 'err'); return; }
+  if (!recipStr)        { log('recipient address required', 'err'); return; }
+
+  let recipPubkey, treasPubkey;
+  try {
+    recipPubkey = new PublicKey(recipStr);
+    treasPubkey = new PublicKey(treasStr);
+  } catch (e) { log(`invalid address: ${e.message}`, 'err'); return; }
+
+  const btn = document.getElementById('launchBtn');
+  btn.disabled = true; btn.textContent = 'Launching…';
+
+  try {
+    const provider = getProvider();
+    if (!provider) throw new Error('Phantom not found — install it at phantom.app');
+
+    // Connect wallet if not already connected
+    if (!walletPubkey) {
+      log('connecting wallet…', 'step');
+      const { publicKey } = await provider.connect();
+      const addr = publicKey.toString();
+      if (!TREASURER_WALLETS.has(addr)) throw new Error('wallet not authorized as treasurer');
+      walletPubkey = publicKey;
+      document.getElementById('treasurer-badge').textContent = `Treasurer · ${addr.slice(0,4)}…${addr.slice(-4)}`;
+    }
+
+    const RPC_LIST = [rpcUrl, 'https://solana.publicnode.com', 'https://api.mainnet-beta.solana.com'].filter(Boolean);
+    let conn;
+    for (const rpc of RPC_LIST) {
+      try {
+        log(`trying rpc: ${rpc}`, 'dim');
+        const c = new Connection(rpc, 'confirmed');
+        await c.getSlot();
+        conn = c;
+        log(`rpc connected: ${rpc}`, 'ok');
+        break;
+      } catch { log(`rpc failed: ${rpc}`, 'warn'); }
+    }
+    if (!conn) throw new Error('All RPC endpoints failed — check your internet connection or try a Helius API key at helius.dev');
+    const mintKp   = Keypair.generate();
+    const mint     = mintKp.publicKey;
+    const payer    = walletPubkey;
+
+    const mult        = BigInt(10 ** decimals);
+    const totalAmt    = BigInt(supplyRaw) * mult;
+    const recipAmt    = (totalAmt * 85n) / 100n;
+    const treasuryAmt = totalAmt - recipAmt;
+
+    log(`initializing ${name} (${symbol})`, 'step');
+    log(`rpc: ${rpcUrl}`, 'dim');
+    log(`mint keypair generated: ${mint.toString().slice(0,16)}…`, 'info');
+    log(`total supply: ${supplyRaw.toLocaleString()} · decimals: ${decimals}`, 'info');
+    log(`recipient 85% → ${recipStr.slice(0,12)}…`, 'info');
+    log(`treasury  15% → ${treasStr.slice(0,12)}…`, 'info');
+
+    // metadata upload
+    let metadataUri = '';
+    log('uploading metadata to storage…', 'step');
+    try {
+      const form = new FormData();
+      form.append('name', name); form.append('symbol', symbol); form.append('description', desc);
+      if (website)  form.append('website',  website);
+      if (twitter)  form.append('twitter',  twitter);
+      if (telegram) form.append('telegram', telegram);
+      if (imgFile)  form.append('image',    imgFile);
+      const res  = await fetch('/api/upload-token-metadata', { method:'POST', body:form });
+      const rawText = await res.text();
+      log(`metadata api → HTTP ${res.status}`, res.ok ? 'info' : 'warn');
+      if (rawText.trim().startsWith('<')) {
+        log(`metadata api returned HTML — function may not be deployed or has a build error`, 'warn');
+        throw new Error(`HTTP ${res.status} — server returned HTML instead of JSON`);
+      }
+      let data;
+      try { data = JSON.parse(rawText); } catch { throw new Error(`bad JSON: ${rawText.slice(0,80)}`); }
+      if (!res.ok) throw new Error(data.error || `upload failed (${res.status})`);
+      metadataUri = data.uri;
+      log(`metadata stored → ${metadataUri.slice(0,48)}…`, 'ok');
+    } catch (e) {
+      log(`metadata upload failed: ${e.message}`, 'warn');
+      log('continuing launch without on-chain metadata — add it after via update panel', 'dim');
+    }
+
+    const [treasATA, recipATA, metadataPDA] = await Promise.all([
+      getATA(mint, treasPubkey),
+      getATA(mint, recipPubkey),
+      getMetadataPDA(mint),
+    ]);
+
+    const rentMint = await conn.getMinimumBalanceForRentExemption(MINT_SIZE);
+
+    // Send + poll for confirmation (avoids lastValidBlockHeight mismatch on lagging RPCs)
+    async function sendAndConfirm(signedTx, label) {
+      const raw = signedTx.serialize();
+      const opts = { skipPreflight: true, maxRetries: 0 };
+      const sig = await conn.sendRawTransaction(raw, opts);
+      log(`${label} submitted → ${sig.slice(0,20)}…`, 'dim');
+
+      // Rebroadcast every 3s while polling
+      let done = false;
+      const interval = setInterval(() => {
+        if (!done) conn.sendRawTransaction(raw, opts).catch(() => {});
+      }, 3000);
+
+      // Poll getSignatureStatuses — don't use blockhash window (lagging RPC gives stale lastValidBlockHeight)
+      const deadline = Date.now() + 90_000;
+      try {
+        while (Date.now() < deadline) {
+          await new Promise(r => setTimeout(r, 2500));
+          const { value } = await conn.getSignatureStatuses([sig]);
+          const s = value?.[0];
+          if (!s) continue;
+          if (s.err) throw new Error(`tx rejected on-chain: ${JSON.stringify(s.err)}`);
+          if (s.confirmationStatus === 'confirmed' || s.confirmationStatus === 'finalized') break;
+        }
+        if (Date.now() >= deadline) throw new Error('confirmation timeout after 90s — check solscan, may have landed anyway');
+      } finally {
+        done = true;
+        clearInterval(interval);
+      }
+      return sig;
+    }
+
+    // Build both TXs with the SAME blockhash, sign both in ONE Phantom prompt
+    log('building transactions…', 'step');
+    const tx1 = new Transaction({ feePayer: payer });
+    tx1.add(
+      SystemProgram.createAccount({ fromPubkey:payer, newAccountPubkey:mint, lamports:rentMint, space:MINT_SIZE, programId:TOKEN_PROGRAM_ID }),
+      initMint2(mint, decimals, payer),
+    );
+    if (metadataUri) tx1.add(createMetadataV3(metadataPDA, mint, payer, payer, name, symbol, metadataUri));
+    tx1.add(createATA(payer, treasATA, treasPubkey, mint), mintTo(mint, treasATA, payer, totalAmt));
+
+    const tx2 = new Transaction({ feePayer: payer });
+    tx2.add(createATA(payer, recipATA, recipPubkey, mint), transfer(treasATA, recipATA, payer, recipAmt));
+
+    // Fetch blockhash once right before the single Phantom prompt
+    let { blockhash, lastValidBlockHeight } = await conn.getLatestBlockhash('confirmed');
+    tx1.recentBlockhash = blockhash;
+    tx2.recentBlockhash = blockhash;
+    tx1.partialSign(mintKp);
+
+    log('approve both transactions in phantom (1 prompt) — create mint + distribute…', 'step');
+    const [signed1, signed2] = await provider.signAllTransactions([tx1, tx2]);
+
+    log('tx 1: sending…', 'step');
+    const sig1 = await sendAndConfirm(signed1, 'tx 1');
+    log(`tx 1 confirmed → <a href="https://solscan.io/tx/${sig1}" target="_blank">${sig1.slice(0,20)}…</a>`, 'ok');
+
+    log('tx 2: sending…', 'step');
+    const sig2 = await sendAndConfirm(signed2, 'tx 2');
+    log(`tx 2 confirmed → <a href="https://solscan.io/tx/${sig2}" target="_blank">${sig2.slice(0,20)}…</a>`, 'ok');
+
+    log(`${symbol} is live on Solana — generating genesis certificate…`, 'ok');
+
+    setTimeout(() => {
+      showGenesis({ name, symbol, mint: mint.toString(), supply: supplyRaw, decimals, recip: recipStr, treasury: treasStr, sig1, sig2, imgSrc });
+    }, 800);
+
+  } catch (e) {
+    log(`error: ${e.message}`, 'err');
+    if (e.message.includes('fetch')) log('check: is Phantom unlocked? is the RPC URL reachable?', 'warn');
+    if (e.message.includes('403'))   log('rpc blocked — try a different RPC endpoint', 'warn');
+    console.error(e);
+    btn.disabled = false; btn.textContent = 'Launch Token';
+  }
+}
+</script>
+</body>
+</html>

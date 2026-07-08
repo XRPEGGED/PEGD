@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RNSM Airdrop — XRP Holders | XRPEGGED</title>
+  <meta name="description" content="150 million RNSM permanently reserved for XRP holders. Connect your Solana wallet, verify your XRP balance, and claim your share.">
+  <meta property="og:title" content="RNSM Airdrop for XRP Holders">
+  <meta property="og:description" content="150M RNSM locked on-chain for XRP holders. Register your Solana wallet to receive your share.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/jpeg" href="/pegged.jpg">
+  <style>
+    :root {
+      --bg: #0a0a1a; --bg2: #0d0d22; --bg3: #111130;
+      --neon: #00f5ff; --neon2: #9945ff; --gold: #f0b90b;
+      --text: #e0e0ff; --muted: #7070a0;
+      --card: #13132e; --border: rgba(0,245,255,0.15); --radius: 12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; line-height: 1.6; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; background: rgba(10,10,26,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); z-index: 100; }
+    .nav-inner { max-width: 960px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; padding: 0 1.5rem; }
+    .nav-brand { font-weight: 900; font-size: 1.1rem; letter-spacing: 1px; color: var(--neon); text-decoration: none; }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--neon); }
+
+    #hero { padding: 7rem 1.5rem 3rem; max-width: 960px; margin: 0 auto; text-align: center; }
+    .badge { display: inline-block; background: rgba(153,69,255,0.12); border: 1px solid rgba(153,69,255,0.35); color: var(--neon2); font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px; padding: 4px 14px; border-radius: 20px; margin-bottom: 1.5rem; text-transform: uppercase; }
+    h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.1; margin-bottom: 1rem; }
+    .neon { color: var(--neon); }
+    .neon2 { color: var(--neon2); }
+    #hero > p { color: var(--muted); font-size: 1rem; max-width: 540px; margin: 0 auto 2.5rem; }
+
+    .stats-bar { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
+    .stat-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.5rem; text-align: center; min-width: 140px; }
+    .stat-val { font-size: 1.5rem; font-weight: 900; color: var(--neon); font-family: monospace; display: block; }
+    .stat-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.2rem; }
+
+    .on-chain-proof { font-size: 0.75rem; color: var(--muted); margin-top: 0.75rem; }
+    .on-chain-proof a { color: var(--neon2); text-decoration: none; }
+    .on-chain-proof a:hover { text-decoration: underline; }
+
+    #register { max-width: 560px; margin: 2rem auto 0; padding: 0 1.5rem; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 2rem; position: relative; overflow: hidden; }
+    .card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--neon), var(--neon2)); }
+
+    .steps { display: flex; margin-bottom: 2rem; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+    .step-ind { flex: 1; text-align: center; padding: 0.55rem 0.5rem; font-size: 0.68rem; font-weight: 700; color: var(--muted); background: rgba(0,0,0,0.2); letter-spacing: 0.5px; border-right: 1px solid var(--border); transition: all 0.3s; }
+    .step-ind:last-child { border-right: none; }
+    .step-ind.active { background: rgba(0,245,255,0.1); color: var(--neon); }
+    .step-ind.done { background: rgba(0,245,255,0.05); color: var(--neon2); }
+
+    .step-content { display: none; }
+    .step-content.active { display: block; }
+    h2 { font-size: 1.15rem; margin-bottom: 0.4rem; }
+    .step-desc { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+    input[type="text"] { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; color: var(--text); font-family: monospace; font-size: 0.85rem; outline: none; transition: border-color 0.2s; margin-bottom: 0.75rem; }
+    input[type="text"]:focus { border-color: var(--neon); }
+    input[type="text"]::placeholder { color: var(--muted); }
+
+    .btn-primary { width: 100%; padding: 0.85rem; background: var(--neon); color: #0a0a1a; font-weight: 900; font-size: 0.95rem; letter-spacing: 0.5px; border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-secondary { width: 100%; padding: 0.75rem; background: transparent; color: var(--muted); font-weight: 600; font-size: 0.88rem; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: color 0.2s, border-color 0.2s; margin-top: 0.5rem; }
+    .btn-secondary:hover { color: var(--text); border-color: var(--muted); }
+
+    .address-label { font-size: 0.65rem; color: var(--muted); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 1px; }
+    .address-display { background: rgba(0,245,255,0.05); border: 1px solid rgba(0,245,255,0.2); border-radius: 8px; padding: 0.65rem 1rem; margin-bottom: 1rem; font-family: monospace; font-size: 0.78rem; word-break: break-all; color: var(--neon); }
+
+    .balance-card { background: rgba(0,245,255,0.05); border: 1px solid rgba(0,245,255,0.2); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+    .balance-val { font-size: 1.8rem; font-weight: 900; color: var(--neon); font-family: monospace; }
+    .balance-sub { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.15rem; }
+
+    .tasks { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.25rem; }
+    .task-row { display: flex; align-items: center; gap: 0.85rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer; transition: border-color 0.2s, background 0.2s; user-select: none; }
+    .task-row:hover { border-color: rgba(0,245,255,0.3); }
+    .task-row.checked { border-color: rgba(0,245,255,0.35); background: rgba(0,245,255,0.04); }
+    .task-row.auto-good { border-color: rgba(153,69,255,0.35); background: rgba(153,69,255,0.05); cursor: default; }
+    .task-row.auto-bad { cursor: default; opacity: 0.7; }
+    .task-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 900; transition: all 0.2s; }
+    .task-row.checked .task-check { background: var(--neon); border-color: var(--neon); color: #0a0a1a; }
+    .task-row.auto-good .task-check { background: var(--neon2); border-color: var(--neon2); color: #fff; }
+    .task-info { flex: 1; }
+    .task-name { font-size: 0.85rem; font-weight: 600; }
+    .task-sub { font-size: 0.73rem; color: var(--muted); margin-top: 0.1rem; }
+    .task-sub a { color: var(--neon); text-decoration: none; }
+    .task-sub a:hover { text-decoration: underline; }
+    .task-bonus { font-size: 0.73rem; font-weight: 700; color: var(--neon); background: rgba(0,245,255,0.1); border-radius: 4px; padding: 2px 7px; white-space: nowrap; flex-shrink: 0; }
+    .task-row.auto-good .task-bonus { color: var(--neon2); background: rgba(153,69,255,0.12); }
+
+    .estimate-box { background: rgba(153,69,255,0.07); border: 1px solid rgba(153,69,255,0.25); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; text-align: center; }
+    .est-val { font-size: 1.9rem; font-weight: 900; color: var(--neon2); font-family: monospace; display: block; }
+    .est-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.15rem; }
+    .est-note { font-size: 0.7rem; color: var(--muted); margin-top: 0.35rem; }
+
+    .status-msg { font-size: 0.8rem; color: var(--muted); text-align: center; margin-top: 0.65rem; min-height: 1.1rem; }
+    .status-msg.ok { color: var(--neon); }
+    .status-msg.error { color: #ff5555; }
+
+    .success-icon { font-size: 2.5rem; text-align: center; margin-bottom: 0.75rem; }
+    .referral-box { background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+    .referral-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+    .referral-link { font-family: monospace; font-size: 0.75rem; color: var(--neon); word-break: break-all; }
+    .copy-btn { width: 100%; margin-top: 0.5rem; padding: 0.55rem; background: rgba(0,245,255,0.08); border: 1px solid var(--border); border-radius: 6px; color: var(--neon); font-size: 0.82rem; cursor: pointer; transition: background 0.2s; }
+    .copy-btn:hover { background: rgba(0,245,255,0.16); }
+    .referral-note { font-size: 0.72rem; color: var(--muted); margin-top: 0.5rem; }
+
+    #how { max-width: 960px; margin: 4rem auto 0; padding: 0 1.5rem; }
+    #how h2 { text-align: center; margin-bottom: 2rem; font-size: 1.4rem; }
+    .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .how-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+    .how-num { font-size: 0.65rem; color: var(--neon2); font-weight: 700; letter-spacing: 2px; margin-bottom: 0.5rem; text-transform: uppercase; }
+    .how-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .how-desc { font-size: 0.8rem; color: var(--muted); }
+
+    #check-status { max-width: 560px; margin: 3rem auto; padding: 0 1.5rem; }
+    .check-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+    .check-card h3 { font-size: 0.95rem; color: var(--muted); margin-bottom: 1rem; }
+    .check-result { margin-top: 0.75rem; font-size: 0.85rem; color: var(--muted); min-height: 1.2rem; }
+
+    footer { text-align: center; padding: 2.5rem 1.5rem 3rem; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); margin-top: 3rem; }
+    footer a { color: var(--neon2); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .how-grid { grid-template-columns: 1fr; }
+      .stats-bar { gap: 0.5rem; }
+      .stat-item { min-width: 90px; padding: 0.75rem; }
+      .stat-val { font-size: 1.2rem; }
+      .card { padding: 1.5rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-brand">XRPEGGED</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a>
+      <a href="https://x.com/xrpegged" target="_blank" rel="noopener">X / Twitter</a>
+    </div>
+  </div>
+</nav>
+
+<section id="hero">
+  <div class="badge">RNSM · XRP Holder Airdrop</div>
+  <h1>XRP Holders<br><span class="neon">Claim Your RNSM</span></h1>
+  <p>150,000,000 RNSM is permanently reserved for XRP holders — written into the token metadata on-chain and locked immutable. Register your Solana wallet to receive your share.</p>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-val" id="stat-count">—</span>
+      <div class="stat-label">Registered</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-val" id="stat-xrp">—</span>
+      <div class="stat-label">XRP Qualifying</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-val" id="stat-per1k">—</span>
+      <div class="stat-label">RNSM / 1K XRP</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-val" style="color:var(--neon2)">150M</span>
+      <div class="stat-label">RNSM Pool</div>
+    </div>
+  </div>
+
+  <div class="on-chain-proof">
+    Verified on-chain:
+    <a href="https://solscan.io/token/2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE" target="_blank" rel="noopener">RNSM token</a>
+    ·
+    <a href="https://solscan.io/account/fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb" target="_blank" rel="noopener">Treasury wallet</a>
+  </div>
+</section>
+
+<section id="register">
+  <div class="card">
+    <div class="steps">
+      <div class="step-ind active" id="step-ind-1">1 · Wallet</div>
+      <div class="step-ind" id="step-ind-2">2 · XRP</div>
+      <div class="step-ind" id="step-ind-3">3 · Boost</div>
+      <div class="step-ind" id="step-ind-4">✓ Done</div>
+    </div>
+
+    <!-- Step 1: Connect Solana wallet -->
+    <div class="step-content active" id="step-1">
+      <h2>Connect your Solana wallet</h2>
+      <p class="step-desc">RNSM lives on Solana. Connect the wallet where you want to receive your airdrop.</p>
+      <button class="btn-primary" id="btn-connect">Connect Phantom</button>
+      <div id="step1-connected" style="display:none; margin-top:1rem;">
+        <div class="address-label">Receiving Wallet</div>
+        <div class="address-display" id="sol-addr-display"></div>
+        <button class="btn-primary" id="btn-sol-next">Continue →</button>
+        <button class="btn-secondary" id="btn-disconnect">Use different wallet</button>
+      </div>
+      <p class="status-msg" id="status-step1"></p>
+    </div>
+
+    <!-- Step 2: Verify XRP address -->
+    <div class="step-content" id="step-2">
+      <h2>Verify your XRP address</h2>
+      <p class="step-desc">Enter the XRP address you want to claim with. Must hold ≥ 10 XRP at snapshot.</p>
+      <input type="text" id="xrp-input" placeholder="rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" autocomplete="off" spellcheck="false" />
+      <button class="btn-primary" id="btn-verify">Verify XRP Balance</button>
+      <div id="xrp-balance-result" style="display:none; margin-top:0.75rem;">
+        <div class="balance-card">
+          <div class="balance-val" id="xrp-bal-val">0.00</div>
+          <div class="balance-sub">XRP Balance (live on XRPL)</div>
+        </div>
+        <button class="btn-primary" id="btn-xrp-next">Continue →</button>
+      </div>
+      <p class="status-msg" id="status-step2"></p>
+    </div>
+
+    <!-- Step 3: Boost tasks + register -->
+    <div class="step-content" id="step-3">
+      <h2>Boost your allocation</h2>
+      <p class="step-desc">Complete tasks to multiply your share. These are permanent — they're locked in when you register.</p>
+
+      <div class="tasks">
+        <div class="task-row" id="task-row-telegram" onclick="toggleTask('telegram')">
+          <div class="task-check" id="check-telegram"></div>
+          <div class="task-info">
+            <div class="task-name">Join Telegram</div>
+            <div class="task-sub"><a href="https://t.me/xrpegged" target="_blank" rel="noopener" onclick="event.stopPropagation()">t.me/xrpegged</a> — join then check this box</div>
+          </div>
+          <div class="task-bonus">+15%</div>
+        </div>
+
+        <div class="task-row" id="task-row-twitter" onclick="toggleTask('twitter')">
+          <div class="task-check" id="check-twitter"></div>
+          <div class="task-info">
+            <div class="task-name">Follow on X / Twitter</div>
+            <div class="task-sub"><a href="https://x.com/xrpegged" target="_blank" rel="noopener" onclick="event.stopPropagation()">@xrpegged</a> — follow then check this box</div>
+          </div>
+          <div class="task-bonus">+15%</div>
+        </div>
+
+        <div class="task-row" id="task-row-pegd">
+          <div class="task-check" id="check-pegd"></div>
+          <div class="task-info">
+            <div class="task-name">Hold ≥ 1,000 PEGD</div>
+            <div class="task-sub" id="pegd-status-text">Checking on-chain...</div>
+          </div>
+          <div class="task-bonus">+25%</div>
+        </div>
+      </div>
+
+      <div class="estimate-box">
+        <span class="est-val" id="est-rnsm">—</span>
+        <div class="est-label">Estimated RNSM Allocation</div>
+        <div class="est-note">Based on current registrations · final amount calculated at snapshot</div>
+      </div>
+
+      <button class="btn-primary" id="btn-register">Register for Airdrop →</button>
+      <p class="status-msg" id="status-step3"></p>
+    </div>
+
+    <!-- Success -->
+    <div class="step-content" id="step-success">
+      <div class="success-icon">🎯</div>
+      <h2 style="text-align:center; margin-bottom:0.4rem;">You're registered!</h2>
+      <p class="step-desc" style="text-align:center;">Your wallet is queued. RNSM will be sent directly to your Solana wallet after snapshot — no claiming needed.</p>
+
+      <div class="balance-card" style="text-align:center; margin: 1rem 0;">
+        <div class="balance-val" id="success-est">—</div>
+        <div class="balance-sub">Estimated RNSM (updates as more people register)</div>
+      </div>
+
+      <div class="referral-box">
+        <div class="referral-label">Referral link — earn +10% per referral (up to 5 people)</div>
+        <div class="referral-link" id="referral-link-text"></div>
+        <button class="copy-btn" id="copy-referral-btn" onclick="copyReferral()">Copy Referral Link</button>
+        <div class="referral-note">Share this link. Each person who registers with it gives you +10% more RNSM.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <h2>How It Works</h2>
+  <div class="how-grid">
+    <div class="how-item">
+      <div class="how-num">Step 01</div>
+      <div class="how-title">Register</div>
+      <div class="how-desc">Connect your Solana wallet, verify your XRP balance on-chain, and complete bonus tasks to increase your share of the 150M RNSM pool.</div>
+    </div>
+    <div class="how-item">
+      <div class="how-num">Step 02</div>
+      <div class="how-title">Snapshot</div>
+      <div class="how-desc">Registration closes and XRP balances are locked in. Your proportional share of 150M RNSM is calculated based on effective XRP (base × multipliers).</div>
+    </div>
+    <div class="how-item">
+      <div class="how-num">Step 03</div>
+      <div class="how-title">Airdrop</div>
+      <div class="how-desc">RNSM sent directly from treasury wallet to your registered Solana address. No claiming, no gas fees on your end.</div>
+    </div>
+  </div>
+</section>
+
+<section id="check-status">
+  <div class="check-card">
+    <h3>Already registered? Check your status</h3>
+    <input type="text" id="check-xrp" placeholder="Your XRP address" autocomplete="off" spellcheck="false" />
+    <button class="btn-secondary" style="margin-top:0;" onclick="checkStatus()">Check Status</button>
+    <div class="check-result" id="check-result"></div>
+  </div>
+</section>
+
+<footer>
+  <p>RNSM Airdrop ·
+    <a href="/">XRPEGGED</a> ·
+    <a href="https://solscan.io/token/2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE" target="_blank" rel="noopener">Token on Solscan</a> ·
+    <a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a>
+  </p>
+  <p style="margin-top:0.5rem; font-family:monospace; font-size:0.72rem; color:var(--muted);">
+    Treasury: fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb
+  </p>
+</footer>
+
+<script>
+const COMPUTE    = 'https://pegd-compute.xrpegged.workers.dev'
+const PEGD_MINT  = 'BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon'
+const TOTAL_RNSM = 150_000_000
+const MIN_XRP    = 10
+
+const state = {
+  solAddress: null,
+  xrpAddress: null,
+  xrpBalance: 0,
+  tasks: { telegram: false, twitter: false, pegd: false },
+  referredBy: null,
+  stats: { count: 0, totalXrp: 0, totalEffectiveXrp: 0 }
+}
+
+// Pick up referral code from URL
+const _params = new URLSearchParams(location.search)
+state.referredBy = _params.get('ref') || null
+
+// ── Stats ────────────────────────────────────────────────────────────────────
+
+async function loadStats() {
+  try {
+    const res  = await fetch(`${COMPUTE}/airdrop-stats`)
+    const data = await res.json()
+    if (typeof data.count !== 'number') return
+    state.stats = data
+    document.getElementById('stat-count').textContent = data.count.toLocaleString()
+    document.getElementById('stat-xrp').textContent   = Math.round(data.totalXrp || 0).toLocaleString()
+    document.getElementById('stat-per1k').textContent = data.perThousandXrp ? Math.round(data.perThousandXrp).toLocaleString() : '—'
+    if (state.xrpBalance > 0) updateEstimate()
+  } catch {}
+}
+loadStats()
+setInterval(loadStats, 30_000)
+
+// ── Step navigation ──────────────────────────────────────────────────────────
+
+function setStep(n) {
+  const ids = [1, 2, 3, 'success']
+  ids.forEach((id, i) => {
+    const el = document.getElementById(`step-${id}`)
+    if (el) el.classList.toggle('active', i + 1 === n)
+    const ind = document.getElementById(`step-ind-${i + 1}`)
+    if (ind) {
+      ind.classList.toggle('active', i + 1 === n)
+      ind.classList.toggle('done', i + 1 < n)
+    }
+  })
+}
+
+function setStatus(stepId, msg, type = '') {
+  const el = document.getElementById(`status-step${stepId}`)
+  if (el) { el.textContent = msg; el.className = `status-msg ${type}` }
+}
+
+// ── Step 1: Connect wallet ───────────────────────────────────────────────────
+
+document.getElementById('btn-connect').addEventListener('click', async () => {
+  if (!window.solana?.isPhantom) {
+    setStatus(1, 'Phantom not found — install it at phantom.app', 'error')
+    return
+  }
+  setStatus(1, 'Connecting...')
+  try {
+    const resp = await window.solana.connect()
+    state.solAddress = resp.publicKey.toString()
+    document.getElementById('sol-addr-display').textContent = state.solAddress
+    document.getElementById('step1-connected').style.display = 'block'
+    document.getElementById('btn-connect').style.display = 'none'
+    setStatus(1, '')
+  } catch (e) {
+    setStatus(1, e.message || 'Connection cancelled', 'error')
+  }
+})
+
+document.getElementById('btn-sol-next').addEventListener('click', () => setStep(2))
+
+document.getElementById('btn-disconnect').addEventListener('click', () => {
+  state.solAddress = null
+  document.getElementById('step1-connected').style.display = 'none'
+  document.getElementById('btn-connect').style.display = 'block'
+  setStatus(1, '')
+})
+
+// ── Step 2: Verify XRP ──────────────────────────────────────────────────────
+
+document.getElementById('btn-verify').addEventListener('click', async () => {
+  const xrp = document.getElementById('xrp-input').value.trim()
+  if (!xrp.startsWith('r') || xrp.length < 25 || xrp.length > 50) {
+    setStatus(2, 'XRP addresses start with "r" and are 25–50 characters', 'error')
+    return
+  }
+
+  const btn = document.getElementById('btn-verify')
+  btn.disabled = true
+  setStatus(2, 'Querying XRPL...')
+
+  try {
+    const res  = await fetch('https://xrplcluster.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ method: 'account_info', params: [{ account: xrp, ledger_index: 'validated' }] })
+    })
+    const data = await res.json()
+
+    if (data.result?.error || !data.result?.account_data) {
+      setStatus(2, data.result?.error_message || 'XRP address not found — is it funded?', 'error')
+      btn.disabled = false
+      return
+    }
+
+    const balance = parseInt(data.result.account_data.Balance || '0') / 1_000_000
+
+    if (balance < MIN_XRP) {
+      setStatus(2, `Only ${balance.toFixed(2)} XRP — minimum ${MIN_XRP} XRP required`, 'error')
+      btn.disabled = false
+      return
+    }
+
+    state.xrpAddress = xrp
+    state.xrpBalance = balance
+    document.getElementById('xrp-bal-val').textContent = balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    document.getElementById('xrp-balance-result').style.display = 'block'
+    btn.style.display = 'none'
+    setStatus(2, '')
+  } catch {
+    setStatus(2, 'Network error — try again', 'error')
+    btn.disabled = false
+  }
+})
+
+document.getElementById('btn-xrp-next').addEventListener('click', async () => {
+  setStep(3)
+  checkPegdBalance()
+  updateEstimate()
+})
+
+// ── Step 3: Tasks ────────────────────────────────────────────────────────────
+
+function toggleTask(name) {
+  state.tasks[name] = !state.tasks[name]
+  const row   = document.getElementById(`task-row-${name}`)
+  const check = document.getElementById(`check-${name}`)
+  row.classList.toggle('checked', state.tasks[name])
+  check.textContent = state.tasks[name] ? '✓' : ''
+  updateEstimate()
+}
+
+async function checkPegdBalance() {
+  try {
+    const res  = await fetch('https://solana.publicnode.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0', id: 1,
+        method: 'getTokenAccountsByOwner',
+        params: [state.solAddress, { mint: PEGD_MINT }, { encoding: 'jsonParsed' }]
+      })
+    })
+    const data   = await res.json()
+    const amount = data.result?.value?.[0]?.account?.data?.parsed?.info?.tokenAmount?.uiAmount || 0
+    state.tasks.pegd = amount >= 1000
+
+    const row    = document.getElementById('task-row-pegd')
+    const check  = document.getElementById('check-pegd')
+    const subTxt = document.getElementById('pegd-status-text')
+
+    if (state.tasks.pegd) {
+      row.classList.add('auto-good')
+      check.textContent = '✓'
+      subTxt.textContent = `${Math.floor(amount).toLocaleString()} PEGD detected — +25% applied!`
+    } else {
+      row.classList.add('auto-bad')
+      check.textContent = ''
+      if (amount > 0) {
+        subTxt.textContent = `${Math.floor(amount).toLocaleString()} PEGD — need ≥ 1,000 to unlock`
+      } else {
+        subTxt.innerHTML = `No PEGD found — <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">buy some</a> to unlock +25%`
+      }
+    }
+    updateEstimate()
+  } catch {
+    document.getElementById('pegd-status-text').textContent = 'Could not verify on-chain'
+  }
+}
+
+function getMultiplier() {
+  let m = 1.0
+  if (state.tasks.telegram) m += 0.15
+  if (state.tasks.twitter)  m += 0.15
+  if (state.tasks.pegd)     m += 0.25
+  return m
+}
+
+function updateEstimate() {
+  const m           = getMultiplier()
+  const effectiveXrp = state.xrpBalance * m
+  const totalEff    = (state.stats.totalEffectiveXrp || 0) + effectiveXrp
+  const est         = totalEff > 0 ? Math.round((effectiveXrp / totalEff) * TOTAL_RNSM) : 0
+  document.getElementById('est-rnsm').textContent = est > 0 ? est.toLocaleString() : '—'
+}
+
+// ── Register ─────────────────────────────────────────────────────────────────
+
+document.getElementById('btn-register').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-register')
+  btn.disabled = true
+  setStatus(3, 'Submitting...')
+
+  try {
+    const res  = await fetch(`${COMPUTE}/airdrop-register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        xrpAddress: state.xrpAddress,
+        solAddress: state.solAddress,
+        tasks: state.tasks,
+        referredBy: state.referredBy
+      })
+    })
+    const data = await res.json()
+
+    if (!data.ok) {
+      if (data.error?.includes('already registered')) {
+        setStatus(3, 'This XRP address is already registered!', 'ok')
+      } else {
+        setStatus(3, data.error || 'Registration failed', 'error')
+        btn.disabled = false
+      }
+      return
+    }
+
+    // Calculate estimate for success screen
+    const m           = getMultiplier()
+    const effectiveXrp = state.xrpBalance * m
+    const totalEff    = (state.stats.totalEffectiveXrp || 0) + effectiveXrp
+    const est         = totalEff > 0 ? Math.round((effectiveXrp / totalEff) * TOTAL_RNSM) : 0
+
+    document.getElementById('success-est').textContent = est.toLocaleString()
+    document.getElementById('referral-link-text').textContent = `https://pegd.org/rnsm-airdrop?ref=${encodeURIComponent(state.xrpAddress)}`
+
+    setStep(4)
+    loadStats()
+  } catch {
+    setStatus(3, 'Network error — please try again', 'error')
+    btn.disabled = false
+  }
+})
+
+function copyReferral() {
+  const link = `https://pegd.org/rnsm-airdrop?ref=${encodeURIComponent(state.xrpAddress)}`
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = document.getElementById('copy-referral-btn')
+    btn.textContent = 'Copied!'
+    setTimeout(() => btn.textContent = 'Copy Referral Link', 2000)
+  })
+}
+
+// ── Check status ─────────────────────────────────────────────────────────────
+
+async function checkStatus() {
+  const xrp    = document.getElementById('check-xrp').value.trim()
+  const result = document.getElementById('check-result')
+  if (!xrp) return
+  result.textContent = 'Checking...'
+  result.style.color = 'var(--muted)'
+  try {
+    const res  = await fetch(`${COMPUTE}/airdrop-check?xrp=${encodeURIComponent(xrp)}`)
+    const data = await res.json()
+    if (data.registered) {
+      result.innerHTML = `<span style="color:var(--neon)">✓ Registered</span> · ${data.balanceXrp.toLocaleString()} XRP · Estimated <strong style="color:var(--neon2)">${(data.estimatedRnsm || 0).toLocaleString()} RNSM</strong>`
+    } else {
+      result.innerHTML = `<span style="color:var(--muted)">Not registered yet</span>`
+    }
+  } catch {
+    result.textContent = 'Error — try again'
+    result.style.color = '#ff5555'
+  }
+}
+
+document.getElementById('check-xrp').addEventListener('keydown', e => { if (e.key === 'Enter') checkStatus() })
+</script>
+</body>
+</html>

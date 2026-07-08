@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEGD — Governance & Treasury Charter</title>
+  <meta name="description" content="PEGD project governance — treasury structure, treasurer role, term length, and community renewal process.">
+  <link rel="icon" type="image/jpeg" href="/pegged.jpg">
+  <style>
+    :root {
+      --bg:#07071a; --surface:#0d0d22; --card:#13132e; --border:#1e1e42;
+      --neon:#00f5ff; --neon2:#a855f7; --green:#22c55e; --yellow:#f0b90b;
+      --red:#ef4444; --text:#c8c8e8; --muted:#555577;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;min-height:100vh;}
+
+    nav{background:var(--surface);border-bottom:1px solid var(--border);
+        display:flex;align-items:center;gap:2rem;padding:0 2rem;height:56px;flex-wrap:wrap;}
+    nav a{color:var(--muted);text-decoration:none;font-size:0.9rem;}
+    nav a:hover,nav a.active{color:var(--neon);}
+    .nav-logo{color:var(--neon);font-weight:800;font-size:1.2rem;letter-spacing:2px;margin-right:1rem;}
+
+    .page{max-width:860px;margin:0 auto;padding:2rem 1rem 5rem;}
+
+    .page-hero{margin:2rem 0 2.5rem;}
+    .page-hero h1{font-size:1.6rem;font-weight:800;color:var(--neon);margin-bottom:0.4rem;}
+    .page-hero p{color:var(--muted);font-size:0.9rem;}
+
+    .section{margin-bottom:2.5rem;}
+    .section h2{font-size:0.85rem;font-weight:700;color:var(--neon);text-transform:uppercase;
+                letter-spacing:2px;margin-bottom:1rem;padding-bottom:0.5rem;
+                border-bottom:1px solid var(--border);}
+    .section p{color:var(--text);font-size:0.92rem;line-height:1.8;margin-bottom:0.75rem;}
+    .section p:last-child{margin-bottom:0;}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;margin-bottom:1rem;}
+
+    .term-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1.5rem;}
+    .term-bar-label{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem;}
+    .term-track{background:var(--border);border-radius:99px;height:8px;margin-bottom:0.5rem;overflow:hidden;}
+    .term-fill{background:linear-gradient(90deg,var(--neon),var(--neon2));height:100%;border-radius:99px;width:0.3%;}
+    .term-dates{display:flex;justify-content:space-between;font-size:0.75rem;color:var(--muted);}
+
+    .rule{display:flex;gap:1rem;margin-bottom:1rem;align-items:flex-start;}
+    .rule-num{font-size:1.4rem;font-weight:900;color:var(--neon);opacity:0.25;line-height:1;flex-shrink:0;width:2rem;text-align:right;}
+    .rule-body{font-size:0.92rem;color:var(--text);line-height:1.75;}
+    .rule-body strong{color:var(--neon);}
+    .rule-body a{color:var(--neon);}
+
+    .addr-row{display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap;}
+    .addr-label{font-size:0.78rem;color:var(--muted);min-width:140px;padding-top:2px;}
+    .addr-val{font-family:monospace;font-size:0.8rem;color:var(--text);word-break:break-all;}
+    .addr-val a{color:var(--text);text-decoration:none;}
+    .addr-val a:hover{color:var(--neon);}
+
+    .stamp{text-align:center;padding:2.5rem 0 1rem;color:var(--muted);font-size:0.82rem;line-height:2;border-top:1px solid var(--border);margin-top:1rem;}
+    .stamp strong{color:var(--text);}
+    .stamp .mono{font-family:monospace;font-size:0.75rem;}
+
+    footer{text-align:center;padding:2rem;color:var(--muted);font-size:0.78rem;border-top:1px solid var(--border);}
+    footer a{color:var(--muted);text-decoration:none;}
+  </style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">PEGD</span>
+  <a href="/">Home</a>
+  <a href="/pool.html">Compute Pool</a>
+  <a href="/mine.html">Mine</a>
+  <a href="/mobile.html">Mobile</a>
+  <a href="/updates.html">Updates</a>
+  <a href="/governance.html" class="active">Governance</a>
+</nav>
+
+<div class="page">
+
+  <div class="page-hero">
+    <h1>Treasury Charter & Governance</h1>
+    <p>The rules that govern the PEGD treasury, the Treasurer role, and how the community can act on both.</p>
+  </div>
+
+  <!-- Article I -->
+  <div class="section">
+    <h2>Article I — The Treasury</h2>
+    <p>The PEGD treasury is the on-chain reserve backing the PEGD token and its ecosystem. All treasury assets are held in publicly auditable wallets. No asset moves without an on-chain transaction visible to all holders.</p>
+    <p>The treasury is the project. It is not owned by any individual — it is stewarded on behalf of all PEGD holders by the appointed Treasurer.</p>
+
+    <div class="card">
+      <div class="addr-row">
+        <span class="addr-label">Main Treasury · SOL</span>
+        <span class="addr-val"><a href="https://solscan.io/account/fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb" target="_blank" rel="noopener">fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb</a></span>
+      </div>
+      <div class="addr-row">
+        <span class="addr-label">Compute Treasury · SOL</span>
+        <span class="addr-val"><a href="https://solscan.io/account/4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9" target="_blank" rel="noopener">4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9</a></span>
+      </div>
+      <div class="addr-row">
+        <span class="addr-label">Treasury · XRP Ledger</span>
+        <span class="addr-val"><a href="https://bithomp.com/explorer/rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" target="_blank" rel="noopener">rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78</a></span>
+      </div>
+      <div class="addr-row">
+        <span class="addr-label">PEGD Mint</span>
+        <span class="addr-val"><a href="https://solscan.io/token/BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon</a></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Article II -->
+  <div class="section">
+    <h2>Article II — The Treasurer</h2>
+
+    <div class="rule">
+      <div class="rule-num">1</div>
+      <div class="rule-body">The Treasurer is the sole custodian of all PEGD treasury wallets. The Treasurer is responsible for all asset movements, liquidity decisions, buyback execution, and on-chain reporting.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">2</div>
+      <div class="rule-body">The Treasurer does not own treasury assets. All assets held in treasury wallets belong to the PEGD project and its holders. The Treasurer acts as steward, not proprietor.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">3</div>
+      <div class="rule-body">The current Treasurer is <strong>Allthemoney</strong>, appointed at the establishment of the treasury on Sol 22, 2026 (July 9, 2026).</div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">4</div>
+      <div class="rule-body">The Treasurer may not use treasury assets for personal gain. All asset movements must serve the growth, stability, or operations of the PEGD ecosystem.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">5</div>
+      <div class="rule-body">The Compute Treasury is kept separate from the Main Treasury for operational safety. Compute funds cover mining infrastructure, pool operations, and transaction fees only.</div>
+    </div>
+  </div>
+
+  <!-- Article III -->
+  <div class="section">
+    <h2>Article III — Term & Renewal</h2>
+
+    <div class="term-bar">
+      <div class="term-bar-label">Treasurer Term — 10 Years</div>
+      <div class="term-track"><div class="term-fill"></div></div>
+      <div class="term-dates">
+        <span>Sol 22, 2026 — Start</span>
+        <span>Sol 22, 2036 — Renewal Vote</span>
+      </div>
+    </div>
+
+    <div class="rule">
+      <div class="rule-num">1</div>
+      <div class="rule-body">The current term began <strong>Sol 22, 2026</strong> (July 9, 2026) and runs through <strong>Sol 22, 2036</strong> (July 9, 2036).</div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">2</div>
+      <div class="rule-body">90 days before term expiry a community renewal vote opens. Any PEGD holder may participate. One PEGD = one vote.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">3</div>
+      <div class="rule-body">A simple majority renews the Treasurer for another 10-year term. If the majority votes to replace, a 60-day transition begins during which a successor is nominated and confirmed by holders.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">4</div>
+      <div class="rule-body">The Treasurer may voluntarily step down at any time with 30 days notice, triggering an emergency successor vote.</div>
+    </div>
+  </div>
+
+  <!-- Article IV -->
+  <div class="section">
+    <h2>Article IV — Holder Directives</h2>
+    <div class="rule">
+      <div class="rule-num">1</div>
+      <div class="rule-body">PEGD holders meeting treasury parity may submit and vote on directives through the <a href="/portal.html">Directives Portal</a>. The Treasurer is bound to act on directives that pass a holder majority vote within 30 days of passage.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">2</div>
+      <div class="rule-body">Directives may not instruct the Treasurer to violate this charter, applicable law, or the security of treasury assets.</div>
+    </div>
+  </div>
+
+  <!-- Article V -->
+  <div class="section">
+    <h2>Article V — Transparency</h2>
+    <div class="rule">
+      <div class="rule-num">1</div>
+      <div class="rule-body">All treasury wallet addresses are public and listed in Article I. Any holder may audit balances at any time on-chain.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">2</div>
+      <div class="rule-body">Live treasury balances are displayed on the <a href="/#treasury">PEGD homepage</a> and updated in real time.</div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">3</div>
+      <div class="rule-body">The Treasurer will publish a treasury report at least once per IFC month summarizing inflows, outflows, buybacks, and current holdings.</div>
+    </div>
+  </div>
+
+  <div class="stamp">
+    <strong>PEGD Treasury Charter</strong><br>
+    Established Sol 22, 2026 · July 9, 2026<br>
+    Treasurer: <strong>Allthemoney</strong><br>
+    Term expires: Sol 22, 2036 · July 9, 2036<br>
+    <br>
+    PEGD Mint<br>
+    <span class="mono">BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon</span><br>
+    <br>
+    This document is public, permanent, and binding by community consensus.
+  </div>
+
+</div>
+
+<footer>
+  <p>PEGD · <a href="/">pegd.org</a> · <a href="https://t.me/ChatPegd" target="_blank" rel="noopener">💬 Telegram</a> · <a href="https://t.me/getpegd" target="_blank" rel="noopener">📢 Announcements</a></p>
+</footer>
+
+</body>
+</html>
