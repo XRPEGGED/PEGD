@@ -5,7 +5,7 @@ const SOLANA_RPCS = [
   'https://api.mainnet-beta.solana.com',
 ]
 
-/** Read-only RPC methods for treasury stats + PEGD checkout (no sendTransaction). */
+/** Allowed RPC methods. sendRawTransaction is safe — tx must be Phantom-signed first. */
 const ALLOWED_METHODS = new Set([
   'getBalance',
   'getTokenAccountsByOwner',
@@ -17,6 +17,7 @@ const ALLOWED_METHODS = new Set([
   'getSlot',
   'getTokenAccountBalance',
   'simulateTransaction',
+  'sendRawTransaction',
 ])
 
 export async function onRequest(context) {
@@ -76,7 +77,7 @@ export async function onRequest(context) {
       })
       const text = await res.text()
       const data = JSON.parse(text)
-      if (data.result != null || (data.error && data.error.code !== 403)) {
+      if (data.result != null) {
         return new Response(text, {
           status: res.status,
           headers: {
