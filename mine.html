@@ -386,8 +386,117 @@
 <div class="hero">
   <span class="hero-icon">⛏️</span>
   <h1>Mine PEGD</h1>
+  <p>One command to start. Earns PEGD automatically. Runs on Linux, Windows, or anything with Python.</p>
 </div>
 
+<!-- ── PEGD Worker App ──────────────────────────────────────────────── -->
+<div style="max-width:720px;margin:0 auto 0;padding:0 1rem">
+  <div style="background:#0d1a0d;border:2px solid rgba(16,185,129,0.5);border-radius:14px;padding:1.75rem">
+
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem">
+      <span style="font-size:1.5rem">🤖</span>
+      <div>
+        <h2 style="color:#10b981;font-size:1rem;letter-spacing:.05em;margin-bottom:.1rem">PEGD WORKER APP</h2>
+        <p style="color:#7070a0;font-size:.8rem">Auto-mines, auto-switches coin, earns PEGD every 3 hours — no config needed</p>
+      </div>
+      <span style="margin-left:auto;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.4);
+                   color:#10b981;border-radius:20px;padding:.2rem .75rem;font-size:.72rem;font-weight:700;white-space:nowrap">
+        RECOMMENDED
+      </span>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0 1.25rem;font-size:.78rem;color:#7070a0">
+      <span style="background:#13132e;border:1px solid #1e1e42;border-radius:6px;padding:.2rem .6rem">⚡ NVIDIA + AMD GPU</span>
+      <span style="background:#13132e;border:1px solid #1e1e42;border-radius:6px;padding:.2rem .6rem">🧠 CPU (RandomX)</span>
+      <span style="background:#13132e;border:1px solid #1e1e42;border-radius:6px;padding:.2rem .6rem">🔄 Auto-switches algorithm</span>
+      <span style="background:#13132e;border:1px solid #1e1e42;border-radius:6px;padding:.2rem .6rem">📦 Python 3 · no sign-up</span>
+    </div>
+
+    <!-- Linux -->
+    <p style="color:#7070a0;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem">Linux / macOS terminal</p>
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
+      <div id="linux-cmd" style="flex:1;background:#050510;border:1px solid rgba(16,185,129,0.4);border-radius:8px;
+                                  padding:.75rem 1rem;font-family:monospace;font-size:.88rem;color:#e0e0ff;
+                                  cursor:pointer;user-select:all;overflow-x:auto;white-space:nowrap"
+           onclick="copyWorkerCmd('linux')" title="Click to copy">curl -fsSL https://pegd.org/install.sh | bash</div>
+      <button type="button" onclick="copyWorkerCmd('linux')"
+              style="flex-shrink:0;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.4);
+                     border-radius:8px;color:#10b981;padding:.65rem 1rem;font-size:.82rem;
+                     font-weight:700;cursor:pointer;white-space:nowrap">Copy</button>
+    </div>
+    <p id="linux-confirm" style="color:#10b981;font-size:.75rem;margin-bottom:.75rem;opacity:0;transition:opacity .3s;min-height:1rem">Copied!</p>
+
+    <!-- Windows -->
+    <p style="color:#7070a0;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem">Windows PowerShell</p>
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
+      <div id="win-cmd" style="flex:1;background:#050510;border:1px solid rgba(153,69,255,0.35);border-radius:8px;
+                                padding:.75rem 1rem;font-family:monospace;font-size:.88rem;color:#e0e0ff;
+                                cursor:pointer;user-select:all;overflow-x:auto;white-space:nowrap"
+           onclick="copyWorkerCmd('win')" title="Click to copy">irm https://pegd.org/install.ps1 | iex</div>
+      <button type="button" onclick="copyWorkerCmd('win')"
+              style="flex-shrink:0;background:rgba(153,69,255,0.1);border:1px solid rgba(153,69,255,0.35);
+                     border-radius:8px;color:#9945ff;padding:.65rem 1rem;font-size:.82rem;
+                     font-weight:700;cursor:pointer;white-space:nowrap">Copy</button>
+    </div>
+    <p id="win-confirm" style="color:#10b981;font-size:.75rem;margin-bottom:.5rem;opacity:0;transition:opacity .3s;min-height:1rem">Copied!</p>
+
+    <div style="border-top:1px solid #1e1e42;margin-top:.75rem;padding-top:.75rem;
+                display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem">
+      <span style="color:#7070a0;font-size:.75rem">Worker stats, leaderboard &amp; payout history →</span>
+      <a href="/pool.html" style="color:#00f5ff;font-size:.8rem;font-weight:700;text-decoration:none;
+                                   background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.2);
+                                   border-radius:6px;padding:.3rem .85rem">View Pool →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function copyWorkerCmd(which) {
+  const cmds = {
+    linux: 'curl -fsSL https://pegd.org/install.sh | bash',
+    win:   'irm https://pegd.org/install.ps1 | iex',
+  }
+  const confirmId = which === 'linux' ? 'linux-confirm' : 'win-confirm'
+  navigator.clipboard.writeText(cmds[which]).catch(() => {
+    const ta = document.createElement('textarea')
+    ta.value = cmds[which]; document.body.appendChild(ta); ta.select()
+    document.execCommand('copy'); document.body.removeChild(ta)
+  })
+  const el = document.getElementById(confirmId)
+  el.style.opacity = '1'
+  setTimeout(() => { el.style.opacity = '0' }, 2000)
+}
+</script>
+
+<div style="max-width:720px;margin:1.5rem auto 0;padding:0 1rem">
+  <div style="display:flex;flex-wrap:wrap;gap:.75rem">
+    <div style="flex:1;min-width:200px;background:#13132e;border:1px solid #1e1e42;border-radius:10px;padding:1rem 1.25rem">
+      <div style="color:#10b981;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem">How it works</div>
+      <ul style="color:#7070a0;font-size:.78rem;line-height:1.9;padding-left:1rem;margin:0">
+        <li>Your Solana wallet address is your ID — no account needed</li>
+        <li>GPU mines whichever coin earns most right now, auto-switches</li>
+        <li>CPU runs RandomX alongside your GPU simultaneously</li>
+        <li>Every 3 hours, your share of pool hashrate pays out as PEGD</li>
+      </ul>
+    </div>
+    <div style="flex:1;min-width:200px;background:#13132e;border:1px solid #1e1e42;border-radius:10px;padding:1rem 1.25rem">
+      <div style="color:#00f5ff;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem">First payout note</div>
+      <p style="color:#7070a0;font-size:.78rem;line-height:1.6">
+        Your wallet needs a PEGD token account before tokens can arrive.
+        Either swap any amount on <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener" style="color:#00f5ff">Jupiter</a>
+        to create it automatically, or add the token in Phantom. Missed payouts accumulate and arrive next cycle.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:720px;margin:1.5rem auto 2rem;padding:0 1rem">
+  <details style="background:#13132e;border:1px solid #1e1e42;border-radius:10px;padding:1rem 1.25rem">
+    <summary style="color:#7070a0;font-size:.82rem;cursor:pointer;list-style:none;display:flex;align-items:center;gap:.5rem">
+      <span style="color:#00f5ff">▶</span> Don't want the worker app? Mine manually with a rig or stratum config ↓
+    </summary>
+  </details>
+</div>
 
 <!-- ── GPU Rig / Manual Miner ───────────────────────────────────────── -->
 <div style="max-width:720px;margin:2.5rem auto 0;padding:0 1rem">
