@@ -426,6 +426,20 @@
     </div>
     <p id="linux-confirm" style="color:#10b981;font-size:.75rem;margin-bottom:.75rem;opacity:0;transition:opacity .3s;min-height:1rem">Copied!</p>
 
+    <!-- Windows -->
+    <p style="color:#7070a0;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem">Windows PowerShell</p>
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
+      <div id="win-cmd" style="flex:1;background:#050510;border:1px solid rgba(153,69,255,0.35);border-radius:8px;
+                                padding:.75rem 1rem;font-family:monospace;font-size:.88rem;color:#e0e0ff;
+                                cursor:pointer;user-select:all;overflow-x:auto;white-space:nowrap"
+           onclick="copyWinCmd()" title="Click to copy">irm https://pegd.org/install.ps1 | iex</div>
+      <button type="button" onclick="copyWinCmd()"
+              style="flex-shrink:0;background:rgba(153,69,255,0.1);border:1px solid rgba(153,69,255,0.35);
+                     border-radius:8px;color:#9945ff;padding:.65rem 1rem;font-size:.82rem;
+                     font-weight:700;cursor:pointer;white-space:nowrap">Copy</button>
+    </div>
+    <p id="win-confirm" style="color:#10b981;font-size:.75rem;margin-bottom:.5rem;opacity:0;transition:opacity .3s;min-height:1rem">Copied!</p>
+
     <div style="border-top:1px solid #1e1e42;margin-top:.75rem;padding-top:.75rem;
                 display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem">
       <span style="color:#7070a0;font-size:.75rem">Worker stats, leaderboard &amp; payout history →</span>
@@ -445,6 +459,17 @@ function copyWorkerCmd() {
     document.execCommand('copy'); document.body.removeChild(ta)
   })
   const el = document.getElementById('linux-confirm')
+  el.style.opacity = '1'
+  setTimeout(() => { el.style.opacity = '0' }, 2000)
+}
+function copyWinCmd() {
+  const cmd = 'irm https://pegd.org/install.ps1 | iex'
+  navigator.clipboard.writeText(cmd).catch(() => {
+    const ta = document.createElement('textarea')
+    ta.value = cmd; document.body.appendChild(ta); ta.select()
+    document.execCommand('copy'); document.body.removeChild(ta)
+  })
+  const el = document.getElementById('win-confirm')
   el.style.opacity = '1'
   setTimeout(() => { el.style.opacity = '0' }, 2000)
 }

@@ -1138,17 +1138,17 @@
     <div class="section-inner">
       <p class="section-label">⛏️ Earn PEGD</p>
       <h2>Install PEGD Worker</h2>
-      <p class="section-sub">One command on Windows. Installs, configures, and starts mining automatically.</p>
+      <p class="section-sub">One command. Installs, configures, and starts mining automatically.</p>
 
       <div style="max-width: 640px; margin: 2rem auto 0;">
         <div style="background:#0a0a1a; border: 1px solid rgba(0,245,255,0.2); border-radius: 10px; padding: 1.25rem 1.5rem;">
-          <div style="font-size:0.7rem; color:#475569; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.6rem;">Windows — PowerShell</div>
+          <div style="font-size:0.7rem; color:#475569; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.6rem;">Linux / macOS — Terminal</div>
           <div style="display:flex; align-items:center; gap:0.75rem;">
-            <code style="flex:1; color:#00f5ff; font-size:0.9rem; word-break:break-all;">powershell -c "irm https://pegd.org/install.ps1 | iex"</code>
-            <button onclick="navigator.clipboard.writeText('powershell -c \"irm https://pegd.org/install.ps1 | iex\"')" style="flex-shrink:0; background:transparent; border:1px solid rgba(0,245,255,0.3); border-radius:5px; color:#00f5ff; padding:4px 10px; font-size:0.75rem; cursor:pointer;">Copy</button>
+            <code style="flex:1; color:#00f5ff; font-size:0.9rem; word-break:break-all;">curl -fsSL https://pegd.org/install.sh | bash</code>
+            <button onclick="navigator.clipboard.writeText('curl -fsSL https://pegd.org/install.sh | bash')" style="flex-shrink:0; background:transparent; border:1px solid rgba(0,245,255,0.3); border-radius:5px; color:#00f5ff; padding:4px 10px; font-size:0.75rem; cursor:pointer;">Copy</button>
           </div>
         </div>
-        <p style="color:#475569; font-size:0.8rem; margin-top:0.75rem; text-align:center;">Downloads worker, installs Python if needed, creates a desktop shortcut.</p>
+        <p style="color:#475569; font-size:0.8rem; margin-top:0.75rem; text-align:center;">Downloads worker, installs Python if needed, starts earning PEGD automatically.</p>
       </div>
 
       <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
