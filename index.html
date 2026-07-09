@@ -1832,21 +1832,14 @@
   const shortAddr = (value) => value.length > 12 ? value.slice(0, 6) + '…' + value.slice(-4) : value;
 
   async function restoreHolderSession() {
-    try {
-      const session = await window.XrpegPortal.checkSession();
-      if (session) {
-        const rail = session.rail === 'xrpl' ? 'xumm' : 'phantom';
-        setHolderUnlocked(session.address, chairmanLabel(rail, session.address), rail);
-        return;
-      }
-    } catch {
-      /* ignore */
-    }
     const wallet  = localStorage.getItem(HOLDER_KEY) || sessionStorage.getItem(HOLDER_KEY);
     const rail    = localStorage.getItem(HOLDER_RAIL_KEY) || sessionStorage.getItem(HOLDER_RAIL_KEY);
     const expires = parseInt(localStorage.getItem(HOLDER_EXP_KEY) || '0', 10);
-    if (wallet && (rail === 'xumm' || rail === 'phantom')) {
-      // Honour expiry — if no expiry stored yet treat old sessions as valid (migrate gracefully)
+
+    // For Phantom sessions: restore from localStorage without touching the portal server.
+    // The portal server only manages Xumm/XRPL sessions — asking it about a Phantom session
+    // causes it to fire xrpeg-portal-logout which would kill the restored session.
+    if (wallet && rail === 'phantom') {
       if (expires && Date.now() > expires) {
         clearHolderWallet();
         holdersStatus.textContent = 'Session expired — please sign in again.';
@@ -1854,14 +1847,41 @@
       } else {
         const dur = parseInt(localStorage.getItem(HOLDER_DUR_KEY) || '86400', 10);
         syncChipSelect(dur);
-        const label = rail === 'xumm'
-          ? 'Connected — Xaman · ' + shortAddr(wallet)
-          : chairmanLabel(rail, wallet);
-        setHolderUnlocked(wallet, label, rail);
+        setHolderUnlocked(wallet, chairmanLabel('phantom', wallet), 'phantom');
         updateExpiryChip();
       }
+      startExpiryTicker();
+      return;
     }
-    // Tick expiry countdown every 60 s and auto-logout when expired
+
+    // For Xumm/portal sessions: check with the portal server
+    try {
+      const session = await window.XrpegPortal.checkSession();
+      if (session) {
+        const r = session.rail === 'xrpl' ? 'xumm' : 'phantom';
+        setHolderUnlocked(session.address, chairmanLabel(r, session.address), r);
+        startExpiryTicker();
+        return;
+      }
+    } catch {
+      /* ignore */
+    }
+    startExpiryTicker();
+  }
+
+  function startExpiryTicker() {
+    // Wire chip duration select once
+    document.getElementById('session-chip-duration')?.addEventListener('change', (e) => {
+      extendSession(parseInt(e.target.value, 10));
+      syncChipSelect(parseInt(e.target.value, 10));
+    });
+    // Sync login-screen select to stored preference
+    const storedDur = localStorage.getItem(HOLDER_DUR_KEY);
+    if (storedDur) {
+      const loginSel = document.getElementById('session-duration-select');
+      if (loginSel) loginSel.value = storedDur;
+    }
+    // Tick every 60 s — update countdown and auto-logout when expired
     setInterval(() => {
       updateExpiryChip();
       const exp = parseInt(localStorage.getItem(HOLDER_EXP_KEY) || '0', 10);
@@ -1869,17 +1889,6 @@
         setHolderLocked('Session expired — please sign in again.', true);
       }
     }, 60_000);
-    // Wire chip duration select — changing it extends the current session
-    document.getElementById('session-chip-duration')?.addEventListener('change', (e) => {
-      extendSession(parseInt(e.target.value, 10));
-      syncChipSelect(parseInt(e.target.value, 10));
-    });
-    // Keep login-screen select in sync with stored preference
-    const storedDur = localStorage.getItem(HOLDER_DUR_KEY);
-    if (storedDur) {
-      const loginSel = document.getElementById('session-duration-select');
-      if (loginSel) loginSel.value = storedDur;
-    }
   }
 
   window.addEventListener('xrpeg-buyer-connected', (e) => {
@@ -1988,7 +1997,11 @@
 
   // Sync holder UI when wallet indicator is clicked to disconnect
   window.addEventListener('xrpeg-portal-logout', () => {
-    if (holderWallet) {
+    // Only log out if the active session is portal/Xumm-based.
+    // Phantom sessions are stored independently in localStorage and must not be
+    // cleared when the portal server reports no Xumm session.
+    const rail = localStorage.getItem(HOLDER_RAIL_KEY);
+    if (holderWallet && rail !== 'phantom') {
       setHolderLocked('');
     }
   });
