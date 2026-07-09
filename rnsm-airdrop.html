@@ -142,6 +142,22 @@
     .qa-answer.visible { display: block; }
     .qa-thinking { color: var(--muted); font-style: italic; }
 
+    #before-you-start { max-width: 560px; margin: 2rem auto 0; padding: 0 1.5rem; }
+    .prereq-box { background: rgba(153,69,255,0.06); border: 1px solid rgba(153,69,255,0.25); border-radius: 12px; padding: 1.25rem 1.5rem; }
+    .prereq-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 1rem; }
+    .prereq-list { display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1rem; }
+    .prereq-item { display: flex; gap: 0.85rem; align-items: flex-start; }
+    .prereq-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .prereq-name { font-size: 0.85rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .prereq-tag { background: rgba(0,245,255,0.12); color: var(--neon); font-size: 0.65rem; border-radius: 4px; padding: 1px 6px; font-weight: 600; margin-left: 0.35rem; }
+    .prereq-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+    .prereq-desc a { color: var(--neon); text-decoration: none; }
+    .prereq-safe { font-size: 0.78rem; color: var(--muted); border-top: 1px solid rgba(153,69,255,0.15); padding-top: 0.75rem; line-height: 1.5; }
+    .prereq-safe strong { color: var(--text); }
+    .how-note { margin-top: 1.5rem; background: rgba(0,245,255,0.05); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1.1rem; font-size: 0.82rem; color: var(--muted); line-height: 1.6; text-align: center; }
+    .how-note strong { color: var(--text); }
+    .how-note a { color: var(--neon); text-decoration: none; }
+
     footer { text-align: center; padding: 2.5rem 1.5rem 3rem; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); margin-top: 3rem; }
     footer a { color: var(--neon2); text-decoration: none; }
 
@@ -165,8 +181,8 @@
 
 <section id="hero">
   <div class="badge">RNSM · XRP Holder Airdrop</div>
-  <h1>XRP Holders<br><span class="neon">Claim Your RNSM</span></h1>
-  <p>150,000,000 RNSM is permanently reserved for XRP holders — written into the token metadata on-chain and locked immutable. Register your Solana wallet to receive your share.</p>
+  <h1>Free Crypto<br><span class="neon">For XRP Holders</span></h1>
+  <p>If you own XRP, you qualify to receive free RNSM tokens — just for holding. No purchase required. Takes about 2 minutes to register. We'll send the tokens straight to your wallet when the airdrop happens.</p>
 
   <div class="stats-bar">
     <div class="stat-item">
@@ -195,6 +211,29 @@
   </div>
 </section>
 
+<section id="before-you-start">
+  <div class="prereq-box">
+    <div class="prereq-title">📋 Before you start — you need these 2 things:</div>
+    <div class="prereq-list">
+      <div class="prereq-item">
+        <div class="prereq-icon">👻</div>
+        <div>
+          <div class="prereq-name">Phantom Wallet <span class="prereq-tag">free</span></div>
+          <div class="prereq-desc">A free crypto wallet app for your phone or browser. Think of it like a free bank account for crypto. <a href="https://phantom.app" target="_blank" rel="noopener">Download at phantom.app →</a></div>
+        </div>
+      </div>
+      <div class="prereq-item">
+        <div class="prereq-icon">💧</div>
+        <div>
+          <div class="prereq-name">An XRP wallet with at least 10 XRP</div>
+          <div class="prereq-desc">XRP is a type of cryptocurrency. You need at least 10 XRP in a wallet you own. You can buy XRP on any major exchange (Coinbase, Kraken, Binance) and send it to an XRP wallet like <a href="https://xumm.app" target="_blank" rel="noopener">Xaman (free) →</a></div>
+        </div>
+      </div>
+    </div>
+    <div class="prereq-safe">🔒 <strong>Is this safe?</strong> Yes. We never ask for your password or seed phrase. The "Sign" button just proves you own your wallet — it's free and cannot move your funds.</div>
+  </div>
+</section>
+
 <section id="register">
   <div class="card">
     <div class="steps">
@@ -206,8 +245,8 @@
 
     <!-- Step 1: Connect Solana wallet -->
     <div class="step-content active" id="step-1">
-      <h2>Connect your Solana wallet</h2>
-      <p class="step-desc">RNSM lives on Solana. Connect the wallet where you want to receive your airdrop.</p>
+      <h2>Step 1 — Connect your Phantom wallet</h2>
+      <p class="step-desc">This is the wallet where you'll <strong>receive your free RNSM tokens</strong>. If you don't have Phantom yet, <a href="https://phantom.app" target="_blank" rel="noopener">download it free at phantom.app</a> — it takes 2 minutes to set up.</p>
       <button class="btn-primary" id="btn-connect">Connect Phantom</button>
       <div id="step1-connected" style="display:none; margin-top:1rem;">
         <div class="address-label">Receiving Wallet</div>
@@ -220,8 +259,8 @@
 
     <!-- Step 2: Verify XRP address -->
     <div class="step-content" id="step-2">
-      <h2>Verify your XRP address</h2>
-      <p class="step-desc">Enter the XRP address you want to claim with. Must hold ≥ 10 XRP at snapshot. Your balance is re-verified on-chain at distribution — you must still hold your registered amount or your allocation is reduced proportionally.</p>
+      <h2>Step 2 — Enter your XRP wallet address</h2>
+      <p class="step-desc">Paste the address of the XRP wallet that holds your XRP. You need at least 10 XRP in it. <strong>Keep your XRP there until the airdrop is sent</strong> — we re-check your balance at payout time, so don't move it out.</p>
       <input type="text" id="xrp-input" placeholder="rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" autocomplete="off" spellcheck="false" />
       <button class="btn-primary" id="btn-verify">Verify XRP Balance</button>
       <div id="xrp-balance-result" style="display:none; margin-top:0.75rem;">
@@ -236,8 +275,8 @@
 
     <!-- Step 3: Boost tasks + register -->
     <div class="step-content" id="step-3">
-      <h2>Boost your allocation</h2>
-      <p class="step-desc">Complete tasks to multiply your share. These are permanent — they're locked in when you register.</p>
+      <h2>Step 3 — Get more RNSM (optional)</h2>
+      <p class="step-desc">You can skip this and just register — but completing these tasks earns you a bigger share of the 150M RNSM pool. Everything is free. The "Sign" button just proves you own the wallet — it costs nothing and cannot move your funds.</p>
 
       <div class="tasks">
 
@@ -327,20 +366,21 @@
   <div class="how-grid">
     <div class="how-item">
       <div class="how-num">Step 01</div>
-      <div class="how-title">Register</div>
-      <div class="how-desc">Connect your Solana wallet, verify your XRP balance on-chain, and complete bonus tasks to increase your share of the 150M RNSM pool.</div>
+      <div class="how-title">Sign Up (2 min)</div>
+      <div class="how-desc">Connect your Phantom wallet, enter your XRP address, and optionally complete bonus tasks to earn a bigger share. Free and takes about 2 minutes.</div>
     </div>
     <div class="how-item">
       <div class="how-num">Step 02</div>
-      <div class="how-title">Snapshot</div>
-      <div class="how-desc">Registration closes. Every XRP address is re-verified on-chain — your allocation uses whichever is lower, your registered balance or your balance at snapshot. Hold your XRP to keep your full share. PEGD holdings are also re-checked.</div>
+      <div class="how-title">Hold Your XRP</div>
+      <div class="how-desc">Keep your XRP in your wallet. Don't move it out — when we close registration, we check every XRP address again. The more XRP you hold, the more RNSM you receive.</div>
     </div>
     <div class="how-item">
       <div class="how-num">Step 03</div>
-      <div class="how-title">Airdrop</div>
-      <div class="how-desc">RNSM sent directly from treasury wallet to your registered Solana address. No claiming, no gas fees on your end.</div>
+      <div class="how-title">Receive RNSM</div>
+      <div class="how-desc">RNSM tokens are sent directly to your Phantom wallet. You don't have to do anything — they just appear. No extra steps, no fees on your end.</div>
     </div>
   </div>
+  <div class="how-note">📬 <strong>When does it happen?</strong> We haven't set a date yet — join our <a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a> to be the first to know. You're registered as long as you keep your XRP.</div>
 </section>
 
 <section id="qa">
