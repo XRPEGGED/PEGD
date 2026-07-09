@@ -192,6 +192,32 @@
       max-width: 640px; margin: 0 auto 2rem; color: var(--muted); font-size: 0.95rem;
     }
 
+    /* ── SESSION DURATION PICKER ── */
+    .session-duration-row {
+      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+      margin-top: 1rem; font-size: 0.8rem; color: var(--muted);
+    }
+    .session-duration-row select {
+      background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+      border-radius: 6px; padding: 4px 10px; color: var(--text);
+      font-size: 0.8rem; cursor: pointer; outline: none;
+    }
+    .session-duration-row select:focus { border-color: var(--neon); }
+
+    /* ── SESSION EXPIRY CHIP (visible when logged in) ── */
+    #session-expiry-chip {
+      display: none; align-items: center; gap: 0.5rem;
+      position: fixed; bottom: 16px; right: 16px; z-index: 200;
+      background: rgba(13,13,34,0.92); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      border: 1px solid var(--border); border-radius: 999px;
+      padding: 6px 14px; font-size: 0.75rem; color: var(--muted);
+    }
+    body.holders-unlocked #session-expiry-chip { display: flex; }
+    #session-expiry-chip select {
+      background: transparent; border: none; color: var(--neon);
+      font-size: 0.75rem; cursor: pointer; outline: none; padding: 0;
+    }
+
     /* ── HERO ── */
     #hero {
       min-height: 100vh;
@@ -1228,6 +1254,16 @@
           <!--<p class="holders-divider">or</p>-->
           <button type="button" class="btn-connect" id="connect-wallet-btn">🟣 Sign in with Phantom</button>
         </div>
+        <div class="session-duration-row">
+          <label for="session-duration-select">Stay signed in for</label>
+          <select id="session-duration-select">
+            <option value="3600">1 hour</option>
+            <option value="28800">8 hours</option>
+            <option value="86400" selected>24 hours</option>
+            <option value="604800">7 days</option>
+            <option value="2592000">30 days</option>
+          </select>
+        </div>
         <!--<img class="xumm-qr" id="xumm-qr" alt="Xumm QR code" width="220" height="220">-->
         <p class="holders-status" id="holders-status"></p>
         <p class="holders-wallet" id="holders-wallet"></p>
@@ -1236,6 +1272,18 @@
   </section>
 
   </div><!-- /.login-landing -->
+
+  <!-- Session expiry chip — only visible when logged in -->
+  <div id="session-expiry-chip">
+    <span id="session-expiry-label">Session: —</span>
+    <select id="session-chip-duration" title="Change session length">
+      <option value="3600">1 hr</option>
+      <option value="28800">8 hrs</option>
+      <option value="86400" selected>24 hrs</option>
+      <option value="604800">7 days</option>
+      <option value="2592000">30 days</option>
+    </select>
+  </div>
 
   <div class="site-content">
 
@@ -1308,8 +1356,10 @@
   const xummQrEl = document.getElementById('xumm-qr');
   const holdersStatus = document.getElementById('holders-status');
   const holdersWalletEl = document.getElementById('holders-wallet');
-  const HOLDER_KEY = 'pegd_holder_wallet';
+  const HOLDER_KEY      = 'pegd_holder_wallet';
   const HOLDER_RAIL_KEY = 'pegd_holder_rail';
+  const HOLDER_EXP_KEY  = 'pegd_holder_expires';
+  const HOLDER_DUR_KEY  = 'pegd_holder_duration';
 
   const fmt = (n, d = 2) => {
     const num = Number(n);
@@ -1576,15 +1626,65 @@
     return 'Chairman mode — ' + name + ' · ' + addr;
   }
 
-  function persistHolderWallet(_wallet, _rail) {
-    // session is not persisted — users must sign in with Phantom each visit
+  function getSessionDurationSec() {
+    const sel = document.getElementById('session-duration-select');
+    const stored = localStorage.getItem(HOLDER_DUR_KEY);
+    return parseInt(sel?.value || stored || '86400', 10);
+  }
+
+  function persistHolderWallet(wallet, rail) {
+    const dur = getSessionDurationSec();
+    const exp = Date.now() + dur * 1000;
+    localStorage.setItem(HOLDER_KEY,      wallet);
+    localStorage.setItem(HOLDER_RAIL_KEY, rail);
+    localStorage.setItem(HOLDER_EXP_KEY,  String(exp));
+    localStorage.setItem(HOLDER_DUR_KEY,  String(dur));
+    syncChipSelect(dur);
+    updateExpiryChip();
+  }
+
+  function extendSession(newDurSec) {
+    const wallet = localStorage.getItem(HOLDER_KEY);
+    const rail   = localStorage.getItem(HOLDER_RAIL_KEY);
+    if (!wallet) return;
+    const exp = Date.now() + newDurSec * 1000;
+    localStorage.setItem(HOLDER_EXP_KEY, String(exp));
+    localStorage.setItem(HOLDER_DUR_KEY, String(newDurSec));
+    updateExpiryChip();
   }
 
   function clearHolderWallet() {
     localStorage.removeItem(HOLDER_KEY);
     localStorage.removeItem(HOLDER_RAIL_KEY);
+    localStorage.removeItem(HOLDER_EXP_KEY);
     sessionStorage.removeItem(HOLDER_KEY);
     sessionStorage.removeItem(HOLDER_RAIL_KEY);
+    updateExpiryChip();
+  }
+
+  function formatTimeLeft(ms) {
+    if (ms <= 0) return 'expired';
+    const s = Math.round(ms / 1000);
+    if (s < 3600)   return Math.ceil(s / 60) + ' min';
+    if (s < 86400)  return Math.ceil(s / 3600) + ' hr';
+    return Math.ceil(s / 86400) + 'd';
+  }
+
+  function updateExpiryChip() {
+    const chip  = document.getElementById('session-expiry-chip');
+    const label = document.getElementById('session-expiry-label');
+    if (!chip || !label) return;
+    const exp = parseInt(localStorage.getItem(HOLDER_EXP_KEY) || '0', 10);
+    if (!exp) { label.textContent = 'Session'; return; }
+    label.textContent = 'Expires in ' + formatTimeLeft(exp - Date.now());
+  }
+
+  function syncChipSelect(durSec) {
+    const chip = document.getElementById('session-chip-duration');
+    const login = document.getElementById('session-duration-select');
+    const v = String(durSec);
+    if (chip)  chip.value  = v;
+    if (login) login.value = v;
   }
 
   function setHolderUnlocked(wallet, label, rail) {
@@ -1742,14 +1842,43 @@
     } catch {
       /* ignore */
     }
-    const wallet = localStorage.getItem(HOLDER_KEY) || sessionStorage.getItem(HOLDER_KEY);
-    const rail = localStorage.getItem(HOLDER_RAIL_KEY) || sessionStorage.getItem(HOLDER_RAIL_KEY);
+    const wallet  = localStorage.getItem(HOLDER_KEY) || sessionStorage.getItem(HOLDER_KEY);
+    const rail    = localStorage.getItem(HOLDER_RAIL_KEY) || sessionStorage.getItem(HOLDER_RAIL_KEY);
+    const expires = parseInt(localStorage.getItem(HOLDER_EXP_KEY) || '0', 10);
     if (wallet && (rail === 'xumm' || rail === 'phantom')) {
-      const label =
-        rail === 'xumm'
+      // Honour expiry — if no expiry stored yet treat old sessions as valid (migrate gracefully)
+      if (expires && Date.now() > expires) {
+        clearHolderWallet();
+        holdersStatus.textContent = 'Session expired — please sign in again.';
+        holdersStatus.className = 'holders-status err';
+      } else {
+        const dur = parseInt(localStorage.getItem(HOLDER_DUR_KEY) || '86400', 10);
+        syncChipSelect(dur);
+        const label = rail === 'xumm'
           ? 'Connected — Xaman · ' + shortAddr(wallet)
           : chairmanLabel(rail, wallet);
-      setHolderUnlocked(wallet, label, rail);
+        setHolderUnlocked(wallet, label, rail);
+        updateExpiryChip();
+      }
+    }
+    // Tick expiry countdown every 60 s and auto-logout when expired
+    setInterval(() => {
+      updateExpiryChip();
+      const exp = parseInt(localStorage.getItem(HOLDER_EXP_KEY) || '0', 10);
+      if (exp && Date.now() > exp && document.body.classList.contains('holders-unlocked')) {
+        setHolderLocked('Session expired — please sign in again.', true);
+      }
+    }, 60_000);
+    // Wire chip duration select — changing it extends the current session
+    document.getElementById('session-chip-duration')?.addEventListener('change', (e) => {
+      extendSession(parseInt(e.target.value, 10));
+      syncChipSelect(parseInt(e.target.value, 10));
+    });
+    // Keep login-screen select in sync with stored preference
+    const storedDur = localStorage.getItem(HOLDER_DUR_KEY);
+    if (storedDur) {
+      const loginSel = document.getElementById('session-duration-select');
+      if (loginSel) loginSel.value = storedDur;
     }
   }
 
