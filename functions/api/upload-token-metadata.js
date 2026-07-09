@@ -48,6 +48,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     const image       = form.get('image')
+    const imageUrlIn  = (form.get('imageUrl')    || '').trim()
     const name        = (form.get('name')        || '').trim().slice(0, 32)
     const symbol      = (form.get('symbol')      || '').trim().slice(0, 10)
     const description = (form.get('description') || '').trim().slice(0, 500)
@@ -63,8 +64,8 @@ export async function onRequestPost({ request, env }) {
 
     const id = crypto.randomUUID().replace(/-/g, '').slice(0, 16)
 
-    // Upload image if provided
-    let imageUrl = ''
+    // Upload image if provided; fall back to caller-supplied URL
+    let imageUrl = imageUrlIn
     if (image && typeof image.arrayBuffer === 'function' && image.size > 0) {
       if (!ALLOWED.has(image.type)) {
         return new Response(JSON.stringify({ error: `Image type ${image.type} not allowed. Use JPEG, PNG, GIF, or WebP.` }), {
