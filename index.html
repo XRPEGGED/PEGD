@@ -2007,12 +2007,7 @@
     setTimeout(() => loadStats(), 0);
   }
   loadShop();
-  // Clear any stale stored sessions so the login gate always shows
-  localStorage.removeItem(HOLDER_KEY);
-  localStorage.removeItem(HOLDER_RAIL_KEY);
-  sessionStorage.removeItem(HOLDER_KEY);
-  sessionStorage.removeItem(HOLDER_RAIL_KEY);
-  // restoreHolderSession(); — disabled: require active Phantom sign-in each visit
+  restoreHolderSession();
 
   // Sticky creative treasury metrics on scroll (unobtrusive, shrinks + lifts with smooth morph when past the section)
   (function initTreasurySticky() {
