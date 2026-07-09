@@ -8,6 +8,14 @@
   <title>Your Order — XRPEGGED</title>
   <meta name="description" content="XRPEGGED Proof of Worth order — confirmation, fulfillment, and tracking.">
   <style>
+  /* ── Site nav ── */
+  .site-nav{position:fixed;top:0;left:0;right:0;background:rgba(10,10,26,0.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,245,255,0.12);z-index:100;height:54px;display:flex;align-items:center;}
+  .site-nav .ni{max-width:1100px;width:100%;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+  .site-nav .brand{font-weight:900;font-size:1rem;color:#00f5ff;text-decoration:none;letter-spacing:1px;}
+  .site-nav .links a{color:#7070a0;text-decoration:none;font-size:0.82rem;margin-left:1.25rem;transition:color .2s;}
+  .site-nav .links a:hover{color:#00f5ff;}
+  @media(max-width:520px){.site-nav .links a{margin-left:.75rem;font-size:.75rem;}}
+
     :root {
       --bg: #0a0a1a; --bg2: #0d0d22; --card: #13132e; --neon: #00f5ff; --neon2: #9945ff;
       --gold: #f0b90b; --text: #e0e0ff; --muted: #7070a0; --border: rgba(0,245,255,0.18);
@@ -97,6 +105,7 @@
   </style>
 </head>
 <body>
+<nav class="site-nav"><div class="ni"><a href="/" class="brand">XRPEGGED</a><div class="links"><a href="/">Home</a><a href="/rnsm-airdrop">Airdrop</a><a href="/advisor">Advisor</a><a href="/pool.html">Pools</a><a href="/updates.html">Updates</a><a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a></div></div></nav>
   <header>
     <div class="nav">
       <a class="logo" href="/">XR<span>PEGGED</span></a>
