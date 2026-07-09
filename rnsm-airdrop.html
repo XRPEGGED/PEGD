@@ -76,21 +76,30 @@
     .balance-sub { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.15rem; }
 
     .tasks { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.25rem; }
-    .task-row { display: flex; align-items: center; gap: 0.85rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; cursor: pointer; transition: border-color 0.2s, background 0.2s; user-select: none; }
-    .task-row:hover { border-color: rgba(0,245,255,0.3); }
-    .task-row.checked { border-color: rgba(0,245,255,0.35); background: rgba(0,245,255,0.04); }
-    .task-row.auto-good { border-color: rgba(153,69,255,0.35); background: rgba(153,69,255,0.05); cursor: default; }
-    .task-row.auto-bad { cursor: default; opacity: 0.7; }
+    .task-row { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; transition: border-color 0.2s, background 0.2s; }
+    .task-row.verified { border-color: rgba(0,245,255,0.35); background: rgba(0,245,255,0.04); }
+    .task-row.auto-good { border-color: rgba(153,69,255,0.35); background: rgba(153,69,255,0.05); }
+    .task-row.auto-bad { opacity: 0.7; }
+    .task-top { display: flex; align-items: center; gap: 0.85rem; }
     .task-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 900; transition: all 0.2s; }
-    .task-row.checked .task-check { background: var(--neon); border-color: var(--neon); color: #0a0a1a; }
+    .task-row.verified .task-check { background: var(--neon); border-color: var(--neon); color: #0a0a1a; }
     .task-row.auto-good .task-check { background: var(--neon2); border-color: var(--neon2); color: #fff; }
     .task-info { flex: 1; }
     .task-name { font-size: 0.85rem; font-weight: 600; }
     .task-sub { font-size: 0.73rem; color: var(--muted); margin-top: 0.1rem; }
     .task-sub a { color: var(--neon); text-decoration: none; }
-    .task-sub a:hover { text-decoration: underline; }
     .task-bonus { font-size: 0.73rem; font-weight: 700; color: var(--neon); background: rgba(0,245,255,0.1); border-radius: 4px; padding: 2px 7px; white-space: nowrap; flex-shrink: 0; }
     .task-row.auto-good .task-bonus { color: var(--neon2); background: rgba(153,69,255,0.12); }
+    .btn-verify-task { background: rgba(0,245,255,0.08); border: 1px solid rgba(0,245,255,0.25); border-radius: 6px; color: var(--neon); font-size: 0.72rem; font-weight: 700; padding: 3px 10px; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+    .btn-verify-task:hover { background: rgba(0,245,255,0.16); }
+    .task-sign-area { margin-top: 0.65rem; display: none; }
+    .task-sign-area.open { display: block; }
+    .task-handle-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.75rem; color: var(--text); font-size: 0.82rem; outline: none; margin-bottom: 0.5rem; }
+    .task-handle-input:focus { border-color: var(--neon); }
+    .btn-sign { width: 100%; padding: 0.55rem; background: var(--neon2); color: #fff; font-weight: 800; font-size: 0.82rem; border: none; border-radius: 6px; cursor: pointer; transition: opacity 0.2s; }
+    .btn-sign:hover { opacity: 0.85; }
+    .btn-sign:disabled { opacity: 0.4; cursor: not-allowed; }
+    .task-sign-note { font-size: 0.68rem; color: var(--muted); margin-top: 0.35rem; }
 
     .estimate-box { background: rgba(153,69,255,0.07); border: 1px solid rgba(153,69,255,0.25); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; text-align: center; }
     .est-val { font-size: 1.9rem; font-weight: 900; color: var(--neon2); font-family: monospace; display: block; }
@@ -139,11 +148,7 @@
 <nav>
   <div class="nav-inner">
     <a href="/" class="nav-brand">XRPEGGED</a>
-    <div class="nav-links">
-      <a href="/">Home</a>
-      <a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a>
-      <a href="https://x.com/xrpegged" target="_blank" rel="noopener">X / Twitter</a>
-    </div>
+    <div class="nav-links"><a href="/">Home</a><a href="/rnsm-airdrop">Airdrop</a><a href="/advisor">Advisor</a><a href="/pool.html">Pools</a><a href="/updates.html">Updates</a><a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a></div>
   </div>
 </nav>
 
@@ -205,7 +210,7 @@
     <!-- Step 2: Verify XRP address -->
     <div class="step-content" id="step-2">
       <h2>Verify your XRP address</h2>
-      <p class="step-desc">Enter the XRP address you want to claim with. Must hold ≥ 10 XRP at snapshot.</p>
+      <p class="step-desc">Enter the XRP address you want to claim with. Must hold ≥ 10 XRP at snapshot. Your balance is re-verified on-chain at distribution — you must still hold your registered amount or your allocation is reduced proportionally.</p>
       <input type="text" id="xrp-input" placeholder="rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" autocomplete="off" spellcheck="false" />
       <button class="btn-primary" id="btn-verify">Verify XRP Balance</button>
       <div id="xrp-balance-result" style="display:none; margin-top:0.75rem;">
@@ -224,32 +229,55 @@
       <p class="step-desc">Complete tasks to multiply your share. These are permanent — they're locked in when you register.</p>
 
       <div class="tasks">
-        <div class="task-row" id="task-row-telegram" onclick="toggleTask('telegram')">
-          <div class="task-check" id="check-telegram"></div>
-          <div class="task-info">
-            <div class="task-name">Join Telegram</div>
-            <div class="task-sub"><a href="https://t.me/xrpegged" target="_blank" rel="noopener" onclick="event.stopPropagation()">t.me/xrpegged</a> — join then check this box</div>
+
+        <!-- Telegram — signed verification -->
+        <div class="task-row" id="task-row-telegram">
+          <div class="task-top">
+            <div class="task-check" id="check-telegram"></div>
+            <div class="task-info">
+              <div class="task-name">Join Telegram</div>
+              <div class="task-sub" id="tg-sub"><a href="https://t.me/xrpegged" target="_blank" rel="noopener">t.me/xrpegged</a> — join, then sign to verify</div>
+            </div>
+            <div class="task-bonus">+15%</div>
+            <button class="btn-verify-task" id="btn-verify-tg" onclick="openSign('telegram')">Verify →</button>
           </div>
-          <div class="task-bonus">+15%</div>
+          <div class="task-sign-area" id="sign-area-telegram">
+            <input class="task-handle-input" id="handle-telegram" placeholder="Your Telegram @username" autocomplete="off" spellcheck="false" />
+            <button class="btn-sign" id="btn-sign-telegram" onclick="signTask('telegram')">Sign with Phantom to verify</button>
+            <div class="task-sign-note">Phantom will ask you to sign a message — no transaction, no fee. Proves you own this wallet + links your handle. We verify membership before distribution.</div>
+          </div>
         </div>
 
-        <div class="task-row" id="task-row-twitter" onclick="toggleTask('twitter')">
-          <div class="task-check" id="check-twitter"></div>
-          <div class="task-info">
-            <div class="task-name">Follow on X / Twitter</div>
-            <div class="task-sub"><a href="https://x.com/xrpegged" target="_blank" rel="noopener" onclick="event.stopPropagation()">@xrpegged</a> — follow then check this box</div>
+        <!-- Twitter — signed verification -->
+        <div class="task-row" id="task-row-twitter">
+          <div class="task-top">
+            <div class="task-check" id="check-twitter"></div>
+            <div class="task-info">
+              <div class="task-name">Follow on X / Twitter</div>
+              <div class="task-sub" id="tw-sub"><a href="https://x.com/xrpegged" target="_blank" rel="noopener">@xrpegged</a> — follow, then sign to verify</div>
+            </div>
+            <div class="task-bonus">+15%</div>
+            <button class="btn-verify-task" id="btn-verify-tw" onclick="openSign('twitter')">Verify →</button>
           </div>
-          <div class="task-bonus">+15%</div>
+          <div class="task-sign-area" id="sign-area-twitter">
+            <input class="task-handle-input" id="handle-twitter" placeholder="Your Twitter @username" autocomplete="off" spellcheck="false" />
+            <button class="btn-sign" id="btn-sign-twitter" onclick="signTask('twitter')">Sign with Phantom to verify</button>
+            <div class="task-sign-note">No transaction, no fee. Phantom signs a message linking your Twitter handle to this wallet. Verified against @xrpegged followers before RNSM is sent.</div>
+          </div>
         </div>
 
+        <!-- PEGD — auto on-chain -->
         <div class="task-row" id="task-row-pegd">
-          <div class="task-check" id="check-pegd"></div>
-          <div class="task-info">
-            <div class="task-name">Hold ≥ 1,000 PEGD</div>
-            <div class="task-sub" id="pegd-status-text">Checking on-chain...</div>
+          <div class="task-top">
+            <div class="task-check" id="check-pegd"></div>
+            <div class="task-info">
+              <div class="task-name">Hold ≥ 1,000 PEGD</div>
+              <div class="task-sub" id="pegd-status-text">Checking on-chain...</div>
+            </div>
+            <div class="task-bonus">+25%</div>
           </div>
-          <div class="task-bonus">+25%</div>
         </div>
+
       </div>
 
       <div class="estimate-box">
@@ -294,7 +322,7 @@
     <div class="how-item">
       <div class="how-num">Step 02</div>
       <div class="how-title">Snapshot</div>
-      <div class="how-desc">Registration closes and XRP balances are locked in. Your proportional share of 150M RNSM is calculated based on effective XRP (base × multipliers).</div>
+      <div class="how-desc">Registration closes. Every XRP address is re-verified on-chain — your allocation uses whichever is lower, your registered balance or your balance at snapshot. Hold your XRP to keep your full share. PEGD holdings are also re-checked.</div>
     </div>
     <div class="how-item">
       <div class="how-num">Step 03</div>
@@ -462,15 +490,61 @@ document.getElementById('btn-xrp-next').addEventListener('click', async () => {
   updateEstimate()
 })
 
-// ── Step 3: Tasks ────────────────────────────────────────────────────────────
+// ── Step 3: Social verification via Phantom message signing ──────────────────
 
-function toggleTask(name) {
-  state.tasks[name] = !state.tasks[name]
-  const row   = document.getElementById(`task-row-${name}`)
-  const check = document.getElementById(`check-${name}`)
-  row.classList.toggle('checked', state.tasks[name])
-  check.textContent = state.tasks[name] ? '✓' : ''
-  updateEstimate()
+function openSign(platform) {
+  const area = document.getElementById(`sign-area-${platform}`)
+  area.classList.toggle('open')
+}
+
+async function signTask(platform) {
+  const handleInput = document.getElementById(`handle-${platform}`)
+  const btn         = document.getElementById(`btn-sign-${platform}`)
+  let handle = handleInput.value.trim().replace(/^@/, '')
+
+  if (!handle) {
+    handleInput.focus()
+    return
+  }
+  handle = '@' + handle
+
+  if (!window.solana?.isPhantom) {
+    setStatus(3, 'Phantom not found', 'error')
+    return
+  }
+
+  btn.disabled = true
+  btn.textContent = 'Waiting for Phantom...'
+
+  const platformName = platform === 'telegram' ? 'Telegram (t.me/xrpegged)' : 'Twitter/X (@xrpegged)'
+  const date         = new Date().toISOString().slice(0, 10)
+  const message      = `XRPEGGED AIRDROP VERIFICATION\nPlatform: ${platformName}\nHandle: ${handle}\nWallet: ${state.solAddress}\nDate: ${date}`
+
+  try {
+    const encoded = new TextEncoder().encode(message)
+    const signed  = await window.solana.signMessage(encoded, 'utf8')
+    const sigHex  = Array.from(signed.signature).map(b => b.toString(16).padStart(2, '0')).join('')
+
+    state.tasks[platform] = { verified: true, handle, signature: sigHex, message }
+
+    const row   = document.getElementById(`task-row-${platform}`)
+    const check = document.getElementById(`check-${platform}`)
+    const sub   = document.getElementById(platform === 'telegram' ? 'tg-sub' : 'tw-sub')
+    const verifyBtn = document.getElementById(`btn-verify-${platform === 'telegram' ? 'tg' : 'tw'}`)
+
+    row.classList.add('verified')
+    check.textContent = '✓'
+    sub.textContent   = `Verified as ${handle} ✓`
+    verifyBtn.style.display = 'none'
+    document.getElementById(`sign-area-${platform}`).classList.remove('open')
+    updateEstimate()
+  } catch (e) {
+    btn.textContent  = 'Sign with Phantom to verify'
+    btn.disabled     = false
+    if (!e.message?.includes('cancelled') && !e.message?.includes('User rejected')) {
+      setStatus(3, e.message || 'Signing failed', 'error')
+    }
+  }
 }
 
 async function checkPegdBalance() {
@@ -511,11 +585,16 @@ async function checkPegdBalance() {
   }
 }
 
+function taskVerified(name) {
+  const t = state.tasks[name]
+  return t === true || (t && t.verified)
+}
+
 function getMultiplier() {
   let m = 1.0
-  if (state.tasks.telegram) m += 0.15
-  if (state.tasks.twitter)  m += 0.15
-  if (state.tasks.pegd)     m += 0.25
+  if (taskVerified('telegram')) m += 0.15
+  if (taskVerified('twitter'))  m += 0.15
+  if (taskVerified('pegd'))     m += 0.25
   return m
 }
 
@@ -539,10 +618,14 @@ document.getElementById('btn-register').addEventListener('click', async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        xrpAddress: state.xrpAddress,
-        solAddress: state.solAddress,
-        tasks: state.tasks,
-        referredBy: state.referredBy
+        xrpAddress:       state.xrpAddress,
+        solAddress:       state.solAddress,
+        referredBy:       state.referredBy,
+        tasks: {
+          pegd:     taskVerified('pegd'),
+          telegram: state.tasks.telegram || false,
+          twitter:  state.tasks.twitter  || false,
+        }
       })
     })
     const data = await res.json()
