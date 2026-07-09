@@ -546,6 +546,162 @@ function copyCmd(id) {
 </script>
 
 
+<!-- ── DIRECT MINING (Tari / XMR / KAS / ERG) ─────────────────────────── -->
+<div style="max-width:720px;margin:2rem auto 0;padding:0 1rem">
+  <div style="background:#13132e;border:1px solid rgba(153,69,255,0.25);border-radius:12px;padding:1.5rem">
+    <div style="display:flex;align-items:baseline;gap:.75rem;margin-bottom:.25rem">
+      <h2 style="color:#9945ff;font-size:1rem;letter-spacing:.05em">DIRECT MINING</h2>
+      <span style="color:#7070a0;font-size:.75rem">keep native rewards · swap to SOL when profitable</span>
+    </div>
+    <p style="color:#7070a0;font-size:.85rem;margin-bottom:1.25rem">
+      Mine any coin directly to your own wallet. Pick your coin, paste your address, and we'll generate the exact miner command.
+      Edit the pool URL to use any pool you want — or leave it at the recommended default.
+    </p>
+
+    <div style="margin-bottom:1rem">
+      <label style="display:block;color:#7070a0;font-size:.8rem;margin-bottom:.4rem;letter-spacing:.05em;text-transform:uppercase">Select Coin</label>
+      <div style="display:flex;flex-wrap:wrap;gap:.5rem" id="direct-coin-tabs">
+        <button class="algo-tab active" data-coin="XTM" onclick="selectDirectCoin(this)">⭐ Tari (XTM)</button>
+        <button class="algo-tab" data-coin="XMR" onclick="selectDirectCoin(this)">Monero (XMR)</button>
+        <button class="algo-tab" data-coin="KAS" onclick="selectDirectCoin(this)">Kaspa (KAS)</button>
+        <button class="algo-tab" data-coin="ERG" onclick="selectDirectCoin(this)">Ergo (ERG)</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1rem">
+      <label id="dw-label" style="display:block;color:#7070a0;font-size:.8rem;margin-bottom:.4rem;letter-spacing:.05em;text-transform:uppercase">Tari (XTM) Wallet Address</label>
+      <input id="dw-addr" type="text" placeholder="Your Tari address"
+             autocomplete="off" autocorrect="off" spellcheck="false"
+             style="width:100%;background:#0a0a1a;border:1px solid rgba(0,245,255,0.2);border-radius:6px;
+                    color:#e0e0ff;padding:.6rem .8rem;font-family:monospace;font-size:.85rem;outline:none">
+    </div>
+
+    <div style="margin-bottom:1rem">
+      <label style="display:block;color:#7070a0;font-size:.8rem;margin-bottom:.4rem;letter-spacing:.05em;text-transform:uppercase">
+        Pool URL <span style="color:#444466;font-size:.75rem;text-transform:none;letter-spacing:0">&mdash; edit to use any pool</span>
+      </label>
+      <input id="dw-pool" type="text" value="tari.hashvault.pro:5555"
+             placeholder="host:port"
+             autocomplete="off" spellcheck="false"
+             style="width:100%;background:#0a0a1a;border:1px solid rgba(0,245,255,0.2);border-radius:6px;
+                    color:#e0e0ff;padding:.6rem .8rem;font-family:monospace;font-size:.85rem;outline:none">
+    </div>
+
+    <div style="margin-bottom:1.25rem">
+      <label style="display:block;color:#7070a0;font-size:.8rem;margin-bottom:.4rem;letter-spacing:.05em;text-transform:uppercase">
+        Worker Name <span style="color:#444466;font-size:.75rem;text-transform:none;letter-spacing:0">(optional)</span>
+      </label>
+      <input id="dw-worker" type="text" placeholder="rig1" autocomplete="off"
+             style="width:220px;background:#0a0a1a;border:1px solid rgba(0,245,255,0.2);border-radius:6px;
+                    color:#e0e0ff;padding:.6rem .8rem;font-family:monospace;font-size:.85rem;outline:none">
+    </div>
+
+    <button onclick="generateDirectCommands()"
+            style="background:#9945ff;color:#fff;border:none;border-radius:6px;
+                   padding:.65rem 1.4rem;font-weight:700;cursor:pointer;font-size:.88rem;margin-bottom:1.25rem">
+      Generate Commands
+    </button>
+
+    <div id="direct-output" style="display:none">
+      <div id="direct-cards"></div>
+
+      <div id="direct-xtm-tip" style="
+        margin-top:1rem;padding:1rem;
+        background:rgba(153,69,255,0.08);
+        border:1px solid rgba(153,69,255,0.25);
+        border-radius:8px;display:none
+      ">
+        <div style="color:#9945ff;font-size:.8rem;font-weight:700;margin-bottom:.5rem">⚡ XTM → SOL SWAP GUIDE</div>
+        <ul style="color:#9090b8;font-size:.8rem;line-height:1.9;padding-left:1.2rem;margin:0">
+          <li>Accumulate XTM in your Tari wallet until rewards clear the pool minimum</li>
+          <li>Sell XTM on <strong style="color:#e0e0ff">TradeOgre</strong> or <strong style="color:#e0e0ff">MEXC</strong> — withdraw as BTC or USDT</li>
+          <li>Send to Phantom → swap for SOL on <a href="https://jup.ag" target="_blank" rel="noopener" style="color:#9945ff">Jupiter</a></li>
+          <li>Best entry: sell XTM when BTC is rising (XTM tends to lag, giving you a window)</li>
+          <li>XTM uses RandomX — CPU-efficient, great for spare laptops or Pi clusters</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DIRECT_COINS_CFG = {
+  XTM: {
+    walletLabel: 'Tari (XTM) Wallet Address',
+    walletPlaceholder: 'Your Tari address',
+    defaultPool: 'tari.hashvault.pro:5555',
+    isCpu: true, coin: 'tari', showTip: true,
+  },
+  XMR: {
+    walletLabel: 'Monero (XMR) Wallet Address',
+    walletPlaceholder: '4...',
+    defaultPool: 'pool.hashvault.pro:3333',
+    isCpu: true, coin: 'monero', showTip: false,
+  },
+  KAS: {
+    walletLabel: 'Kaspa (KAS) Wallet Address',
+    walletPlaceholder: 'kaspa:qq...',
+    defaultPool: 'pool.woolypooly.com:3112',
+    isCpu: false, coin: null, showTip: false,
+  },
+  ERG: {
+    walletLabel: 'Ergo (ERG) Wallet Address',
+    walletPlaceholder: '9f...',
+    defaultPool: 'erg.2miners.com:8888',
+    isCpu: false, coin: null, showTip: false,
+  },
+}
+let directCoinSel = 'XTM'
+
+function selectDirectCoin(btn) {
+  document.querySelectorAll('#direct-coin-tabs .algo-tab').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  directCoinSel = btn.dataset.coin
+  const cfg = DIRECT_COINS_CFG[directCoinSel]
+  document.getElementById('dw-label').textContent = cfg.walletLabel
+  document.getElementById('dw-addr').placeholder  = cfg.walletPlaceholder
+  document.getElementById('dw-pool').value         = cfg.defaultPool
+  document.getElementById('direct-output').style.display = 'none'
+}
+
+function generateDirectCommands() {
+  const wallet = document.getElementById('dw-addr').value.trim()
+  if (!wallet || wallet.length < 8) { alert('Enter a valid wallet address'); return }
+
+  const pool   = document.getElementById('dw-pool').value.trim() || DIRECT_COINS_CFG[directCoinSel].defaultPool
+  const worker = document.getElementById('dw-worker').value.trim() || 'rig1'
+  const cfg    = DIRECT_COINS_CFG[directCoinSel]
+  const user   = `${wallet}.${worker}`
+  const pass   = 'x'
+
+  let cards = ''
+
+  if (cfg.isCpu) {
+    const coinFlag = cfg.coin ? ` --coin ${cfg.coin}` : ''
+    const coinJson = cfg.coin ? `,\n  "coin": "${cfg.coin}"` : ''
+    cards += cmdBlock('XMRig (CPU)',
+      `xmrig${coinFlag} -o stratum+tcp://${pool} -u "${user}" -p ${pass}`)
+    cards += cmdBlock('XMRig config.json snippet',
+      `"pools": [{\n  "url": "${pool}",\n  "user": "${user}",\n  "pass": "${pass}"${coinJson}\n}]`)
+  } else if (directCoinSel === 'KAS') {
+    cards += cmdBlock('lolMiner (NVIDIA / AMD)',
+      `lolMiner --algo KHEAVYHASH --pool stratum+tcp://${pool} --user "${wallet}" --worker ${worker} --pass ${pass}`)
+    cards += cmdBlock('BzMiner',
+      `bzminer -a kaspa -p stratum+tcp://${pool} -w "${wallet}.${worker}" --pass ${pass}`)
+  } else if (directCoinSel === 'ERG') {
+    cards += cmdBlock('lolMiner (NVIDIA / AMD)',
+      `lolMiner --algo AUTOLYKOS2 --pool stratum+tcp://${pool} --user "${wallet}" --worker ${worker} --pass ${pass}`)
+    cards += cmdBlock('nanominer',
+      `nanominer -a Autolykos2 -r stratum+tcp://${pool} -w "${wallet}.${worker}"`)
+  }
+
+  document.getElementById('direct-cards').innerHTML = cards
+  document.getElementById('direct-output').style.display = ''
+  document.getElementById('direct-xtm-tip').style.display = cfg.showTip ? '' : 'none'
+}
+</script>
+
+
 <section class="chat-section">
   <h2 class="chat-title">Miner Chat</h2>
   <p class="chat-sub">Open to everyone — say hi, share your hashrate, ask questions.</p>
