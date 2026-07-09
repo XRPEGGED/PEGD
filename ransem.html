@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RANSEM — The XRP Community Token</title>
+  <meta name="description" content="RANSEM (RNSM) — born on XRP, living on Solana. Real-time price, top holders, and everything you need to know.">
+  <link rel="icon" type="image/jpeg" href="/pegged.jpg">
+  <style>
+    :root {
+      --bg:     #06060f;
+      --bg2:    #0a0a1a;
+      --bg3:    #0f0f22;
+      --card:   #12122a;
+      --border: rgba(255,184,0,0.15);
+      --gold:   #ffb800;
+      --gold2:  #ff8c00;
+      --neon:   #00f5ff;
+      --purple: #9945ff;
+      --text:   #e8e8ff;
+      --muted:  #6060a0;
+      --green:  #10b981;
+      --red:    #ef4444;
+      --radius: 12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; }
+
+    /* ── NAV ── */
+    .site-nav { position: sticky; top: 0; z-index: 100; background: rgba(6,6,15,0.96); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 1.5rem; }
+    .ni { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .brand { font-weight: 900; font-size: 1rem; color: var(--gold); text-decoration: none; letter-spacing: 1px; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-left: 1.25rem; transition: color .2s; }
+    .nav-links a:hover { color: var(--gold); }
+    @media(max-width:520px){ .nav-links a { margin-left: .6rem; font-size: .75rem; } }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 4rem 1.5rem 3rem;
+      background: radial-gradient(ellipse at top, rgba(255,184,0,0.08) 0%, transparent 65%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 40px,
+        rgba(255,184,0,0.02) 40px,
+        rgba(255,184,0,0.02) 41px
+      );
+    }
+    .hero-logo {
+      font-size: 4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-bottom: .5rem;
+      position: relative;
+    }
+    .hero-ticker {
+      display: inline-block;
+      background: rgba(255,184,0,0.12);
+      border: 1px solid rgba(255,184,0,0.3);
+      color: var(--gold);
+      border-radius: 20px;
+      padding: .2rem .85rem;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+    .hero-tagline {
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      color: var(--muted);
+      max-width: 540px;
+      margin: 0 auto 2rem;
+      position: relative;
+    }
+    .price-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .75rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .75rem 1.5rem;
+      position: relative;
+    }
+    .price-big { font-size: 1.8rem; font-weight: 900; color: var(--gold); font-variant-numeric: tabular-nums; }
+    .price-change { font-size: .9rem; font-weight: 700; }
+    .price-change.up { color: var(--green); }
+    .price-change.down { color: var(--red); }
+
+    /* ── STATS ── */
+    .stats-section { max-width: 1000px; margin: 0 auto; padding: 2rem 1.25rem 0; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .stat-cell { background: var(--card); padding: 1.1rem 1.25rem; }
+    .stat-label { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: .3rem; }
+    .stat-val { font-size: 1.3rem; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
+    .stat-sub { font-size: .7rem; color: var(--muted); margin-top: .15rem; }
+
+    /* ── CHART ── */
+    .chart-section { max-width: 1000px; margin: 2rem auto 0; padding: 0 1.25rem; }
+    .chart-section h2 { font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: .75rem; }
+    .chart-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+
+    /* ── ABOUT ── */
+    .about-section { max-width: 1000px; margin: 2.5rem auto 0; padding: 0 1.25rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width:640px){ .about-section { grid-template-columns: 1fr; } }
+    .about-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+    .about-card h3 { font-size: .75rem; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; margin-bottom: .75rem; }
+    .about-card p, .about-card li { font-size: .88rem; color: var(--muted); line-height: 1.8; }
+    .about-card ul { padding-left: 1.1rem; }
+    .about-card li { margin-bottom: .25rem; }
+    .about-card a { color: var(--gold); text-decoration: none; }
+    .about-card a:hover { text-decoration: underline; }
+    .highlight { color: var(--text); font-weight: 600; }
+
+    /* ── DISTRIBUTION ── */
+    .dist-section { max-width: 1000px; margin: 2rem auto 0; padding: 0 1.25rem; }
+    .dist-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+    .dist-card h3 { font-size: .75rem; color: var(--gold); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 1.25rem; }
+    .dist-row { display: flex; align-items: center; gap: 1rem; margin-bottom: .85rem; }
+    .dist-row:last-child { margin-bottom: 0; }
+    .dist-label { font-size: .82rem; color: var(--text); min-width: 160px; }
+    .dist-bar-wrap { flex: 1; background: var(--bg2); border-radius: 100px; height: 8px; overflow: hidden; }
+    .dist-bar { height: 100%; border-radius: 100px; transition: width 1.2s ease; }
+    .dist-pct { font-size: .82rem; font-weight: 700; color: var(--gold); min-width: 40px; text-align: right; }
+
+    /* ── HOLDERS ── */
+    .holders-section { max-width: 1000px; margin: 2rem auto 0; padding: 0 1.25rem; }
+    .holders-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: .75rem; flex-wrap: wrap; gap: .5rem; }
+    .holders-header h2 { font-size: .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+    .holders-refresh { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-size: .72rem; padding: .25rem .7rem; cursor: pointer; transition: all .2s; }
+    .holders-refresh:hover { border-color: var(--gold); color: var(--gold); }
+    .holders-table { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .h-row { display: grid; grid-template-columns: 36px 1fr 130px 110px; align-items: center; padding: .65rem 1rem; border-bottom: 1px solid rgba(255,184,0,0.06); font-size: .82rem; gap: .5rem; }
+    .h-row:last-child { border-bottom: none; }
+    .h-row.head { background: var(--bg3); font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .h-row:not(.head):hover { background: rgba(255,184,0,0.04); }
+    .h-rank { color: var(--muted); font-size: .75rem; font-weight: 700; }
+    .h-rank.top3 { color: var(--gold); }
+    .h-addr { font-family: monospace; font-size: .78rem; color: var(--neon); text-decoration: none; }
+    .h-addr:hover { text-decoration: underline; }
+    .h-amount { font-variant-numeric: tabular-nums; color: var(--text); }
+    .h-pct { color: var(--muted); font-size: .78rem; }
+    .h-pct-bar { display: flex; align-items: center; gap: .5rem; }
+    .h-bar { flex: 1; background: var(--bg2); border-radius: 100px; height: 4px; overflow: hidden; }
+    .h-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold2)); border-radius: 100px; }
+    .holders-loading { padding: 2.5rem; text-align: center; color: var(--muted); font-size: .85rem; }
+    .holders-note { font-size: .72rem; color: var(--muted); margin-top: .5rem; text-align: right; }
+    @media(max-width:520px){ .h-row { grid-template-columns: 28px 1fr 90px; } .h-row > *:last-child { display: none; } }
+
+    /* ── BUY ── */
+    .buy-section { max-width: 1000px; margin: 2.5rem auto 0; padding: 0 1.25rem; }
+    .buy-card { background: linear-gradient(135deg, rgba(255,184,0,0.08), rgba(255,140,0,0.04)); border: 1px solid rgba(255,184,0,0.3); border-radius: var(--radius); padding: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; }
+    .buy-card h3 { font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: .25rem; }
+    .buy-card p { font-size: .85rem; color: var(--muted); }
+    .buy-btn { display: inline-flex; align-items: center; gap: .5rem; background: linear-gradient(135deg, var(--gold), var(--gold2)); color: #000; font-weight: 800; font-size: .95rem; padding: .75rem 1.75rem; border-radius: var(--radius); text-decoration: none; white-space: nowrap; transition: opacity .2s, transform .2s; }
+    .buy-btn:hover { opacity: .88; transform: translateY(-1px); }
+    .mint-chip { font-family: monospace; font-size: .72rem; color: var(--muted); margin-top: .5rem; word-break: break-all; }
+    .mint-chip a { color: var(--gold); text-decoration: none; }
+
+    /* ── LINKS ROW ── */
+    .links-row { max-width: 1000px; margin: 1.5rem auto 0; padding: 0 1.25rem; display: flex; flex-wrap: wrap; gap: .75rem; }
+    .link-chip { display: inline-flex; align-items: center; gap: .4rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: .45rem .9rem; font-size: .8rem; color: var(--muted); text-decoration: none; transition: all .2s; }
+    .link-chip:hover { border-color: var(--gold); color: var(--gold); }
+
+    footer { text-align: center; padding: 3rem 1.5rem; color: var(--muted); font-size: .8rem; border-top: 1px solid var(--border); margin-top: 4rem; }
+    footer a { color: var(--gold); text-decoration: none; }
+
+    /* pulse dot */
+    .live-dot { display: inline-block; width: 7px; height: 7px; background: var(--green); border-radius: 50%; margin-right: 5px; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+  </style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="ni">
+    <a href="/" class="brand">XRPEGGED</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/ransem.html" style="color:var(--gold)">RANSEM</a>
+      <a href="/rnsm-airdrop">Airdrop</a>
+      <a href="/mine.html">Mine</a>
+      <a href="/pool.html">Pool</a>
+      <a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-ticker">RNSM · Solana</div>
+  <div class="hero-logo">RANSEM</div>
+  <p class="hero-tagline">Born from the XRP community. Named after the legend. Living on Solana.</p>
+  <div class="price-badge">
+    <div>
+      <div style="font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.15rem"><span class="live-dot"></span>Live Price</div>
+      <div class="price-big" id="hero-price">—</div>
+    </div>
+    <div>
+      <div style="font-size:.65rem;color:var(--muted);margin-bottom:.15rem">24h</div>
+      <div class="price-change" id="hero-change">—</div>
+    </div>
+    <div>
+      <div style="font-size:.65rem;color:var(--muted);margin-bottom:.15rem">Liquidity</div>
+      <div style="font-size:1rem;font-weight:700;color:var(--text)" id="hero-liq">—</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-cell">
+      <div class="stat-label">Price USD</div>
+      <div class="stat-val" id="stat-price">—</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Market Cap</div>
+      <div class="stat-val" id="stat-mc">—</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">FDV</div>
+      <div class="stat-val" id="stat-fdv">—</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">24h Volume</div>
+      <div class="stat-val" id="stat-vol">—</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">Liquidity</div>
+      <div class="stat-val" id="stat-liq">—</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-label">5m / 1h / 24h</div>
+      <div class="stat-val" style="font-size:.95rem" id="stat-changes">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- CHART -->
+<div class="chart-section">
+  <h2>Price Chart</h2>
+  <div class="chart-wrap">
+    <iframe
+      id="ransem-chart"
+      src="about:blank"
+      style="width:100%;height:460px;border:none;display:block;"
+      allow="clipboard-write"
+      title="RANSEM price chart">
+    </iframe>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="about-section">
+  <div class="about-card">
+    <h3>What is RANSEM?</h3>
+    <p>
+      <span class="highlight">RANSEM (RNSM)</span> is a community token built around the XRP ecosystem and the legendary figure known as Ansem — one of crypto's most influential voices for XRP and Solana.
+    </p>
+    <br>
+    <p>
+      The name is a mashup: <span class="highlight">R</span>ansom + <span class="highlight">Ansem</span> — a nod to the cult following that formed around his calls. RANSEM launched on Solana, backed by the XRPEGGED treasury, with <span class="highlight">150 million tokens airdropped free</span> to verified XRP holders.
+    </p>
+    <br>
+    <p>
+      It's not just a meme. The XRPEGGED compute pool backs the token with real hashrate, and PEGD buybacks create organic demand. RANSEM is the community layer on top.
+    </p>
+  </div>
+
+  <div class="about-card">
+    <h3>Key Facts</h3>
+    <ul>
+      <li>Total supply: <span class="highlight">1,000,000,000 RNSM</span></li>
+      <li>Airdrop allocation: <span class="highlight">150M RNSM</span> to XRP holders</li>
+      <li>Mint authority: <span class="highlight">Revoked</span> — supply is fixed forever</li>
+      <li>Freeze authority: <span class="highlight">Revoked</span> — no wallet can ever be frozen</li>
+      <li>Metadata: <span class="highlight">Immutable</span> — locked on-chain</li>
+      <li>Chain: <span class="highlight">Solana</span></li>
+      <li>DEX: <span class="highlight">Raydium / Jupiter</span></li>
+      <li>No team tokens, no VC allocation</li>
+      <li>Treasury wallet publicly verifiable on-chain</li>
+    </ul>
+  </div>
+</div>
+
+<!-- DISTRIBUTION -->
+<div class="dist-section">
+  <div class="dist-card">
+    <h3>Token Distribution</h3>
+
+    <div class="dist-row">
+      <div class="dist-label">🎁 XRP Holder Airdrop</div>
+      <div class="dist-bar-wrap"><div class="dist-bar" style="width:0%;background:linear-gradient(90deg,#ffb800,#ff8c00)" data-pct="15"></div></div>
+      <div class="dist-pct">15%</div>
+    </div>
+    <div class="dist-row">
+      <div class="dist-label">💧 Liquidity Pool</div>
+      <div class="dist-bar-wrap"><div class="dist-bar" style="width:0%;background:linear-gradient(90deg,#00f5ff,#9945ff)" data-pct="30"></div></div>
+      <div class="dist-pct">30%</div>
+    </div>
+    <div class="dist-row">
+      <div class="dist-label">⛏️ Compute Mining Rewards</div>
+      <div class="dist-bar-wrap"><div class="dist-bar" style="width:0%;background:linear-gradient(90deg,#10b981,#00f5ff)" data-pct="30"></div></div>
+      <div class="dist-pct">30%</div>
+    </div>
+    <div class="dist-row">
+      <div class="dist-label">🏦 Treasury Reserve</div>
+      <div class="dist-bar-wrap"><div class="dist-bar" style="width:0%;background:linear-gradient(90deg,#9945ff,#ffb800)" data-pct="25"></div></div>
+      <div class="dist-pct">25%</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOLDERS -->
+<div class="holders-section">
+  <div class="holders-header">
+    <h2>Top Holders <span style="color:var(--gold);margin-left:.5rem" id="holder-count"></span></h2>
+    <button class="holders-refresh" onclick="loadHolders()" type="button">↻ Refresh</button>
+  </div>
+  <div class="holders-table" id="holders-table">
+    <div class="holders-loading">Loading holders…</div>
+  </div>
+  <p class="holders-note">Top 20 by balance · <span class="live-dot"></span>Live from Solana RPC</p>
+</div>
+
+<!-- BUY -->
+<div class="buy-section">
+  <div class="buy-card">
+    <div>
+      <h3>Get RANSEM</h3>
+      <p>Swap any token for RNSM instantly on Jupiter — best price across all Solana DEXs.</p>
+      <div class="mint-chip">Mint: <a href="https://solscan.io/token/2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE" target="_blank" rel="noopener">2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE</a></div>
+    </div>
+    <a class="buy-btn" href="https://jup.ag/swap/SOL-2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE" target="_blank" rel="noopener">
+      ⚡ Buy on Jupiter
+    </a>
+  </div>
+</div>
+
+<!-- LINKS -->
+<div class="links-row">
+  <a class="link-chip" href="https://solscan.io/token/2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE" target="_blank" rel="noopener">🔍 Solscan</a>
+  <a class="link-chip" href="https://dexscreener.com/solana/2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE" target="_blank" rel="noopener">📊 DEXScreener</a>
+  <a class="link-chip" href="https://birdeye.so/token/2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE" target="_blank" rel="noopener">🦅 Birdeye</a>
+  <a class="link-chip" href="/rnsm-airdrop" >🎁 Airdrop Registration</a>
+  <a class="link-chip" href="https://t.me/xrpegged" target="_blank" rel="noopener">💬 Telegram</a>
+  <a class="link-chip" href="/" >🏠 XRPEGGED Home</a>
+</div>
+
+<footer>
+  <p>RANSEM (RNSM) · <a href="/">XRPEGGED</a> · <a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a></p>
+  <p style="margin-top:.5rem">Not financial advice. Do your own research.</p>
+</footer>
+
+<script>
+const MINT = '2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE'
+const RPC  = 'https://solana.publicnode.com'
+
+function fmt$(n) {
+  if (!n) return '—'
+  if (n >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B'
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(2) + 'M'
+  if (n >= 1e3) return '$' + (n/1e3).toFixed(1) + 'K'
+  return '$' + n.toFixed(2)
+}
+
+function fmtN(n) {
+  if (!n) return '—'
+  if (n >= 1e9) return (n/1e9).toFixed(2) + 'B'
+  if (n >= 1e6) return (n/1e6).toFixed(2) + 'M'
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K'
+  return n.toLocaleString()
+}
+
+function fmtPct(n) {
+  if (n == null) return '—'
+  const s = n >= 0 ? '+' : ''
+  return s + n.toFixed(2) + '%'
+}
+
+function chgClass(n) { return n >= 0 ? 'up' : 'down' }
+
+// ── DEXScreener ──
+async function loadPrice() {
+  try {
+    const res  = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${MINT}`)
+    const data = await res.json()
+    const pairs = (data.pairs || []).sort((a,b) => (b.liquidity?.usd||0) - (a.liquidity?.usd||0))
+    const p = pairs[0]
+    if (!p) return
+
+    const price  = parseFloat(p.priceUsd || '0')
+    const chg24  = p.priceChange?.h24 || 0
+    const chg1h  = p.priceChange?.h1  || 0
+    const chg5m  = p.priceChange?.m5  || 0
+    const mc     = p.marketCap || 0
+    const fdv    = p.fdv || 0
+    const vol24  = p.volume?.h24 || 0
+    const liq    = p.liquidity?.usd || 0
+
+    // Hero
+    document.getElementById('hero-price').textContent  = price < 0.01 ? '$' + price.toExponential(3) : '$' + price.toFixed(6)
+    const hc = document.getElementById('hero-change')
+    hc.textContent  = fmtPct(chg24)
+    hc.className    = 'price-change ' + chgClass(chg24)
+    document.getElementById('hero-liq').textContent    = fmt$(liq)
+
+    // Stats
+    document.getElementById('stat-price').textContent   = price < 0.001 ? '$' + price.toExponential(3) : '$' + price.toFixed(6)
+    document.getElementById('stat-mc').textContent      = fmt$(mc)
+    document.getElementById('stat-fdv').textContent     = fmt$(fdv)
+    document.getElementById('stat-vol').textContent     = fmt$(vol24)
+    document.getElementById('stat-liq').textContent     = fmt$(liq)
+    document.getElementById('stat-changes').innerHTML   =
+      `<span class="${chgClass(chg5m)}" style="color:${chg5m>=0?'var(--green)':'var(--red)'}">${fmtPct(chg5m)}</span> / ` +
+      `<span style="color:${chg1h>=0?'var(--green)':'var(--red)'}">${fmtPct(chg1h)}</span> / ` +
+      `<span style="color:${chg24>=0?'var(--green)':'var(--red)'}">${fmtPct(chg24)}</span>`
+
+    // Wire up chart using the best pair's pool address
+    const frame = document.getElementById('ransem-chart')
+    if (frame.src === 'about:blank' && p.pairAddress) {
+      frame.src = `https://www.geckoterminal.com/solana/pools/${p.pairAddress}?embed=1&info=0&swaps=0&grayscale=0&light_chart=0`
+    }
+
+  } catch(e) { console.error('price fetch failed', e) }
+}
+
+// ── Holders via Solana RPC ──
+async function rpc(method, params) {
+  const res = await fetch(RPC, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params }),
+  })
+  const d = await res.json()
+  return d.result
+}
+
+async function loadHolders() {
+  const table = document.getElementById('holders-table')
+  table.innerHTML = '<div class="holders-loading">Loading holders…</div>'
+  try {
+    // Get supply for % calc
+    const supplyRes = await rpc('getTokenSupply', [MINT])
+    const totalSupply = parseFloat(supplyRes?.value?.uiAmount || '1000000000')
+
+    // Top 20 token accounts by balance
+    const largest = await rpc('getTokenLargestAccounts', [MINT])
+    const accounts = largest?.value || []
+
+    document.getElementById('holder-count').textContent = ''
+
+    // Resolve each token account → owner wallet
+    const owners = await Promise.all(accounts.map(async (acct) => {
+      try {
+        const info = await rpc('getAccountInfo', [acct.address, { encoding: 'jsonParsed' }])
+        const owner = info?.value?.data?.parsed?.info?.owner || acct.address
+        return { owner, amount: parseFloat(acct.uiAmountString || '0') }
+      } catch { return { owner: acct.address, amount: parseFloat(acct.uiAmountString || '0') } }
+    }))
+
+    const maxAmt = owners[0]?.amount || 1
+
+    const head = `<div class="h-row head">
+      <div>#</div><div>Wallet</div><div>Balance</div><div>% Supply</div>
+    </div>`
+
+    const rows = owners.map((h, i) => {
+      const pct     = (h.amount / totalSupply * 100)
+      const barPct  = (h.amount / maxAmt * 100)
+      const rankCls = i < 3 ? 'top3' : ''
+      const short   = h.owner.slice(0,6) + '…' + h.owner.slice(-4)
+      return `<div class="h-row">
+        <div class="h-rank ${rankCls}">${i+1}</div>
+        <a class="h-addr" href="https://solscan.io/account/${h.owner}" target="_blank" rel="noopener" title="${h.owner}">${short}</a>
+        <div class="h-amount">${fmtN(h.amount)}</div>
+        <div class="h-pct-bar">
+          <div class="h-bar"><div class="h-bar-fill" style="width:${barPct.toFixed(1)}%"></div></div>
+          <span class="h-pct">${pct.toFixed(2)}%</span>
+        </div>
+      </div>`
+    }).join('')
+
+    table.innerHTML = head + rows
+  } catch(e) {
+    table.innerHTML = '<div class="holders-loading">Failed to load holders — try refreshing.</div>'
+    console.error(e)
+  }
+}
+
+// ── Animate distribution bars ──
+function animateBars() {
+  document.querySelectorAll('.dist-bar[data-pct]').forEach(bar => {
+    setTimeout(() => { bar.style.width = bar.dataset.pct + '%' }, 200)
+  })
+}
+
+// ── Init ──
+loadPrice()
+loadHolders()
+animateBars()
+setInterval(loadPrice, 30000)
+</script>
+</body>
+</html>
