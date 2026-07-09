@@ -200,7 +200,7 @@ async function analyze(wallet) {
     renderPools(data.pools)
 
     const adviceEl = document.getElementById('advice-box')
-    adviceEl.textContent = data.advice || 'No advice returned — check GROQ_API_KEY is configured.'
+    adviceEl.textContent = data.advice || 'No advice returned — try again in a moment.'
     adviceEl.style.display = 'block'
 
     setStatus('', '')

@@ -141,8 +141,8 @@
     <div class="entry-body">
       <span class="entry-tag tag-new">New</span>
       <div class="entry-title">AI Trade Advisor — free Solana portfolio analysis</div>
-      <div class="entry-desc">Paste any Solana wallet and get instant AI-powered advice on what to hold, sell, and where to add liquidity — based on live on-chain data and PEGD pool stats. Powered by Llama 3.3 70B via Groq. Free forever, no login required.</div>
-      <div class="entry-pills"><span class="pill"><a href="/advisor">Try it →</a></span><span class="pill">Groq AI</span><span class="pill">DEXScreener</span></div>
+      <div class="entry-desc">Paste any Solana wallet and get instant AI-powered advice on what to hold, sell, and where to add liquidity — based on live on-chain data and PEGD pool stats. Powered by Cloudflare AI (DeepSeek R1). Free forever, no login required.</div>
+      <div class="entry-pills"><span class="pill"><a href="/advisor">Try it →</a></span><span class="pill">Cloudflare AI</span><span class="pill">DEXScreener</span></div>
     </div>
   </div>
 
@@ -486,5 +486,21 @@
   Updates are logged as features ship. All dates are approximate.
   <a href="/disclaimer.html" style="color:#7070a0">Full disclaimer →</a>
 </p>
+<script>
+// Compute relative dates dynamically so "today" / "X days ago" stay accurate
+document.querySelectorAll('.entry-date').forEach(el => {
+  const dayEl = el.querySelector('.day')
+  const relEl = el.querySelector('.rel')
+  if (!dayEl || !relEl) return
+  const date = new Date(dayEl.textContent.trim())
+  if (isNaN(date)) return
+  const days = Math.round((Date.now() - date) / 86400000)
+  if (days === 0)       relEl.textContent = 'today'
+  else if (days === 1)  relEl.textContent = 'yesterday'
+  else if (days < 30)   relEl.textContent = `${days} days ago`
+  else if (days < 365)  relEl.textContent = `${Math.round(days/30)} mo ago`
+  else                  relEl.textContent = `${Math.round(days/365)}y ago`
+})
+</script>
 </body>
 </html>
