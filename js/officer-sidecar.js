@@ -36,11 +36,8 @@
       width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 800;
       font-size: 0.85rem; cursor: pointer;
     }
-    #xrpeg-sidecar .gate .btn-xumm { background: linear-gradient(135deg, #0052ff, #0039b3); color: #fff; }
     #xrpeg-sidecar .gate .btn-phantom { background: linear-gradient(135deg, #9945ff, #7c3aed); color: #fff; }
     #xrpeg-sidecar .gate .err { color: #f87171; font-size: 0.78rem; min-height: 1.2rem; }
-    #xrpeg-sidecar .gate .qr { max-width: 180px; margin: 8px auto; border-radius: 8px; display: none; }
-    #xrpeg-sidecar .gate .qr.visible { display: block; }
     #xrpeg-sidecar .main { flex: 1; display: flex; flex-direction: column; min-height: 0; }
     #xrpeg-sidecar .main.hidden { display: none; }
     #xrpeg-sidecar .chips { padding: 10px 12px; display: flex; flex-wrap: wrap; gap: 6px; }
@@ -82,22 +79,20 @@
   fab.id = 'xrpeg-sidecar-fab'
   fab.type = 'button'
   fab.className = 'locked'
-  fab.textContent = '◎ Officers'
-  fab.setAttribute('aria-label', 'Open XRPEGGED officers panel')
+  fab.textContent = '◎ Portal'
+  fab.setAttribute('aria-label', 'Open XRPEGGED portal')
 
   const panel = document.createElement('aside')
   panel.id = 'xrpeg-sidecar'
   panel.innerHTML = `
     <header>
-      <h2>XRPEGGED Officers</h2>
+      <h2>XRPEGGED Portal</h2>
       <span class="session-pill hidden" id="xrpeg-sidecar-pill"></span>
       <button type="button" class="close" aria-label="Close">✕</button>
     </header>
     <div class="gate" id="xrpeg-sidecar-gate">
-      <p><strong style="color:#e0e0ff">Wallet sign-in required.</strong> Officers panel is Chairman-only. Connect Xaman or Phantom — your wallet must be on the allowlist.</p>
-      <button type="button" class="btn btn-xumm" id="xrpeg-gate-xumm">🔵 Sign in with Xaman</button>
+      <p><strong style="color:#e0e0ff">Wallet sign-in required.</strong> Portal is Chairman-only. Connect Phantom — your wallet must be on the allowlist.</p>
       <button type="button" class="btn btn-phantom" id="xrpeg-gate-phantom">🟣 Sign in with Phantom</button>
-      <img class="qr" id="xrpeg-gate-qr" alt="Xumm QR" width="180" height="180">
       <p class="err" id="xrpeg-gate-msg"></p>
       <p style="font-size:0.72rem;color:#505070;margin-top:auto;">Full HUD: <a href="/portal.html" style="color:#00f5ff">portal.html</a></p>
     </div>
@@ -111,7 +106,7 @@
       <div class="log" id="xrpeg-sidecar-log"></div>
       <a class="portal-link" href="/portal.html">Open Command HUD →</a>
       <form id="xrpeg-sidecar-form">
-        <input type="text" placeholder="Ask the officers…" maxlength="500" autocomplete="off">
+        <input type="text" placeholder="Ask the portal…" maxlength="500" autocomplete="off">
         <button type="submit" class="send">Ask</button>
       </form>
     </div>
@@ -168,7 +163,7 @@
       gate.style.display = 'none'
       main.classList.remove('hidden')
       fab.classList.remove('locked')
-      fab.textContent = '◎ Officers'
+      fab.textContent = '◎ Portal'
       const rail = session.rail === 'xrpl' ? 'Xaman' : 'Phantom'
       const addr = window.XrpegPortal?.shortAddr(session.address) || session.address
       pill.textContent = `${rail} ${addr}`
@@ -179,7 +174,7 @@
       gate.style.display = ''
       main.classList.remove('hidden')
       fab.classList.add('locked')
-      fab.textContent = '◎ Officers'
+      fab.textContent = '◎ Portal'
       pill.classList.add('hidden')
       // keep prior log or clear on sign-out only
       greeted = false
@@ -211,66 +206,6 @@
       append('CEO', err instanceof Error ? err.message : 'Briefing offline — try again.')
     }
   }
-
-  async function pollXumm(payloadId) {
-    for (let i = 0; i < 90; i++) {
-      const res = await fetch('/api/xumm/poll', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payloadId }),
-      })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(data?.error || 'Xumm poll failed')
-      if (data.pending) {
-        await new Promise((r) => setTimeout(r, 2000))
-        continue
-      }
-      if (data.signed && data.account) return data.account
-      throw new Error('Xumm sign-in cancelled')
-    }
-    throw new Error('Xumm timed out')
-  }
-
-  panel.querySelector('#xrpeg-gate-xumm').addEventListener('click', async () => {
-    gateMsg.textContent = 'Opening Xumm…'
-    try {
-      const res = await fetch('/api/xumm/auth', { method: 'POST' })
-      const data = await res.json()
-      if (!res.ok || !data?.success) throw new Error(data?.error || 'Xumm auth failed')
-      if (data.qr) {
-        gateQr.src = data.qr
-        gateQr.classList.add('visible')
-      }
-      if (data.deeplink) window.open(data.deeplink, '_blank', 'noopener')
-      gateMsg.textContent = 'Scan QR or approve in Xumm…'
-      const account = await pollXumm(data.uuid)
-      try {
-        const session = await window.XrpegPortal.verifyXumm(data.uuid)
-        setAuthUi(session)
-        gateMsg.textContent = ''
-      } catch (portalErr) {
-        const msg = portalErr instanceof Error ? portalErr.message : 'Portal sign-in failed'
-        if (msg.includes('not configured')) {
-          gateMsg.textContent =
-            'Wallet connected (' +
-            (window.XrpegPortal?.shortAddr(account) || account) +
-            ') — Full officers requires sign-in via /portal.html. Public brief (market/treasury) works without.'
-          window.dispatchEvent(
-            new CustomEvent('xrpeg-buyer-connected', { detail: { address: account, rail: 'xumm' } })
-          )
-        } else {
-          throw portalErr
-        }
-      }
-      gateQr.classList.remove('visible')
-      if (!greeted) {
-        greeted = true
-        ask('help')
-      }
-    } catch (err) {
-      gateMsg.textContent = err instanceof Error ? err.message : 'Xumm failed'
-    }
-  })
 
   panel.querySelector('#xrpeg-gate-phantom').addEventListener('click', async () => {
     gateMsg.textContent = 'Connect Phantom…'
