@@ -11,17 +11,10 @@ echo "=== CURRENT STATE (from wrangler) ==="
 npx wrangler pages secret list --project-name pegd 2>&1 || true
 echo ""
 
-# LATEST PRE-GENERATED (use this P0k... value for PORTAL_SESSION_SECRET to match prior turns; script also gens fresh below)
-LATEST_SECRET="P0kXpofCiKzHo1Iu53niUHGWIziT2MXvF7bO3nOJGjWMl7kC"
-echo "LATEST PREPARED PORTAL_SESSION_SECRET (from yesterday prep): $LATEST_SECRET"
-echo "  (Use this or the fresh generated below. Do NOT commit.)"
-echo ""
-
 echo "=== GENERATING FRESH PORTAL_SESSION_SECRET ==="
 SECRET="$(openssl rand -base64 48 | tr -d '/+=' | head -c 48)"
-echo "FRESH PORTAL_SESSION_SECRET (save offline NOW — shown once only):"
+echo "FRESH PORTAL_SESSION_SECRET (save offline NOW — shown once only, never committed):"
 echo "$SECRET"
-echo "(Primary for this run: use LATEST_PREPARED $LATEST_SECRET above for yesterday consistency.)"
 echo ""
 
 # Example using known treasuries (edit to your exact wallets for ALLOWLIST)
@@ -30,12 +23,11 @@ echo "Suggested ALLOWLIST (comma-sep; prefixed or bare ok per portal.js; treasur
 echo "$EXAMPLE_ALLOWLIST"
 echo ""
 
-echo "=== ONE-CLICK READY BLOCK (use LATEST or fresh; paste this whole section after wrangler login) ==="
+echo "=== ONE-CLICK READY BLOCK (paste this whole section after wrangler login) ==="
 echo "cd /home/cube/Desktop/pegd-site"
 echo ""
-echo "# 1. PORTAL_SESSION_SECRET (paste LATEST or fresh value at wrangler prompt, or use piped):"
-echo "printf '%s' \"$LATEST_SECRET\" | npx wrangler pages secret put PORTAL_SESSION_SECRET --project-name pegd"
-echo "# (or with fresh: printf '%s' \"$SECRET\" | ... )"
+echo "# 1. PORTAL_SESSION_SECRET (piped from the fresh value generated above):"
+echo "printf '%s' \"$SECRET\" | npx wrangler pages secret put PORTAL_SESSION_SECRET --project-name pegd"
 echo ""
 echo "# 2. PORTAL_ALLOWLIST (exact treasury; pipe or prompt):"
 echo "printf '%s' \"$EXAMPLE_ALLOWLIST\" | npx wrangler pages secret put PORTAL_ALLOWLIST --project-name pegd"
@@ -52,7 +44,7 @@ echo ""
 echo "=== CF DASHBOARD UI ALT (no CLI at all; use for first-time or double-check; secrets instant) ==="
 echo "1. dash.cloudflare.com > Pages > pegd > Settings > Environment variables (Production section; also Preview)"
 echo "2. Add (secret/locked type for keys):"
-echo "   PORTAL_SESSION_SECRET = $LATEST_SECRET   (or fresh)"
+echo "   PORTAL_SESSION_SECRET = $SECRET"
 echo "   PORTAL_ALLOWLIST = $EXAMPLE_ALLOWLIST"
 echo "   SUPABASE_SERVICE_ROLE_KEY = <your service_role from Supabase>"
 echo "   SUPABASE_URL = https://tmaeezonwjyydkxwpeug.supabase.co"
@@ -79,7 +71,7 @@ echo ""
 read -p "Auto-execute the core puts now (will pipe LATEST/fresh; enter values at prompts if needed)? [y/N] " do_run
 if [[ "$do_run" =~ ^[Yy]$ ]]; then
   echo "Piping PORTAL_SESSION_SECRET (LATEST)..."
-  printf '%s' "$LATEST_SECRET" | npx wrangler pages secret put PORTAL_SESSION_SECRET --project-name pegd || echo " (may require interactive; run the printf line above manually)"
+  printf '%s' "$SECRET" | npx wrangler pages secret put PORTAL_SESSION_SECRET --project-name pegd || echo " (may require interactive; run the printf line above manually)"
   echo ""
   printf '%s' "$EXAMPLE_ALLOWLIST" | npx wrangler pages secret put PORTAL_ALLOWLIST --project-name pegd || echo " (manual run needed for allowlist)"
   echo ""
