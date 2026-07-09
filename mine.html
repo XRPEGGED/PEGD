@@ -418,27 +418,13 @@
       <div id="linux-cmd" style="flex:1;background:#050510;border:1px solid rgba(16,185,129,0.4);border-radius:8px;
                                   padding:.75rem 1rem;font-family:monospace;font-size:.88rem;color:#e0e0ff;
                                   cursor:pointer;user-select:all;overflow-x:auto;white-space:nowrap"
-           onclick="copyWorkerCmd('linux')" title="Click to copy">curl -fsSL https://pegd.org/install.sh | bash</div>
-      <button type="button" onclick="copyWorkerCmd('linux')"
+           onclick="copyWorkerCmd()" title="Click to copy">curl -fsSL https://pegd.org/install.sh | bash</div>
+      <button type="button" onclick="copyWorkerCmd()"
               style="flex-shrink:0;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.4);
                      border-radius:8px;color:#10b981;padding:.65rem 1rem;font-size:.82rem;
                      font-weight:700;cursor:pointer;white-space:nowrap">Copy</button>
     </div>
     <p id="linux-confirm" style="color:#10b981;font-size:.75rem;margin-bottom:.75rem;opacity:0;transition:opacity .3s;min-height:1rem">Copied!</p>
-
-    <!-- Windows -->
-    <p style="color:#7070a0;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem">Windows PowerShell</p>
-    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
-      <div id="win-cmd" style="flex:1;background:#050510;border:1px solid rgba(153,69,255,0.35);border-radius:8px;
-                                padding:.75rem 1rem;font-family:monospace;font-size:.88rem;color:#e0e0ff;
-                                cursor:pointer;user-select:all;overflow-x:auto;white-space:nowrap"
-           onclick="copyWorkerCmd('win')" title="Click to copy">irm https://pegd.org/install.ps1 | iex</div>
-      <button type="button" onclick="copyWorkerCmd('win')"
-              style="flex-shrink:0;background:rgba(153,69,255,0.1);border:1px solid rgba(153,69,255,0.35);
-                     border-radius:8px;color:#9945ff;padding:.65rem 1rem;font-size:.82rem;
-                     font-weight:700;cursor:pointer;white-space:nowrap">Copy</button>
-    </div>
-    <p id="win-confirm" style="color:#10b981;font-size:.75rem;margin-bottom:.5rem;opacity:0;transition:opacity .3s;min-height:1rem">Copied!</p>
 
     <div style="border-top:1px solid #1e1e42;margin-top:.75rem;padding-top:.75rem;
                 display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem">
@@ -451,18 +437,14 @@
 </div>
 
 <script>
-function copyWorkerCmd(which) {
-  const cmds = {
-    linux: 'curl -fsSL https://pegd.org/install.sh | bash',
-    win:   'irm https://pegd.org/install.ps1 | iex',
-  }
-  const confirmId = which === 'linux' ? 'linux-confirm' : 'win-confirm'
-  navigator.clipboard.writeText(cmds[which]).catch(() => {
+function copyWorkerCmd() {
+  const cmd = 'curl -fsSL https://pegd.org/install.sh | bash'
+  navigator.clipboard.writeText(cmd).catch(() => {
     const ta = document.createElement('textarea')
-    ta.value = cmds[which]; document.body.appendChild(ta); ta.select()
+    ta.value = cmd; document.body.appendChild(ta); ta.select()
     document.execCommand('copy'); document.body.removeChild(ta)
   })
-  const el = document.getElementById(confirmId)
+  const el = document.getElementById('linux-confirm')
   el.style.opacity = '1'
   setTimeout(() => { el.style.opacity = '0' }, 2000)
 }
@@ -655,144 +637,10 @@ function copyCmd(id) {
 </script>
 
 
-<section class="chat-section">
-  <h2 class="chat-title">Miner Chat</h2>
-  <p class="chat-sub">Open to everyone — say hi, share your hashrate, ask questions.</p>
-  <div class="chat-box" id="chat-box">
-    <div class="chat-loading" id="chat-loading">Loading messages…</div>
-  </div>
-  <div class="chat-form">
-    <input class="chat-name" id="chat-name" type="text" placeholder="Name (optional)" maxlength="24">
-    <div class="chat-row">
-      <input class="chat-input" id="chat-input" type="text" placeholder="Type a message…" maxlength="200">
-      <button class="chat-send" id="chat-send" onclick="chatSend()">Send</button>
-    </div>
-    <div class="chat-hint" id="chat-hint"></div>
-  </div>
-</section>
-
 <footer>
   <p>PEGD · <a href="/">pegd.org</a> · <a href="https://t.me/ChatPegd" target="_blank" rel="noopener">💬 Telegram</a> · <a href="https://t.me/getpegd" target="_blank" rel="noopener">📢 Announcements</a></p>
 </footer>
 
-<script>
-const COORDINATOR = 'https://pegd-compute.xrpegged.workers.dev'
-
-// ── Chat ──────────────────────────────────────────────────────────────────────
-let chatLastId    = 0
-let chatCooling   = false
-
-function chatFmt(ts) {
-  const d = new Date(ts)
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-function chatEsc(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-}
-
-function chatRender(messages) {
-  const box = document.getElementById('chat-box')
-  const loading = document.getElementById('chat-loading')
-  if (loading) loading.remove()
-
-  const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 60
-  const newMsgs  = messages.filter(m => m.id > chatLastId)
-  if (!newMsgs.length) return
-
-  for (const m of newMsgs) {
-    const el = document.createElement('div')
-    el.className = 'chat-msg'
-    el.innerHTML =
-      `<div class="chat-msg-header">` +
-        `<span class="chat-msg-name">${chatEsc(m.name)}</span>` +
-        `<span class="chat-msg-time">${chatFmt(m.ts)}</span>` +
-      `</div>` +
-      `<div class="chat-msg-body">${chatEsc(m.message)}</div>`
-    box.appendChild(el)
-    chatLastId = Math.max(chatLastId, m.id)
-  }
-
-  if (atBottom) box.scrollTop = box.scrollHeight
-}
-
-async function chatPoll() {
-  try {
-    const res  = await fetch(COORDINATOR + '/chat')
-    const data = await res.json()
-    if (Array.isArray(data.messages)) chatRender(data.messages)
-  } catch {}
-}
-
-async function chatSend() {
-  if (chatCooling) return
-  const nameEl = document.getElementById('chat-name')
-  const inputEl = document.getElementById('chat-input')
-  const hintEl  = document.getElementById('chat-hint')
-  const sendBtn = document.getElementById('chat-send')
-
-  const message = inputEl.value.trim()
-  if (!message) { hintEl.textContent = 'Type something first.'; return }
-
-  const name = nameEl.value.trim() || 'anon'
-
-  sendBtn.disabled = true
-  hintEl.textContent = ''
-
-  try {
-    const res  = await fetch(COORDINATOR + '/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, message })
-    })
-    const data = await res.json()
-    if (res.status === 429) {
-      hintEl.textContent = 'Slow down — 1 message per 15 seconds.'
-    } else if (!res.ok) {
-      hintEl.textContent = data.error || 'Failed to send.'
-    } else {
-      inputEl.value = ''
-      try { localStorage.setItem('pegd_chat_name', name) } catch {}
-      chatCooling = true
-      sendBtn.disabled = true
-      let secs = 15
-      const iv = setInterval(() => {
-        secs--
-        if (secs <= 0) {
-          clearInterval(iv)
-          chatCooling = false
-          sendBtn.disabled = false
-          hintEl.textContent = ''
-        } else {
-          hintEl.textContent = `Next message in ${secs}s`
-        }
-      }, 1000)
-      await chatPoll()
-    }
-  } catch {
-    hintEl.textContent = 'Network error — try again.'
-  } finally {
-    if (!chatCooling) sendBtn.disabled = false
-  }
-}
-
-// allow Enter key to send
-document.getElementById('chat-input')?.addEventListener('keydown', e => {
-  if (e.key === 'Enter') chatSend()
-})
-
-// restore saved name
-;(function() {
-  try {
-    const saved = localStorage.getItem('pegd_chat_name')
-    if (saved) document.getElementById('chat-name').value = saved
-  } catch {}
-})()
-
-// initial load + poll every 8 seconds
-chatPoll()
-setInterval(chatPoll, 8000)
-</script>
 <p style="text-align:center;color:#444466;font-size:0.75rem;padding:1.5rem 1rem 2rem;margin-top:1rem;border-top:1px solid #1a1a3a;line-height:1.6">
   Mining rewards are variable and not guaranteed. PEGD is a utility token — not an investment, not a security.
   Always review software source code before running it on your hardware.
