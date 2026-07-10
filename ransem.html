@@ -435,7 +435,7 @@ async function loadPrice() {
     // Wire up chart using the best pair's pool address
     const frame = document.getElementById('ransem-chart')
     if (frame.src === 'about:blank' && p.pairAddress) {
-      frame.src = `https://dexscreener.com/solana/${p.pairAddress}?embed=1&theme=dark&trades=0&info=0`
+      frame.src = `https://www.geckoterminal.com/solana/pools/${p.pairAddress}?embed=1&info=0&swaps=0&grayscale=0&light_chart=0`
     }
 
   } catch(e) { console.error('price fetch failed', e) }
