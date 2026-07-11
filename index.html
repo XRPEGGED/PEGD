@@ -23,6 +23,9 @@
   <link rel="preconnect" href="https://api.dexscreener.com">
   <link rel="preconnect" href="https://api.geckoterminal.com">
   <link rel="dns-prefetch" href="https://api.mainnet-beta.solana.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #0a0a1a;
@@ -42,15 +45,16 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
       line-height: 1.6;
-      overflow-x: hidden;
     }
+    .site-content { overflow-x: hidden; padding-top: 64px; }
 
     /* ── HEADER ── */
     header {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(10,10,26,0.92);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(10,10,26,0.95);
+      -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 0 2rem;
@@ -58,7 +62,7 @@
     .nav-inner {
       max-width: 1200px; margin: 0 auto;
       display: flex; align-items: center; justify-content: space-between;
-      height: 64px;
+      min-height: 64px;
     }
     .logo {
       font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px;
@@ -85,6 +89,17 @@
     }
     .nav-cta:hover { background: #00d4e0 !important; color: var(--bg) !important; }
     .nav-unlock { display: none; }
+    .nav-links { display: contents; }
+    .nav-hamburger {
+      display: none;
+      flex-direction: column; justify-content: center; gap: 5px;
+      width: 32px; height: 32px; background: none; border: none; cursor: pointer; padding: 0;
+      flex-shrink: 0;
+    }
+    .nav-hamburger span { display: block; width: 100%; height: 2px; background: var(--text); border-radius: 2px; transition: transform 0.2s, opacity 0.2s; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .nav-hamburger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
     .portal-badge {
       font-size: 0.62rem; font-weight: 800; padding: 4px 10px; border-radius: 999px;
       background: linear-gradient(135deg, var(--neon), var(--neon2)); color: var(--bg);
@@ -170,6 +185,7 @@
     #directives-board .dir-btn:disabled { opacity: 0.35; cursor: not-allowed; }
     #directives-board .dir-label { flex: 1; line-height: 1.35; }
     .holders-actions { display: flex; flex-direction: column; gap: 0.5rem; align-items: stretch; }
+    .holders-privacy-note { margin-top: 0.75rem; font-size: 0.75rem; color: var(--muted); cursor: help; }
     .holders-divider {
       font-size: 0.75rem; color: var(--muted); margin: 0.75rem 0 0.25rem;
       letter-spacing: 1px; text-transform: uppercase;
@@ -254,6 +270,9 @@
     }
     .hero-eyebrow::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    h1, h2, h3 {
+      font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+    }
     h1 {
       font-size: clamp(2.8rem, 8vw, 6rem);
       font-weight: 900; line-height: 1.05; letter-spacing: -2px;
@@ -338,13 +357,23 @@
       max-width: 700px; margin: 0 auto;
     }
     .treasury-wallets { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .treasury-wallet-row-wrap { display: flex; align-items: stretch; gap: 0.5rem; }
     .treasury-wallet-row {
-      display: flex; align-items: center; gap: 0.75rem;
+      display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0;
       background: var(--bg3); border: 1px solid var(--border);
       border-radius: 8px; padding: 0.65rem 1rem;
       text-decoration: none; transition: border-color 0.2s;
     }
     .treasury-wallet-row:hover { border-color: var(--neon); }
+    .wallet-explorer-icon { color: var(--muted); font-size: 0.85rem; flex-shrink: 0; }
+    .treasury-wallet-row:hover .wallet-explorer-icon { color: var(--neon); }
+    .treasury-copy-btn {
+      flex-shrink: 0; width: 42px;
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--muted); cursor: pointer; font-size: 1rem; transition: all 0.2s;
+    }
+    .treasury-copy-btn:hover { border-color: var(--neon); color: var(--neon); }
+    .treasury-copy-btn.copied { color: var(--neon); border-color: var(--neon); }
     .chain-badge {
       font-size: 0.65rem; font-weight: 800; letter-spacing: 1px;
       padding: 2px 7px; border-radius: 4px; flex-shrink: 0;
@@ -392,6 +421,28 @@
     .portfolio-mint:hover { text-decoration:underline; }
     .portfolio-amt { color:var(--text); font-family:monospace; }
 
+    /* ── SECURITY CHECK CARDS ── */
+    .sec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; }
+    .sec-card {
+      background: rgba(0,245,255,0.04); border: 1px solid rgba(0,245,255,0.12);
+      border-radius: 10px; padding: 1rem;
+      display: flex; align-items: flex-start; gap: 12px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .sec-card:hover { transform: translateY(-2px); border-color: rgba(46,204,113,0.4); }
+    .sec-card.sec-locked:hover { border-color: rgba(153,69,255,0.4); }
+    .sec-icon {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.3);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .sec-icon.sec-icon-locked {
+      background: rgba(153,69,255,0.12); border-color: rgba(153,69,255,0.3);
+    }
+    .sec-card-title { font-weight: 800; font-size: 0.88rem; margin-bottom: 0.25rem; }
+    .sec-card-body  { font-size: 0.78rem; color: var(--muted); }
+
     /* ── TOKEN PORTFOLIO ROWS ── */
     .tok-row {
       display: flex; align-items: center; gap: 10px;
@@ -424,6 +475,32 @@
       font-size: 0.82rem; color: var(--muted);
       padding: 0.75rem 0; text-align: center;
     }
+
+    /* ── Shimmer skeletons + retry/error state (shared) ── */
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    .skel {
+      background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 37%, rgba(255,255,255,0.04) 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.6s ease-in-out infinite;
+      border-radius: 6px;
+    }
+    .skel-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; }
+    .skel-circle { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; }
+    .skel-line { height: 12px; flex: 1; }
+    .skel-line.short { max-width: 60px; flex: 0 0 auto; }
+    .skel-block { width: 100%; height: 100%; }
+    .data-error {
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+      flex-wrap: wrap; padding: 1rem; text-align: center;
+      font-size: 0.82rem; color: var(--muted);
+    }
+    .data-error-retry {
+      background: none; border: 1px solid var(--border); color: var(--neon);
+      border-radius: 8px; padding: 0.35rem 0.9rem; font-size: 0.78rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .data-error-retry:hover { background: rgba(0,245,255,0.1); }
+    .data-updated { font-size: 0.7rem; color: var(--muted); opacity: 0.8; }
 
     /* ── ABOUT ── */
     #about { padding: 6rem 2rem; }
@@ -707,7 +784,7 @@
     }
     .footer-inner {
       max-width: 1100px; margin: 0 auto;
-      display: grid; grid-template-columns: 2fr 1fr 1fr;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
       gap: 2rem; margin-bottom: 2rem;
     }
     .footer-brand p { color: var(--muted); font-size: 0.85rem; margin-top: 0.75rem; max-width: 280px; }
@@ -729,9 +806,20 @@
       nav { gap: 0.75rem; }
       .hero-stats { gap: 1.5rem; }
       header { padding: 0 1rem; }
-      nav { flex-wrap: nowrap; overflow: hidden; }
-      nav a:not(.nav-cta) { font-size: 0.8rem; }
-      .nav-inner { height: 56px; }
+      nav { flex-wrap: nowrap; }
+      .nav-inner { min-height: 56px; }
+      .site-content { padding-top: 56px; }
+      .nav-hamburger { display: flex; order: -1; margin-right: 0.5rem; }
+      .nav-links {
+        display: none;
+        position: absolute; top: 56px; left: 0; right: 0;
+        flex-direction: column; align-items: flex-start; gap: 0.25rem;
+        background: rgba(10,10,26,0.98); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 1.25rem; max-height: calc(100vh - 56px); overflow-y: auto;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links a { width: 100%; padding: 0.65rem 0; font-size: 0.95rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
       #hero { padding: 5rem 1.25rem 3rem; min-height: 100dvh; }
       #treasury, #about, #mine, #swap, #governance, #xrp-pay { padding: 4rem 1.25rem; }
       .section-sub { margin-bottom: 2rem; }
@@ -751,10 +839,9 @@
       .footer-brand p { max-width: 100%; }
     }
     @media (max-width: 480px) {
-      nav a:not(.nav-cta) { display: none !important; }
       nav .portal-badge { display: none !important; }
       nav { flex-wrap: nowrap; gap: 0.5rem; }
-      .nav-inner { height: 56px; padding: 0 1rem; overflow: hidden; }
+      .nav-inner { min-height: 56px; padding: 0 1rem; }
       .wallet-indicator { padding: 4px 10px; }
       .wallet-address { font-size: 0.72rem; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       #hero { padding: 4.5rem 1rem 2.5rem; }
@@ -773,18 +860,12 @@
       .section-inner { padding: 0; }
     }
 
-    /* ── SITE GATE: everything hidden until sign-in ── */
-    nav a:not(.nav-cta), .nav-cta { display: none; }
-    body.holders-unlocked nav a:not(.nav-cta) { display: inline; }
-    body.holders-unlocked .nav-cta { display: inline-block; }
+    /* ── Site content is public. Only holder-specific chrome (wallet chip, ── */
+    /* ── session chip, FABs) waits for sign-in.                            ── */
     body.holders-unlocked .wallet-indicator { display: flex; }
 
-    .site-content { display: none; }
-    body.holders-unlocked .site-content { display: block; }
-
     .login-landing {
-      min-height: calc(100vh - 72px);
-      display: flex; align-items: center; justify-content: center; padding: 2rem;
+      display: flex; align-items: center; justify-content: center; padding: 3rem 2rem;
     }
     body.holders-unlocked .login-landing { display: none; }
 
@@ -797,11 +878,21 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "XRPEGGED",
-    "alternateName": "PEGD",
-    "description": "XRPEGGED (PEGD) is treasury-backed on XRP and Solana, with PEGD Market marketplace checkout via direct wallet payments.",
-    "url": "https://pegd.org"
+    "@graph": [
+      {
+        "@type": "Organization",
+        "name": "XRPEGGED",
+        "alternateName": "PEGD",
+        "description": "XRPEGGED (PEGD) is treasury-backed on XRP and Solana, with PEGD Market marketplace checkout via direct wallet payments.",
+        "url": "https://pegd.org",
+        "sameAs": ["https://x.com/XrPegged", "https://t.me/ChatPegd", "https://github.com/XRPEGGED/PEGD"]
+      },
+      {
+        "@type": "WebSite",
+        "name": "XRPEGGED — The PEGD Token",
+        "url": "https://pegd.org"
+      }
+    ]
   }
   </script>
 </head>
@@ -815,16 +906,23 @@
       <a href="#hero" class="logo">
         <span class="brand-word"><span class="brand-accent">PEGD</span></span>
       </a>
+      <button type="button" class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="nav-links">
+        <span></span><span></span><span></span>
+      </button>
       <nav>
-        <a href="#treasury">Treasury</a>
-        <a href="#mine">Earn</a>
-        <a href="#shop">Market</a>
-        <a href="/about-xrp">PEGD Oracle</a>
-        <a href="#governance">Governance</a>
-        <a href="/updates.html">Updates</a>
-        <a href="/wallet-tools.html">Wallet Tools</a>
-        <a href="/token-launcher">Token Launcher</a>
-        <button type="button" class="nav-cta" onclick="connectHolderWallet()">Sign Out</button>
+        <div class="nav-links" id="nav-links">
+          <a href="#treasury">Treasury</a>
+          <a href="#mine">Earn</a>
+          <a href="/trade.html">Trade</a>
+          <a href="#shop">Market</a>
+          <a href="/about-xrp">PEGD Oracle</a>
+          <a href="#governance">Governance</a>
+          <a href="/updates.html">Updates</a>
+          <a href="/token-launcher">Token Launcher</a>
+          <a href="/battlefield.html">Battlefield</a>
+          <a href="#holders">Dashboard</a>
+        </div>
+        <button type="button" class="nav-cta" onclick="connectHolderWallet()">Sign In</button>
         <span id="portal-badge" class="portal-badge hidden" aria-live="polite"></span>
         <div id="wallet-indicator" class="wallet-indicator" title="Click to copy address" aria-label="Copy wallet address">
           <span id="wallet-address" class="wallet-address"></span>
@@ -862,47 +960,62 @@
   <!-- TREASURY -->
   <section id="treasury">
     <div class="section-inner">
-      <p class="section-label">🔐 Proof of Reserves</p>
+      <p class="section-label"><span aria-hidden="true">🔐</span> Proof of Reserves</p>
       <h2>Transparent Treasury</h2>
       <p class="section-sub">Every wallet is public and on-chain. Verify anytime — no login, no trust required.</p>
 
       <div class="treasury-card">
 
-        <div class="treasury-note" style="margin-bottom:1rem;">
-          <strong>🔒 No hidden wallets.</strong> All reserves are on public blockchains. Click any address below to verify on-chain in real time.
+        <div class="treasury-note" style="margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+          <span><strong>🔒 No hidden wallets.</strong> All reserves are on public blockchains. Click any address below to verify on-chain in real time.</span>
+          <span id="treasury-updated" class="data-updated"></span>
         </div>
 
         <!-- Wallet links -->
         <div class="treasury-wallets">
-          <a class="treasury-wallet-row" href="https://bithomp.com/explorer/rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" target="_blank" rel="noopener">
-            <svg class="coin-img" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#00AAE4"/><path d="M22 9h2.5l-5.25 5.05a4.75 4.75 0 0 1-6.5 0L7.5 9H10l4.12 3.96a2.75 2.75 0 0 0 3.76 0L22 9ZM10 23H7.5l5.25-5.05a4.75 4.75 0 0 1 6.5 0L24.5 23H22l-4.12-3.96a2.75 2.75 0 0 0-3.76 0L10 23Z" fill="white"/></svg>
-            <span class="wallet-mono">rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78</span>
-            <span class="wallet-row-label">XRP Ledger Treasury</span>
-            <span class="wallet-balance" id="bal-xrp">—</span>
-          </a>
-          <a class="treasury-wallet-row" href="https://solscan.io/account/fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb" target="_blank" rel="noopener">
-            <svg class="coin-img" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#9945FF"/><path d="M9 20.5h11.5a.5.5 0 0 0 .35-.15l1.8-1.8a.5.5 0 0 0-.35-.85H10.8a.5.5 0 0 0-.35.15l-1.8 1.8a.5.5 0 0 0 .35.85Zm0-5.5h11.5a.5.5 0 0 0 .35-.15l1.8-1.8a.5.5 0 0 0-.35-.85H10.8a.5.5 0 0 0-.35.15l-1.8 1.8A.5.5 0 0 0 9 15Zm13.65-7.35-1.8 1.8a.5.5 0 0 1-.35.15H9a.5.5 0 0 1-.35-.85l1.8-1.8A.5.5 0 0 1 10.8 7h11.5a.5.5 0 0 1 .35.85Z" fill="white"/></svg>
-            <div class="wallet-col">
-              <span class="wallet-mono">fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb</span>
-              <span class="wallet-row-label">Main Treasury</span>
-            </div>
-            <span class="wallet-balance" id="bal-sol-main">—</span>
-          </a>
-          <a class="treasury-wallet-row" href="https://solscan.io/account/4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9" target="_blank" rel="noopener">
-            <svg class="coin-img" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#9945FF"/><path d="M9 20.5h11.5a.5.5 0 0 0 .35-.15l1.8-1.8a.5.5 0 0 0-.35-.85H10.8a.5.5 0 0 0-.35.15l-1.8 1.8a.5.5 0 0 0 .35.85Zm0-5.5h11.5a.5.5 0 0 0 .35-.15l1.8-1.8a.5.5 0 0 0-.35-.85H10.8a.5.5 0 0 0-.35.15l-1.8 1.8A.5.5 0 0 0 9 15Zm13.65-7.35-1.8 1.8a.5.5 0 0 1-.35.15H9a.5.5 0 0 1-.35-.85l1.8-1.8A.5.5 0 0 1 10.8 7h11.5a.5.5 0 0 1 .35.85Z" fill="white"/></svg>
-            <div class="wallet-col">
-              <span class="wallet-mono">4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9</span>
-              <span class="wallet-row-label">Compute Treasury</span>
-            </div>
-            <span class="wallet-balance" id="bal-sol-compute">—</span>
-          </a>
+          <div class="treasury-wallet-row-wrap">
+            <a class="treasury-wallet-row" href="https://bithomp.com/explorer/rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" target="_blank" rel="noopener" aria-label="XRP Ledger Treasury address rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78, opens block explorer">
+              <svg class="coin-img" aria-hidden="true" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#00AAE4"/><path d="M22 9h2.5l-5.25 5.05a4.75 4.75 0 0 1-6.5 0L7.5 9H10l4.12 3.96a2.75 2.75 0 0 0 3.76 0L22 9ZM10 23H7.5l5.25-5.05a4.75 4.75 0 0 1 6.5 0L24.5 23H22l-4.12-3.96a2.75 2.75 0 0 0-3.76 0L10 23Z" fill="white"/></svg>
+              <span class="wallet-mono" data-full="rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" title="rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78"></span>
+              <span class="wallet-row-label">XRP Ledger Treasury</span>
+              <span class="wallet-balance" id="bal-xrp">—</span>
+              <span class="wallet-explorer-icon" aria-hidden="true">↗</span>
+            </a>
+            <button type="button" class="treasury-copy-btn" data-address="rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" aria-label="Copy XRP Ledger Treasury address">⧉</button>
+          </div>
+          <div class="treasury-wallet-row-wrap">
+            <a class="treasury-wallet-row" href="https://solscan.io/account/fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb" target="_blank" rel="noopener" aria-label="Main Treasury address fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb, opens block explorer">
+              <svg class="coin-img" aria-hidden="true" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#9945FF"/><path d="M9 20.5h11.5a.5.5 0 0 0 .35-.15l1.8-1.8a.5.5 0 0 0-.35-.85H10.8a.5.5 0 0 0-.35.15l-1.8 1.8a.5.5 0 0 0 .35.85Zm0-5.5h11.5a.5.5 0 0 0 .35-.15l1.8-1.8a.5.5 0 0 0-.35-.85H10.8a.5.5 0 0 0-.35.15l-1.8 1.8A.5.5 0 0 0 9 15Zm13.65-7.35-1.8 1.8a.5.5 0 0 1-.35.15H9a.5.5 0 0 1-.35-.85l1.8-1.8A.5.5 0 0 1 10.8 7h11.5a.5.5 0 0 1 .35.85Z" fill="white"/></svg>
+              <div class="wallet-col">
+                <span class="wallet-mono" data-full="fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb" title="fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb"></span>
+                <span class="wallet-row-label">Main Treasury</span>
+              </div>
+              <span class="wallet-balance" id="bal-sol-main">—</span>
+              <span class="wallet-explorer-icon" aria-hidden="true">↗</span>
+            </a>
+            <button type="button" class="treasury-copy-btn" data-address="fWi4mx4bavfhFnJgHcAE5aCczEoaA7QFTp26zbV92zb" aria-label="Copy Main Treasury address">⧉</button>
+          </div>
+          <div class="treasury-wallet-row-wrap">
+            <a class="treasury-wallet-row" href="https://solscan.io/account/4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9" target="_blank" rel="noopener" aria-label="Compute Treasury address 4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9, opens block explorer">
+              <svg class="coin-img" aria-hidden="true" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#9945FF"/><path d="M9 20.5h11.5a.5.5 0 0 0 .35-.15l1.8-1.8a.5.5 0 0 0-.35-.85H10.8a.5.5 0 0 0-.35.15l-1.8 1.8a.5.5 0 0 0 .35.85Zm0-5.5h11.5a.5.5 0 0 0 .35-.15l1.8-1.8a.5.5 0 0 0-.35-.85H10.8a.5.5 0 0 0-.35.15l-1.8 1.8A.5.5 0 0 0 9 15Zm13.65-7.35-1.8 1.8a.5.5 0 0 1-.35.15H9a.5.5 0 0 1-.35-.85l1.8-1.8A.5.5 0 0 1 10.8 7h11.5a.5.5 0 0 1 .35.85Z" fill="white"/></svg>
+              <div class="wallet-col">
+                <span class="wallet-mono" data-full="4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9" title="4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9"></span>
+                <span class="wallet-row-label">Compute Treasury</span>
+              </div>
+              <span class="wallet-balance" id="bal-sol-compute">—</span>
+              <span class="wallet-explorer-icon" aria-hidden="true">↗</span>
+            </a>
+            <button type="button" class="treasury-copy-btn" data-address="4xpXLWEndmwFRm8tZm31pcUdGCw2u6MaeBs3q1RgE5C9" aria-label="Copy Compute Treasury address">⧉</button>
+          </div>
         </div>
 
         <!-- Token portfolio (auto-discovered) -->
         <div class="treasury-portfolio-wrap">
           <div class="portfolio-header">Token Holdings</div>
           <div class="portfolio-box" id="treasury-portfolio">
-            <div class="portfolio-loading-row">Loading…</div>
+            <div class="skel-row"><div class="skel skel-circle"></div><div class="skel skel-line"></div><div class="skel skel-line short"></div></div>
+            <div class="skel-row"><div class="skel skel-circle"></div><div class="skel skel-line"></div><div class="skel skel-line short"></div></div>
+            <div class="skel-row"><div class="skel skel-circle"></div><div class="skel skel-line"></div><div class="skel skel-line short"></div></div>
           </div>
           <div class="portfolio-footer" id="portfolio-total"></div>
         </div>
@@ -931,7 +1044,11 @@
             </div>
           </div>
           <div id="sol-chart-box" style="width:100%; height:460px; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; position:relative; background:#0a0a1a;">
-            <div id="sol-chart-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.85rem;">Loading…</div>
+            <div id="sol-chart-loading" style="position:absolute;inset:0;padding:1rem;pointer-events:none;">
+              <div class="skel skel-block"></div>
+            </div>
+            <div id="sol-chart-error" class="data-error" style="position:absolute;inset:0;display:none;flex-direction:column;background:#0a0a1a;"></div>
+            <canvas id="sol-chart" style="display:block;width:100%;height:100%;"></canvas>
           </div>
           <div id="sol-chart-price" style="font-size:.75rem;color:var(--muted);margin-top:.4rem;min-height:1rem;"></div>
         </div>
@@ -1019,59 +1136,89 @@
           if (el) el.textContent = fmt((d.result?.value||0)/1e9,4)+' SOL';
         } catch {}
       }
+
+      const updatedEl = document.getElementById('treasury-updated');
+      if (updatedEl) updatedEl.textContent = 'Updated ' + new Date().toLocaleTimeString(undefined, {hour:'2-digit', minute:'2-digit'});
     }
 
     /* ── Token portfolio (auto-discovers all SPL tokens, fetches logos + prices) ── */
-    async function loadTreasuryPortfolio() {
+    async function loadTreasuryPortfolio(isRetry) {
       const container  = document.getElementById('treasury-portfolio');
       const footerEl   = document.getElementById('portfolio-total');
       if (!container) return;
 
-      // Aggregate across both wallets
-      const mints = new Map(); // mint -> {amount, decimals}
-      for (const addr of [TREAS_SOL_MAIN, TREAS_SOL_COMPUTE]) {
-        for (const prog of [TREAS_TOKEN_PROG, TREAS_TOKEN_PROG_2022]) {
-          try {
-            const d = await solRpc('getTokenAccountsByOwner',
-              [addr, {programId: prog}, {encoding:'jsonParsed'}]);
-            for (const {account} of d.result?.value || []) {
-              const info = account.data.parsed.info;
-              const uiAmt = info.tokenAmount.uiAmount || 0;
-              if (uiAmt === 0) continue;
-              if (!mints.has(info.mint)) mints.set(info.mint, {amount:0, decimals:info.tokenAmount.decimals});
-              mints.get(info.mint).amount += uiAmt;
-            }
-          } catch {}
+      // Fetch all 4 token account lists in parallel (2 wallets × 2 token programs)
+      const fetchAccounts = () => Promise.all([
+        solRpc('getTokenAccountsByOwner', [TREAS_SOL_MAIN,    {programId: TREAS_TOKEN_PROG},      {encoding:'jsonParsed'}]).catch(()=>null),
+        solRpc('getTokenAccountsByOwner', [TREAS_SOL_MAIN,    {programId: TREAS_TOKEN_PROG_2022}, {encoding:'jsonParsed'}]).catch(()=>null),
+        solRpc('getTokenAccountsByOwner', [TREAS_SOL_COMPUTE, {programId: TREAS_TOKEN_PROG},      {encoding:'jsonParsed'}]).catch(()=>null),
+        solRpc('getTokenAccountsByOwner', [TREAS_SOL_COMPUTE, {programId: TREAS_TOKEN_PROG_2022}, {encoding:'jsonParsed'}]).catch(()=>null),
+      ]);
+
+      let rpcResults = await fetchAccounts();
+      let allFailed = rpcResults.every(d => d === null);
+      if (allFailed && !isRetry) {
+        await new Promise(r => setTimeout(r, 1500));
+        rpcResults = await fetchAccounts();
+        allFailed = rpcResults.every(d => d === null);
+      }
+
+      const mints = new Map();
+      for (const d of rpcResults) {
+        for (const {account} of d?.result?.value || []) {
+          const info  = account.data.parsed.info;
+          const uiAmt = info.tokenAmount.uiAmount || 0;
+          if (uiAmt === 0) continue;
+          if (!mints.has(info.mint)) mints.set(info.mint, {amount:0, decimals:info.tokenAmount.decimals});
+          mints.get(info.mint).amount += uiAmt;
         }
       }
 
       if (mints.size === 0) {
-        container.innerHTML = '<div class="portfolio-loading-row">No token holdings found.</div>';
+        if (allFailed) {
+          container.innerHTML = '<div class="data-error">Data temporarily unavailable.<button type="button" class="data-error-retry">Retry</button></div>';
+          container.querySelector('.data-error-retry')?.addEventListener('click', () => loadTreasuryPortfolio());
+        } else {
+          container.innerHTML = '<div class="portfolio-loading-row">No token holdings found.</div>';
+        }
         return;
       }
 
       const mintList = [...mints.keys()];
 
-      // Fetch metadata from Jupiter token API (parallel)
-      const metaMap = new Map();
-      await Promise.all(mintList.map(async mint => {
-        try {
-          const r = await fetch('https://lite-api.jup.ag/tokens/v2/search?query='+mint);
-          if (r.ok) {
-            const results = await r.json();
-            const t = results?.[0];
-            if (t) metaMap.set(mint, { symbol: t.symbol, name: t.name, logoURI: t.icon });
-          }
-        } catch {}
-      }));
-
-      // Fetch USD prices from Jupiter price API
+      // Single GeckoTerminal multi-token call: returns symbol, name, logo, AND price_usd
+      const metaMap  = new Map();
       const priceMap = new Map();
       try {
-        const r = await fetch('https://lite-api.jup.ag/price/v3?ids='+mintList.join(','));
-        const d = await r.json();
-        for (const [mint, p] of Object.entries(d||{})) priceMap.set(mint, p.usdPrice||0);
+        // GeckoTerminal supports up to 30 addresses per call
+        const chunks = [];
+        for (let i = 0; i < mintList.length; i += 30) chunks.push(mintList.slice(i, i + 30));
+        await Promise.all(chunks.map(async chunk => {
+          const r = await fetch(`https://api.geckoterminal.com/api/v2/networks/solana/tokens/multi/${chunk.join(',')}`);
+          const d = await r.json();
+          for (const tok of d?.data || []) {
+            const mint  = tok.attributes?.address;
+            const price = parseFloat(tok.attributes?.price_usd || '0');
+            if (!mint) continue;
+            metaMap.set(mint, {
+              symbol:   tok.attributes?.symbol  || mint.slice(0,4)+'…',
+              name:     tok.attributes?.name    || 'Unknown Token',
+              logoURI:  tok.attributes?.image_url || '',
+            });
+            if (price > 0) priceMap.set(mint, price);
+          }
+        }));
       } catch {}
+
+      // Fallback prices from Jupiter for anything GeckoTerminal missed
+      const missing = mintList.filter(m => !priceMap.has(m));
+      if (missing.length) {
+        try {
+          const r = await fetch('https://lite-api.jup.ag/price/v3?ids=' + missing.join(','));
+          const d = await r.json();
+          for (const [mint, p] of Object.entries(d||{})) if (p.usdPrice) priceMap.set(mint, p.usdPrice);
+        } catch {}
+      }
 
       // Sort by USD value descending
       mintList.sort((a,b) => {
@@ -1094,7 +1241,7 @@
         totalUsd += usdVal;
 
         const imgHtml = logo
-          ? `<img class="tok-logo" src="${logo}" alt="${symbol}"
+          ? `<img class="tok-logo" src="${logo}" alt="${symbol}" loading="lazy"
                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
             + `<span class="tok-logo-fallback">${symbol.charAt(0)}</span>`
           : `<span class="tok-logo-fallback">${symbol.charAt(0)}</span>`;
@@ -1114,9 +1261,10 @@
 
       container.innerHTML = html;
       if (footerEl) {
+        const stamp = new Date().toLocaleTimeString(undefined, {hour:'2-digit', minute:'2-digit'});
         footerEl.textContent = totalUsd > 0
-          ? `Total token value ≈ ${fmtUsd(totalUsd)} · ${mintList.length} token${mintList.length!==1?'s':''} · refreshes every 60s`
-          : `${mintList.length} token${mintList.length!==1?'s':''} · prices unavailable · refreshes every 60s`;
+          ? `Total token value ≈ ${fmtUsd(totalUsd)} · ${mintList.length} token${mintList.length!==1?'s':''} · updated ${stamp}`
+          : `${mintList.length} token${mintList.length!==1?'s':''} · prices unavailable · updated ${stamp}`;
       }
     }
 
@@ -1131,92 +1279,179 @@
   </script>
 
   <!-- SOL pair chart -->
-  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
   <script>
   (() => {
-    const POOLS = {
+    const CHART_POOLS = {
       pegd:  '2YjbbaLWX8oNHUEtjEsBQAzyjkvHyxGgujnzb1ojEq3u',
       ansem: '6e7V9eegCHw997T72MxgwwJipZ6GJyZF8NvjkzT1rvpN',
     }
-    const TF = {
+    const CHART_TF = {
       '15m': { timeframe: 'minute', aggregate: 15, limit: 96  },
       '1h':  { timeframe: 'hour',   aggregate: 1,  limit: 168 },
       '4h':  { timeframe: 'hour',   aggregate: 4,  limit: 180 },
       '1d':  { timeframe: 'day',    aggregate: 1,  limit: 90  },
     }
 
-    let chart = null, series = null
-    let activeCoin = 'pegd', activeTf = '15m'
+    let chartCoin = 'pegd', chartTf = '15m', chartCandles = []
 
-    function initChart() {
-      const box = document.getElementById('sol-chart-box')
-      chart = LightweightCharts.createChart(box, {
-        width:  box.clientWidth,
-        height: 460,
-        layout: { background: { color: '#0a0a1a' }, textColor: '#7070a0' },
-        grid:   { vertLines: { color: '#111130' }, horzLines: { color: '#111130' } },
-        crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
-        rightPriceScale: { borderColor: '#1e1e42' },
-        timeScale: { borderColor: '#1e1e42', timeVisible: true, secondsVisible: false },
-      })
-      series = chart.addCandlestickSeries({
-        upColor:   '#10b981', downColor: '#ef4444',
-        borderUpColor: '#10b981', borderDownColor: '#ef4444',
-        wickUpColor:   '#10b981', wickDownColor:   '#ef4444',
-      })
-      new ResizeObserver(() => chart.applyOptions({ width: box.clientWidth })).observe(box)
-
-      chart.subscribeCrosshairMove(p => {
-        const el = document.getElementById('sol-chart-price')
-        if (p?.seriesData?.size) {
-          const d = p.seriesData.get(series)
-          if (d) {
-            const label = activeCoin === 'pegd' ? 'PEGD' : 'ANSEM'
-            el.textContent = `${label}/SOL  O: ${d.open.toExponential(4)}  H: ${d.high.toExponential(4)}  L: ${d.low.toExponential(4)}  C: ${d.close.toExponential(4)}`
-          }
-        } else { el.textContent = '' }
-      })
+    function fmtSol(v) {
+      if (!v) return '0'
+      if (Math.abs(v) < 0.0001) return v.toExponential(3)
+      if (Math.abs(v) < 1) return v.toPrecision(4)
+      return v.toLocaleString(undefined, {maximumFractionDigits: 4})
     }
 
-    async function loadCandles() {
+    function drawChart(candles) {
+      const canvas = document.getElementById('sol-chart')
+      if (!canvas) return
+      const box = document.getElementById('sol-chart-box')
+      const dpr = window.devicePixelRatio || 1
+      const cw = box.clientWidth
+      const ch = box.clientHeight
+      canvas.width  = cw * dpr
+      canvas.height = ch * dpr
+      canvas.style.width  = cw + 'px'
+      canvas.style.height = ch + 'px'
+
+      const ctx = canvas.getContext('2d')
+      ctx.scale(dpr, dpr)
+      ctx.fillStyle = '#0a0a1a'
+      ctx.fillRect(0, 0, cw, ch)
+
+      if (!candles || !candles.length) {
+        ctx.fillStyle = '#7070a0'
+        ctx.font = '13px system-ui,sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('No data available', cw / 2, ch / 2)
+        return
+      }
+
+      const ml = 10, mr = 85, mt = 28, mb = 48
+      const pw = cw - ml - mr
+      const ph = ch - mt - mb
+
+      let pmin = Infinity, pmax = -Infinity
+      for (const c of candles) {
+        if (c.high > pmax) pmax = c.high
+        if (c.low  < pmin) pmin = c.low
+      }
+      const pad = (pmax - pmin) * 0.07
+      pmin -= pad; pmax += pad
+      const prange = pmax - pmin || 1
+
+      const tmin = candles[0].time
+      const tmax = candles[candles.length - 1].time
+      const trange = tmax - tmin || 1
+
+      const toY = v => mt + ph * (1 - (v - pmin) / prange)
+      const slotW = pw / candles.length
+      const bodyW = Math.max(1, Math.floor(slotW * 0.65))
+
+      // horizontal grid + price labels
+      ctx.strokeStyle = '#111130'
+      ctx.lineWidth = 1
+      ctx.font = '10px monospace'
+      ctx.fillStyle = '#7070a0'
+      ctx.textAlign = 'left'
+      for (let i = 0; i <= 5; i++) {
+        const v = pmin + prange * (i / 5)
+        const y = toY(v)
+        ctx.beginPath(); ctx.moveTo(ml, y); ctx.lineTo(cw - mr, y); ctx.stroke()
+        ctx.fillText(fmtSol(v), cw - mr + 4, y + 3)
+      }
+
+      // candles
+      candles.forEach((c, i) => {
+        const x = ml + (i + 0.5) * slotW
+        const up = c.close >= c.open
+        ctx.fillStyle = ctx.strokeStyle = up ? '#10b981' : '#ef4444'
+        ctx.lineWidth = 1
+        const yTop    = toY(Math.max(c.open, c.close))
+        const yBottom = toY(Math.min(c.open, c.close))
+        ctx.fillRect(x - bodyW / 2, yTop, bodyW, Math.max(1, yBottom - yTop))
+        ctx.beginPath(); ctx.moveTo(x, toY(c.high)); ctx.lineTo(x, yTop);    ctx.stroke()
+        ctx.beginPath(); ctx.moveTo(x, yBottom);    ctx.lineTo(x, toY(c.low)); ctx.stroke()
+      })
+
+      // time labels
+      ctx.fillStyle = '#7070a0'
+      ctx.font = '10px monospace'
+      ctx.textAlign = 'center'
+      const labelCount = Math.min(6, candles.length)
+      for (let i = 0; i <= labelCount; i++) {
+        const idx = Math.round(i / labelCount * (candles.length - 1))
+        if (idx >= candles.length) continue
+        const x = ml + (idx + 0.5) * slotW
+        const d = new Date(candles[idx].time * 1000)
+        const date = d.toLocaleDateString('en-US', {month:'short', day:'numeric'})
+        if (chartTf === '1d') {
+          ctx.fillText(date, x, ch - mb + 16)
+        } else {
+          const time = d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false})
+          ctx.fillText(date, x, ch - mb + 14)
+          ctx.fillText(time, x, ch - mb + 26)
+        }
+      }
+
+      // current price top-right
+      const last = candles[candles.length - 1]
+      const coinLabel = chartCoin === 'pegd' ? 'PEGD' : 'ANSEM'
+      ctx.fillStyle = '#e0e0ff'
+      ctx.font = 'bold 11px monospace'
+      ctx.textAlign = 'right'
+      ctx.fillText(`${coinLabel}/SOL  ${fmtSol(last.close)}`, cw - mr - 4, mt - 6)
+    }
+
+    async function loadCandles(isRetry) {
       const loading = document.getElementById('sol-chart-loading')
-      loading.style.display = 'flex'
+      const errorBox = document.getElementById('sol-chart-error')
+      if (loading) loading.style.display = 'block'
+      if (errorBox) errorBox.style.display = 'none'
       try {
-        const { timeframe, aggregate, limit } = TF[activeTf]
-        const url = `https://api.geckoterminal.com/api/v2/networks/solana/pools/${POOLS[activeCoin]}/ohlcv/${timeframe}?aggregate=${aggregate}&limit=${limit}&currency=token&token=base`
+        const { timeframe, aggregate, limit } = CHART_TF[chartTf]
+        const url = `https://api.geckoterminal.com/api/v2/networks/solana/pools/${CHART_POOLS[chartCoin]}/ohlcv/${timeframe}?aggregate=${aggregate}&limit=${limit}&currency=token&token=base`
         const res  = await fetch(url)
+        if (!res.ok) throw new Error('bad response')
         const data = await res.json()
         const raw  = data?.data?.attributes?.ohlcv_list || []
-
-        const candles = raw.map(([t, o, h, l, c]) => ({
-          time: t, open: +o, high: +h, low: +l, close: +c,
-        })).sort((a, b) => a.time - b.time)
-
-        series.setData(candles)
-        chart.timeScale().fitContent()
+        chartCandles = raw
+          .map(([t, o, h, l, c]) => ({ time: t, open: +o, high: +h, low: +l, close: +c }))
+          .sort((a, b) => a.time - b.time)
+        drawChart(chartCandles)
+        if (loading) loading.style.display = 'none'
       } catch(e) {
-        console.error('chart load failed', e)
-      } finally {
-        loading.style.display = 'none'
+        console.error('chart error', e)
+        if (!isRetry) {
+          setTimeout(() => loadCandles(true), 1500)
+          return
+        }
+        if (loading) loading.style.display = 'none'
+        if (errorBox) {
+          errorBox.style.display = 'flex'
+          errorBox.innerHTML = 'Chart data temporarily unavailable.<button type="button" class="data-error-retry">Retry</button>'
+          errorBox.querySelector('.data-error-retry')?.addEventListener('click', () => loadCandles())
+        }
       }
     }
 
     window.switchChart = function(coin) {
-      activeCoin = coin
+      chartCoin = coin
       document.getElementById('cpb-pegd').classList.toggle('active', coin === 'pegd')
       document.getElementById('cpb-ansem').classList.toggle('active', coin === 'ansem')
       loadCandles()
     }
 
     window.switchTf = function(tf) {
-      activeTf = tf
+      chartTf = tf
       ;['15m','1h','4h','1d'].forEach(t => document.getElementById('ctf-'+t).classList.toggle('active', t === tf))
       loadCandles()
     }
 
-    initChart()
-    loadCandles()
-    setInterval(loadCandles, 30000)
+    window.addEventListener('load', () => {
+      loadCandles()
+      setInterval(loadCandles, 30000)
+      new ResizeObserver(() => drawChart(chartCandles)).observe(document.getElementById('sol-chart-box'))
+    })
   })()
   </script>
 
@@ -1224,13 +1459,13 @@
   <!-- EARN -->
   <section id="mine" style="padding: 4rem 2rem; background: rgba(0,245,255,0.03); border-top: 1px solid rgba(0,245,255,0.08); border-bottom: 1px solid rgba(0,245,255,0.08);">
     <div class="section-inner">
-      <p class="section-label">⛏️ Earn PEGD</p>
+      <p class="section-label"><span aria-hidden="true">⛏️</span> Earn PEGD</p>
       <h2>Install PEGD Worker</h2>
       <p class="section-sub">One command. Installs, configures, and starts mining automatically.</p>
 
       <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a href="/mine.html" class="btn-primary" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">Mine</a>
-        <a href="/pool.html" class="btn-secondary" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">GPU Rig Setup</a>
+        <a href="/mine.html" class="btn-primary" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">Install Worker</a>
+        <a href="/pool.html" class="btn-secondary" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">GPU Rig Guide</a>
         <a href="https://t.me/ChatPegd" target="_blank" rel="noopener" class="btn-secondary" style="font-size: 0.85rem; padding: 0.6rem 1.4rem;">💬 Telegram Help</a>
       </div>
     </div>
@@ -1244,17 +1479,17 @@
       <p class="section-sub">Your GPU or CPU mines crypto — the pool converts it to PEGD and sends it to your wallet.</p>
       <div class="features-grid" style="max-width: 900px;">
         <div class="feature-card">
-          <div class="feature-icon">⛏️</div>
+          <div class="feature-icon" aria-hidden="true">⛏️</div>
           <h3>You Mine</h3>
           <p>Point your GPU or CPU at Unmineable using your Solana wallet as the worker name.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">🔄</div>
+          <div class="feature-icon" aria-hidden="true">🔄</div>
           <h3>Pool Converts</h3>
           <p>Mining fees accumulate in the treasury. The pool auto-buys PEGD on the bonding curve.</p>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">💸</div>
+          <div class="feature-icon" aria-hidden="true">💸</div>
           <h3>You Earn PEGD</h3>
           <p>PEGD lands in your Phantom wallet every payout cycle, proportional to your hashrate.</p>
         </div>
@@ -1265,15 +1500,19 @@
   <!-- SHOP — live PEGD Market listings -->
   <section id="shop">
     <div class="section-inner">
-      <p class="section-label">💎 PEGD Market</p>
-      <h2>prove its worth</h2>
+      <p class="section-label"><span aria-hidden="true">💎</span> PEGD Market</p>
+      <h2>Prove Its Worth</h2>
       <p class="section-sub">Everyone can browse and buy. Listings are <strong>USD-priced</strong>. Checkout: <strong>PEGD</strong> (preferred), <strong>XRP via Xaman</strong>, or <strong>SOL</strong> on Phantom.</p>
       <div class="shop-demo-banner" id="shop-status-banner">
-        <p id="shop-status-text"><strong style="color:var(--gold);">Order #1 complete.</strong> <span id="shop-pay-instructions">Metapod sold via PEGD/Phantom (first PEGD Market). See remaining listings below or the full market.</span> <a href="#swap" style="color:var(--neon2);">Get PEGD</a> above.</p>
-        <a href="https://market.pegd.org/proof" target="_blank" rel="noopener" class="shop-cta-market" id="shop-market-cta">Open PEGD Market →</a>
+        <p id="shop-status-text"><strong style="color:var(--gold);">Order #1 complete.</strong> <span id="shop-pay-instructions">Metapod sold via PEGD/Phantom (first PEGD Market). See remaining listings below or the full market.</span></p>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener" class="shop-cta-market" style="background:var(--neon2);">Get PEGD on Jupiter →</a>
+          <a href="https://market.pegd.org/proof" target="_blank" rel="noopener" class="shop-cta-market" id="shop-market-cta">Open PEGD Market →</a>
+        </div>
       </div>
       <div class="shop-grid" id="shop-grid">
-        <p style="color:var(--muted);grid-column:1/-1;text-align:center;">Loading market…</p>
+        <div class="shop-card" aria-hidden="true"><div class="skel skel-block" style="height:120px;border-radius:var(--radius) var(--radius) 0 0;"></div><div class="shop-info"><div class="skel skel-line" style="margin-bottom:0.5rem;"></div><div class="skel skel-line short"></div></div></div>
+        <div class="shop-card" aria-hidden="true"><div class="skel skel-block" style="height:120px;border-radius:var(--radius) var(--radius) 0 0;"></div><div class="shop-info"><div class="skel skel-line" style="margin-bottom:0.5rem;"></div><div class="skel skel-line short"></div></div></div>
       </div>
     </div>
   </section>
@@ -1283,27 +1522,23 @@
     <div class="section-inner">
       <!-- Token security facts -->
       <div class="trade-status" style="margin-top:1.25rem;">
-        <p class="section-label" style="margin-bottom:1rem;">🛡️ Token Security</p>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.75rem;">
-          <div style="background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.12);border-radius:10px;padding:1rem;">
-            <div style="font-size:1.1rem;margin-bottom:0.4rem;">✅</div>
-            <div style="font-weight:800;font-size:0.88rem;margin-bottom:0.25rem;">Mint Authority Revoked</div>
-            <div style="font-size:0.78rem;color:var(--muted);">Supply is permanently fixed. No new PEGD can ever be created.</div>
+        <p class="section-label" style="margin-bottom:1rem;"><span aria-hidden="true">🛡️</span> Token Security</p>
+        <div class="sec-grid">
+          <div class="sec-card">
+            <div class="sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><div class="sec-card-title">Mint Authority Revoked</div><div class="sec-card-body">Supply is permanently fixed. No new PEGD can ever be created.</div></div>
           </div>
-          <div style="background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.12);border-radius:10px;padding:1rem;">
-            <div style="font-size:1.1rem;margin-bottom:0.4rem;">✅</div>
-            <div style="font-weight:800;font-size:0.88rem;margin-bottom:0.25rem;">Freeze Authority Revoked</div>
-            <div style="font-size:0.78rem;color:var(--muted);">No wallet holding PEGD can ever be frozen or blocked.</div>
+          <div class="sec-card">
+            <div class="sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><div class="sec-card-title">Freeze Authority Revoked</div><div class="sec-card-body">No wallet holding PEGD can ever be frozen or blocked.</div></div>
           </div>
-          <div style="background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.12);border-radius:10px;padding:1rem;">
-            <div style="font-size:1.1rem;margin-bottom:0.4rem;">✅</div>
-            <div style="font-weight:800;font-size:0.88rem;margin-bottom:0.25rem;">Fixed Supply: 1B PEGD</div>
-            <div style="font-size:0.78rem;color:var(--muted);">999,999,009 PEGD in existence. Immutable. Verifiable on-chain.</div>
+          <div class="sec-card">
+            <div class="sec-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div><div class="sec-card-title">Fixed Supply: 1B PEGD</div><div class="sec-card-body">999,999,009 PEGD in existence. Immutable. Verifiable on-chain.</div></div>
           </div>
-          <div style="background:rgba(0,245,255,0.04);border:1px solid rgba(0,245,255,0.12);border-radius:10px;padding:1rem;">
-            <div style="font-size:1.1rem;margin-bottom:0.4rem;">🔒</div>
-            <div style="font-weight:800;font-size:0.88rem;margin-bottom:0.25rem;">Governance: Locked</div>
-            <div style="font-size:0.78rem;color:var(--muted);">No DAO, no voting, no proposals. Chairman-only until transition.</div>
+          <div class="sec-card sec-locked">
+            <div class="sec-icon sec-icon-locked"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9945ff" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div><div class="sec-card-title">Governance: Locked</div><div class="sec-card-body">No DAO, no voting, no proposals. Chairman-only until transition.</div></div>
           </div>
         </div>
         <p style="margin-top:1rem;font-size:0.78rem;color:var(--muted);">
@@ -1321,16 +1556,17 @@
   <!-- SIGN-IN -->
   <section id="holders">
     <div class="section-inner" style="text-align:center;">
-      <!--<p class="section-label">🔐 Chairman Portal</p>-->
+      <p class="section-label"><span aria-hidden="true">◎</span> Dashboard</p>
       <div class="holders-card">
         <div class="holders-icon">◎</div>
-        <h2>Welcome to PEGD</h2>
-        <p>Connect your Phantom wallet to access the dashboard.</p>
+        <h2>Connect Your Wallet</h2>
+        <p>Sign in to vote on governance, use the chairman portal, and check out with PEGD. Browsing treasury, market, and mine info doesn't require a wallet.</p>
         <div class="holders-actions">
           <!--<button type="button" class="btn-connect xumm" id="connect-xumm-btn">🔵 Sign in with Xaman</button>-->
           <!--<p class="holders-divider">or</p>-->
           <button type="button" class="btn-connect" id="connect-wallet-btn">🟣 Sign in with Phantom</button>
         </div>
+        <p class="holders-privacy-note" title="PEGD never requests, stores, or has access to your private keys or seed phrase.">🔒 We never have access to your private keys.</p>
         <div class="session-duration-row">
           <label for="session-duration-select">Stay signed in for</label>
           <select id="session-duration-select">
@@ -1379,13 +1615,22 @@
         <a href="/about-xrp">PEGD Oracle</a>
         <a href="#governance">Governance</a>
         <a href="/updates.html">Updates</a>
+        <a href="/battlefield.html">Battlefield</a>
       </div>
       <div class="footer-col">
         <h4>Community</h4>
         <a href="https://x.com/XrPegged" target="_blank" rel="noopener">𝕏 @XrPegged</a>
         <a href="https://t.me/ChatPegd" target="_blank" rel="noopener">💬 Telegram Chat</a>
         <a href="https://t.me/getpegd" target="_blank" rel="noopener">📢 Announcements</a>
+        <a href="https://github.com/XRPEGGED/PEGD" target="_blank" rel="noopener">🐙 GitHub</a>
         <a href="mailto:xrpegged@proton.me">✉️ xrpegged@proton.me</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="/faq.html">Docs / FAQ</a>
+        <a href="/terms.html">Terms of Use</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/disclaimer.html">Disclaimer</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -1776,6 +2021,8 @@
     xummQrEl?.classList.remove('visible');
     const walletAddrEl = document.getElementById('wallet-address');
     if (walletAddrEl) walletAddrEl.textContent = wallet.slice(0, 4) + '…' + wallet.slice(-4);
+    const navCta = document.querySelector('.nav-cta');
+    if (navCta) navCta.textContent = 'Sign Out';
     window.XrpegPortal?.updateBadge();
     loadGatedContent();
   }
@@ -1792,6 +2039,8 @@
     connectXummBtn?.textContent != null && (connectXummBtn.textContent = '🔵 Sign in with Xaman');
     xummQrEl?.classList.remove('visible');
     xummQrEl?.removeAttribute('src');
+    const navCta = document.querySelector('.nav-cta');
+    if (navCta) navCta.textContent = 'Sign In';
   }
 
   function getPhantom() {
@@ -2042,6 +2291,24 @@
     await loadPublicStats();
   }
 
+  document.querySelectorAll('.wallet-mono[data-full]').forEach(el => {
+    const full = el.dataset.full;
+    el.textContent = full.slice(0, 4) + '…' + full.slice(-4);
+  });
+
+  document.querySelectorAll('.treasury-copy-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        await navigator.clipboard.writeText(btn.dataset.address);
+        const original = btn.textContent;
+        btn.textContent = '✓';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1500);
+      } catch { /* clipboard denied */ }
+    });
+  });
+
   document.getElementById('copy-ca-btn')?.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(PEGD_MINT);
@@ -2160,7 +2427,7 @@
   }
   updateShopPayInstructions();
 
-  async function loadShop() {
+  async function loadShop(isRetry) {
     const grid = document.getElementById('shop-grid');
     const statusText = document.getElementById('shop-status-text');
     if (!grid) return;
@@ -2216,7 +2483,7 @@
 
       grid.innerHTML = listings.map(item => {
         const img = item.mediaUri
-          ? `<div class="shop-img-real"><img src="${item.mediaUri}" alt=""></div>`
+          ? `<div class="shop-img-real"><img src="${item.mediaUri}" alt="" loading="lazy"></div>`
           : `<div class="shop-img">${item.emoji || '📦'}</div>`;
         return `
         <div class="shop-card">
@@ -2239,7 +2506,12 @@
         });
       });
     } catch {
-      grid.innerHTML = `<p style="color:var(--muted);grid-column:1/-1;text-align:center;">Market syncing… <a href="${MARKET_URL}" style="color:var(--neon);">Open PEGD Market</a></p>`;
+      if (!isRetry) {
+        setTimeout(() => loadShop(true), 1500);
+        return;
+      }
+      grid.innerHTML = `<div class="data-error" style="grid-column:1/-1;">Data temporarily unavailable. <a href="${MARKET_URL}" target="_blank" rel="noopener" style="color:var(--neon);">Open PEGD Market</a><button type="button" class="data-error-retry">Retry</button></div>`;
+      grid.querySelector('.data-error-retry')?.addEventListener('click', () => loadShop());
     }
   }
   // Sticky nav active state
@@ -2254,6 +2526,23 @@
       a.style.color = a.getAttribute('href') === '#' + current ? 'var(--neon)' : '';
     });
   });
+
+  // Mobile hamburger nav
+  (() => {
+    const btn = document.getElementById('nav-hamburger');
+    const links = document.getElementById('nav-links');
+    if (!btn || !links) return;
+    const close = () => { links.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); };
+    const open  = () => { links.classList.add('open');    btn.setAttribute('aria-expanded', 'true'); };
+    btn.addEventListener('click', () => {
+      links.classList.contains('open') ? close() : open();
+    });
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+    document.addEventListener('click', (e) => {
+      if (links.classList.contains('open') && !links.contains(e.target) && e.target !== btn && !btn.contains(e.target)) close();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  })();
 </script>
 <script src="/js/directives-board.js"></script>
 <script>
@@ -2305,6 +2594,20 @@
   })();
 </script>
 <script src="/js/officer-sidecar.js?v=5db2d7d8" defer></script>
+<script>
+(function() {
+  var hdr = document.querySelector('header');
+  if (!hdr) return;
+  function sync() {
+    var h = hdr.offsetHeight;
+    document.querySelectorAll('.site-content').forEach(function(el) { el.style.paddingTop = h + 'px'; });
+    var nl = document.getElementById('nav-links');
+    if (nl) nl.style.top = h + 'px';
+  }
+  sync();
+  if (window.ResizeObserver) new ResizeObserver(sync).observe(hdr);
+})();
+</script>
 </body>
 </html>
 
