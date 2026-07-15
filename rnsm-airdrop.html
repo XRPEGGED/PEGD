@@ -188,6 +188,13 @@
   </div>
 </nav>
 
+<div style="background:#1a0808;border-bottom:2px solid #ff4444;padding:0.7rem 1.5rem;text-align:center;font-size:0.82rem;color:#ffaaaa;line-height:1.6;">
+  <strong style="color:#ff5555">Re-registration required.</strong>
+  Registrations submitted before Jul 15, 2026 (balance-only, no Xaman proof) <strong>do not count</strong>.
+  Prove ownership with Xaman below. Window open through <strong>Jul 27, 2026</strong>.
+  <a href="/updates.html" style="color:#ff7777;margin-left:0.5rem">Details →</a>
+</div>
+
 <section id="hero">
   <div class="badge">RNSM · XRP Holder Airdrop</div>
   <h1>RNSM Airdrop<br><span class="neon">For XRP Holders</span></h1>
@@ -222,24 +229,31 @@
 
 <section id="before-you-start">
   <div class="prereq-box">
-    <div class="prereq-title">📋 Before you start — you need these 2 things:</div>
+    <div class="prereq-title">📋 Before you start — you need these 3 things:</div>
     <div class="prereq-list">
       <div class="prereq-item">
         <div class="prereq-icon">👻</div>
         <div>
           <div class="prereq-name">Phantom Wallet <span class="prereq-tag">free</span></div>
-          <div class="prereq-desc">A free crypto wallet app for your phone or browser. Think of it like a free bank account for crypto. <a href="https://phantom.app" target="_blank" rel="noopener">Download at phantom.app →</a></div>
+          <div class="prereq-desc">A free Solana wallet app for your phone or browser — this is where your RNSM tokens will be sent. <a href="https://phantom.app" target="_blank" rel="noopener">Download at phantom.app →</a></div>
+        </div>
+      </div>
+      <div class="prereq-item">
+        <div class="prereq-icon">🔑</div>
+        <div>
+          <div class="prereq-name">Xaman app <span class="prereq-tag">free · required</span></div>
+          <div class="prereq-desc">Xaman (formerly Xumm) is a free XRP wallet app. You'll use it to <strong>prove you control</strong> your XRP address via a free Sign In — no seed phrase entered, no funds moved. <a href="https://xumm.app" target="_blank" rel="noopener">Download at xumm.app →</a></div>
         </div>
       </div>
       <div class="prereq-item">
         <div class="prereq-icon">💧</div>
         <div>
-          <div class="prereq-name">An XRP wallet with at least 10 XRP</div>
-          <div class="prereq-desc">XRP is a type of cryptocurrency. You need at least 10 XRP in a wallet you own. You can buy XRP on any major exchange (Coinbase, Kraken, Binance) and send it to an XRP wallet like <a href="https://xumm.app" target="_blank" rel="noopener">Xaman (free) →</a></div>
+          <div class="prereq-name">At least 10 XRP in your Xaman wallet</div>
+          <div class="prereq-desc">You need ≥ 10 XRP in the wallet you sign with. Buy XRP on Coinbase, Kraken, or Binance and send it to Xaman.</div>
         </div>
       </div>
     </div>
-    <div class="prereq-safe">🔒 <strong>Is this safe?</strong> Yes. We never ask for your password or seed phrase. The "Sign" button just proves you own your wallet — it's free and cannot move your funds.</div>
+    <div class="prereq-safe">🔒 <strong>Is this safe?</strong> Yes. We never ask for your seed phrase or password. Xaman Sign In is a free cryptographic proof — no transaction fee, no funds moved, just a signature that proves you own the wallet.</div>
   </div>
 </section>
 
@@ -266,20 +280,38 @@
       <p class="status-msg" id="status-step1"></p>
     </div>
 
-    <!-- Step 2: Verify XRP address -->
+    <!-- Step 2: Prove XRP with Xaman -->
     <div class="step-content" id="step-2">
-      <h2>Step 2 — Enter your XRP wallet address</h2>
-      <p class="step-desc">Paste the address of the XRP wallet that holds your XRP. You need at least 10 XRP in it. <strong>Keep your XRP there until the airdrop is sent</strong> — we re-check your balance at payout time, so don't move it out.</p>
-      <input type="text" id="xrp-input" placeholder="rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" autocomplete="off" spellcheck="false" />
-      <button class="btn-primary" id="btn-verify">Verify XRP Balance</button>
-      <div id="xrp-balance-result" style="display:none; margin-top:0.75rem;">
+      <h2>Step 2 — Prove your XRP wallet with Xaman</h2>
+      <p class="step-desc">Tap the button to open a free <strong>Xaman Sign In</strong>. We never ask for your seed phrase and no funds move — this is a cryptographic proof that you control the wallet.</p>
+
+      <div id="xaman-sign-section">
+        <button class="btn-primary" id="btn-xaman-signin">Sign with Xaman</button>
+      </div>
+
+      <div id="xaman-qr-section" style="display:none;text-align:center;margin:1rem 0;">
+        <img id="xaman-qr-img" src="" alt="Xaman QR code" style="width:190px;height:190px;border-radius:10px;margin-bottom:0.75rem;" />
+        <br>
+        <a id="xaman-deeplink" href="#" target="_blank" rel="noopener" style="font-size:0.82rem;color:var(--neon);text-decoration:none;">Open in Xaman app →</a>
+        <p class="status-msg" id="status-step2">Waiting for Xaman signature...</p>
+      </div>
+
+      <div id="xaman-proven-section" style="display:none;margin-top:0.75rem;">
+        <div class="address-label">Proven XRP Wallet</div>
+        <div class="address-display" id="xrp-addr-display"></div>
         <div class="balance-card">
           <div class="balance-val" id="xrp-bal-val">0.00</div>
           <div class="balance-sub">XRP Balance (live on XRPL)</div>
         </div>
-        <button class="btn-primary" id="btn-xrp-next">Continue →</button>
+        <p class="status-msg error" id="xrp-balance-warn" style="display:none;">Balance too low — minimum 10 XRP required</p>
+        <button class="btn-primary" id="btn-xrp-next" disabled>Continue →</button>
+        <button class="btn-secondary" id="btn-xaman-retry">Use a different XRP wallet</button>
       </div>
-      <p class="status-msg" id="status-step2"></p>
+
+      <p style="margin-top:1rem;font-size:0.75rem;color:var(--muted);text-align:center;">
+        Don't have Xaman? <a href="https://xumm.app" target="_blank" rel="noopener" style="color:var(--neon)">Download free at xumm.app →</a>
+      </p>
+      <p class="status-msg error" id="status-step2-err"></p>
     </div>
 
     <!-- Step 3: Boost tasks + register -->
@@ -433,6 +465,7 @@ const state = {
   solAddress: null,
   xrpAddress: null,
   xrpBalance: 0,
+  xamanProof: null,
   tasks: { telegram: false, twitter: false, pegd: false },
   referredBy: null,
   stats: { count: 0, totalXrp: 0, totalEffectiveXrp: 0 }
@@ -508,54 +541,121 @@ document.getElementById('btn-disconnect').addEventListener('click', () => {
   setStatus(1, '')
 })
 
-// ── Step 2: Verify XRP ──────────────────────────────────────────────────────
+// ── Step 2: Xaman SignIn ─────────────────────────────────────────────────────
 
-document.getElementById('btn-verify').addEventListener('click', async () => {
-  const xrp = document.getElementById('xrp-input').value.trim()
-  if (!xrp.startsWith('r') || xrp.length < 25 || xrp.length > 50) {
-    setStatus(2, 'XRP addresses start with "r" and are 25–50 characters', 'error')
-    return
-  }
+let xamanPollTimer = null
 
-  const btn = document.getElementById('btn-verify')
+function resetXamanStep() {
+  clearTimeout(xamanPollTimer)
+  state.xamanProof = null
+  state.xrpAddress = null
+  state.xrpBalance = 0
+  document.getElementById('xaman-sign-section').style.display = 'block'
+  document.getElementById('xaman-qr-section').style.display = 'none'
+  document.getElementById('xaman-proven-section').style.display = 'none'
+  document.getElementById('btn-xaman-signin').disabled = false
+  document.getElementById('status-step2').textContent = 'Waiting for Xaman signature...'
+  document.getElementById('status-step2-err').textContent = ''
+}
+
+document.getElementById('btn-xaman-retry').addEventListener('click', resetXamanStep)
+
+document.getElementById('btn-xaman-signin').addEventListener('click', async () => {
+  const btn = document.getElementById('btn-xaman-signin')
   btn.disabled = true
-  setStatus(2, 'Querying XRPL...')
+  document.getElementById('status-step2-err').textContent = ''
 
   try {
-    const res  = await fetch('https://xrplcluster.com', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ method: 'account_info', params: [{ account: xrp, ledger_index: 'validated' }] })
-    })
-    const data = await res.json()
+    const res = await fetch('/api/xumm/auth', { method: 'POST' })
+    const payload = await res.json()
+    if (!payload.success) throw new Error(payload.error || 'Xaman request failed')
 
-    if (data.result?.error || !data.result?.account_data) {
-      setStatus(2, data.result?.error_message || 'XRP address not found — is it funded?', 'error')
-      btn.disabled = false
-      return
-    }
+    document.getElementById('xaman-sign-section').style.display = 'none'
+    document.getElementById('xaman-qr-section').style.display = 'block'
+    if (payload.qr) document.getElementById('xaman-qr-img').src = payload.qr
+    if (payload.deeplink) document.getElementById('xaman-deeplink').href = payload.deeplink
 
-    const balance = parseInt(data.result.account_data.Balance || '0') / 1_000_000
-
-    if (balance < MIN_XRP) {
-      setStatus(2, `Only ${balance.toFixed(2)} XRP — minimum ${MIN_XRP} XRP required`, 'error')
-      btn.disabled = false
-      return
-    }
-
-    state.xrpAddress = xrp
-    state.xrpBalance = balance
-    document.getElementById('xrp-bal-val').textContent = balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-    document.getElementById('xrp-balance-result').style.display = 'block'
-    btn.style.display = 'none'
-    setStatus(2, '')
-  } catch {
-    setStatus(2, 'Network error — try again', 'error')
+    pollXaman(payload.uuid)
+  } catch (e) {
+    document.getElementById('status-step2-err').textContent = e.message || 'Failed to start Xaman — try again'
     btn.disabled = false
   }
 })
 
-document.getElementById('btn-xrp-next').addEventListener('click', async () => {
+async function pollXaman(payloadId) {
+  try {
+    const res = await fetch('/api/xumm/poll', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ payloadId })
+    })
+    const data = await res.json()
+    if (data.pending) {
+      xamanPollTimer = setTimeout(() => pollXaman(payloadId), 2000)
+      return
+    }
+    if (!data.signed || !data.account) {
+      resetXamanStep()
+      document.getElementById('status-step2-err').textContent = 'Sign-in cancelled — try again'
+      return
+    }
+
+    document.getElementById('status-step2').textContent = 'Verifying proof...'
+
+    const proofRes = await fetch('/api/airdrop/xrp-proof', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ payloadId, solAddress: state.solAddress })
+    })
+    const proofData = await proofRes.json()
+    if (!proofData.xamanProof) throw new Error(proofData.error || 'Proof minting failed — try again')
+
+    state.xamanProof = proofData.xamanProof
+    state.xrpAddress = proofData.xrpAddress
+
+    document.getElementById('xaman-qr-section').style.display = 'none'
+    document.getElementById('xrp-addr-display').textContent = proofData.xrpAddress
+    document.getElementById('xaman-proven-section').style.display = 'block'
+
+    await fetchProvenBalance(proofData.xrpAddress)
+  } catch (e) {
+    resetXamanStep()
+    document.getElementById('status-step2-err').textContent = e.message || 'Verification failed — try again'
+  }
+}
+
+async function fetchProvenBalance(xrpAddress) {
+  document.getElementById('xrp-bal-val').textContent = '…'
+  try {
+    const res = await fetch('https://xrplcluster.com', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ method: 'account_info', params: [{ account: xrpAddress, ledger_index: 'validated' }] })
+    })
+    const data = await res.json()
+    if (data.result?.error || !data.result?.account_data) {
+      document.getElementById('xrp-bal-val').textContent = '0.00'
+      document.getElementById('xrp-balance-warn').style.display = 'block'
+      return
+    }
+    const balance = parseInt(data.result.account_data.Balance || '0') / 1_000_000
+    state.xrpBalance = balance
+    document.getElementById('xrp-bal-val').textContent = balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    if (balance < MIN_XRP) {
+      document.getElementById('xrp-balance-warn').style.display = 'block'
+      document.getElementById('btn-xrp-next').disabled = true
+    } else {
+      document.getElementById('xrp-balance-warn').style.display = 'none'
+      document.getElementById('btn-xrp-next').disabled = false
+    }
+  } catch {
+    document.getElementById('xrp-bal-val').textContent = '?'
+    document.getElementById('status-step2-err').textContent = 'Could not fetch balance — check your XRP wallet'
+    document.getElementById('btn-xrp-next').disabled = false
+  }
+}
+
+document.getElementById('btn-xrp-next').addEventListener('click', () => {
   setStep(3)
   checkPegdBalance()
   updateEstimate()
@@ -685,11 +785,17 @@ document.getElementById('btn-register').addEventListener('click', async () => {
   setStatus(3, 'Submitting...')
 
   try {
+    if (!state.xamanProof) {
+      setStatus(3, 'Ownership proof missing — go back to Step 2 and sign with Xaman', 'error')
+      btn.disabled = false
+      return
+    }
+
     const res  = await fetch(`${COMPUTE}/airdrop-register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        xrpAddress:       state.xrpAddress,
+        xamanProof:       state.xamanProof,
         solAddress:       state.solAddress,
         referredBy:       state.referredBy,
         tasks: {
@@ -703,7 +809,7 @@ document.getElementById('btn-register').addEventListener('click', async () => {
 
     if (!data.ok) {
       if (data.error?.includes('already registered')) {
-        setStatus(3, 'This XRP address is already registered!', 'ok')
+        setStatus(3, 'This XRP wallet is already registered with Xaman proof!', 'ok')
       } else {
         setStatus(3, data.error || 'Registration failed', 'error')
         btn.disabled = false
@@ -748,8 +854,10 @@ async function checkStatus() {
   try {
     const res  = await fetch(`${COMPUTE}/airdrop-check?xrp=${encodeURIComponent(xrp)}`)
     const data = await res.json()
-    if (data.registered) {
-      result.innerHTML = `<span style="color:var(--neon)">✓ Registered</span> · ${data.balanceXrp.toLocaleString()} XRP · Estimated <strong style="color:var(--neon2)">${(data.estimatedRnsm || 0).toLocaleString()} RNSM</strong>`
+    if (data.mustReRegister) {
+      result.innerHTML = `<span style="color:#ff5555">⚠ Invalid registration</span> — you registered before Xaman ownership was required. <strong>Re-register with Xaman by Jul 27, 2026</strong>. <a href="/rnsm-airdrop" style="color:var(--neon)">Re-register →</a>`
+    } else if (data.registered && data.valid) {
+      result.innerHTML = `<span style="color:var(--neon)">✓ Registered (Xaman verified)</span> · ${data.balanceXrp.toLocaleString()} XRP · Estimated <strong style="color:var(--neon2)">${(data.estimatedRnsm || 0).toLocaleString()} RNSM</strong>`
     } else {
       result.innerHTML = `<span style="color:var(--muted)">Not registered yet</span>`
     }
