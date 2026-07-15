@@ -4,6 +4,8 @@ PEGD Compute Worker
 Mine the most profitable GPU coin. Earn PEGD.
 """
 
+WORKER_VERSION = "1.1.0"
+
 import datetime
 import json
 import math
@@ -14,6 +16,7 @@ import subprocess
 import sys
 import threading
 import time
+import webbrowser
 from pathlib import Path
 from urllib import request, error
 from urllib.parse import urlencode
@@ -764,6 +767,30 @@ def parse_hashrate(line):
         return float(x.group(1)) / 1e6  # XMRig reports H/s → convert to MH/s
     return None
 
+def is_ai_busy():
+    """Return True if ComfyUI or Ollama is actively processing a job."""
+    try:
+        import urllib.request
+        req = urllib.request.urlopen(
+            "http://127.0.0.1:8188/queue", timeout=2
+        )
+        data = json.loads(req.read())
+        if data.get("queue_running") or data.get("queue_pending"):
+            return True
+    except Exception:
+        pass
+    try:
+        import urllib.request
+        req = urllib.request.urlopen(
+            "http://127.0.0.1:11434/api/ps", timeout=2
+        )
+        data = json.loads(req.read())
+        if data.get("models"):
+            return True
+    except Exception:
+        pass
+    return False
+
 # ── Main App ──────────────────────────────────────────────────────────────────
 
 class PEGDWorker:
@@ -792,6 +819,7 @@ class PEGDWorker:
 
         self._build_ui()
         self._apply_theme()
+        threading.Thread(target=self._check_for_update, daemon=True).start()
 
         orphans = kill_orphaned_miners()
         if self.gpus:
@@ -813,6 +841,7 @@ class PEGDWorker:
         # Header
         hdr = tk.Frame(self.root, bg="#0d0d22", pady=12)
         hdr.pack(fill=tk.X)
+        self._hdr_frame = hdr
         tk.Label(hdr, text="PEGD", bg="#0d0d22", fg="#00f5ff",
                  font=("Arial", 28, "bold")).pack(side=tk.LEFT, padx=20)
         tk.Label(hdr, text="Compute Worker", bg="#0d0d22", fg="#7070a0",
@@ -820,6 +849,12 @@ class PEGDWorker:
         self.status_dot = tk.Label(hdr, text="⬤  Idle", bg="#0d0d22",
                                     fg="#555577", font=("Arial", 11))
         self.status_dot.pack(side=tk.RIGHT, padx=20)
+
+        # Update banner — hidden until _check_for_update finds a newer version
+        self.update_banner = tk.Label(
+            self.root, text="", bg="#2a1a00", fg="#f0b90b",
+            font=("Arial", 10), cursor="hand2", pady=6
+        )
 
         body = tk.Frame(self.root, bg="#0a0a1a")
         body.pack(fill=tk.BOTH, expand=True, **pad)
@@ -1119,6 +1154,30 @@ class PEGDWorker:
         style = ttk.Style()
         style.theme_use("clam")
 
+    def _check_for_update(self):
+        try:
+            resp = request.urlopen(
+                "https://pegd.org/worker-version.json", timeout=8
+            )
+            data = json.loads(resp.read())
+            latest = data.get("version", "")
+            if not latest:
+                return
+            def _ver(v):
+                return tuple(int(x) for x in v.split("."))
+            if _ver(latest) <= _ver(WORKER_VERSION):
+                return
+            notes = data.get("notes", "")
+            dl    = data.get("download", "https://pegd.org/worker.py")
+            msg   = f"  ↑  Update available: v{latest}  —  {notes}  ·  Click to download"
+            def show():
+                self.update_banner.config(text=msg)
+                self.update_banner.pack(fill=tk.X, after=self._hdr_frame)
+                self.update_banner.bind("<Button-1>", lambda e: webbrowser.open(dl))
+            self.root.after(0, show)
+        except Exception:
+            pass
+
     def _log(self, msg, tag="ok"):
         if threading.current_thread() is not threading.main_thread():
             self.root.after(0, self._log, msg, tag)
@@ -1163,7 +1222,10 @@ class PEGDWorker:
         last_pool_check       = 0
         last_nonzero_hr       = time.time()
         peak_announced        = False
+        ai_paused             = False
+        last_ai_check         = 0
         POOL_CHECK_SECS       = 120  # refresh Unmineable stats every 2 min
+        AI_CHECK_SECS         = 10
 
         while self.running:
             now = time.time()
@@ -1185,6 +1247,29 @@ class PEGDWorker:
                 self._log("Off-peak hours — resuming mining.", "ok")
                 self._set_status("Connecting...", "#f0b90b")
                 peak_announced = False
+
+            # AI yield — pause GPU+CPU miners while ComfyUI or Ollama is active
+            if now - last_ai_check > AI_CHECK_SECS:
+                ai_busy = is_ai_busy()
+                last_ai_check = now
+                if ai_busy and not ai_paused:
+                    if self.miner_proc:
+                        self._kill_miner()
+                    if self.cpu_proc:
+                        self._kill_cpu_miner()
+                    last_assignment_check = 0
+                    ai_paused = True
+                    self._set_status("Yielding to AI", "#a855f7")
+                    self._log("AI job detected — yielding GPU/CPU to ComfyUI/Ollama", "warn")
+                elif not ai_busy and ai_paused:
+                    ai_paused = False
+                    last_assignment_check = 0
+                    self._log("AI job finished — resuming mining", "ok")
+                    self._set_status("Connecting...", "#f0b90b")
+
+            if ai_paused:
+                time.sleep(10)
+                continue
 
             # Refresh assignment
             if now - last_assignment_check > assignment_secs or self.assignment is None:

@@ -15,7 +15,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@XrPegged">
   <meta name="twitter:title" content="PEGD — Mine Compute. Earn PEGD.">
-  <meta name="twitter:description" content="PEGD on Solana. Mine XMR or KAS and earn PEGD every 3 hours. Treasury-backed, transparent, community-run.">
+  <meta name="twitter:description" content="PEGD on Solana. Mine XMR or KAS and earn PEGD automatically. Treasury-backed, transparent, community-run.">
   <meta name="twitter:image" content="https://placehold.co/1200x630/0a0a1a/00f5ff?text=XRPEGGED">
   <link rel="icon" type="image/jpeg" href="/pegged.jpg">
   <link rel="preconnect" href="https://xrplcluster.com">
@@ -920,9 +920,11 @@
           <a href="/updates.html">Updates</a>
           <a href="/token-launcher">Token Launcher</a>
           <a href="/battlefield.html">Battlefield</a>
+          <a href="/run.html">Play</a>
           <a href="#holders">Dashboard</a>
+          <a href="/ai.html">AI</a>
         </div>
-        <button type="button" class="nav-cta" onclick="connectHolderWallet()">Sign In</button>
+        <button type="button" class="nav-cta" onclick="connectHolderWallet()">Connect</button>
         <span id="portal-badge" class="portal-badge hidden" aria-live="polite"></span>
         <div id="wallet-indicator" class="wallet-indicator" title="Click to copy address" aria-label="Copy wallet address">
           <span id="wallet-address" class="wallet-address"></span>
@@ -944,7 +946,7 @@
       <div class="hero-eyebrow">NOW LIVE</div>
       <h1>XRPEGGED</h1>
       <p class="hero-sub">
-        XRP holders qualify for the RNSM airdrop — no purchase required. Shop with crypto at real USD prices. Mine and earn PEGD every 3 hours. <strong>No experience needed.</strong>
+        XRP holders qualify for the RNSM airdrop — no purchase required. Shop with crypto at real USD prices. Mine and earn PEGD automatically. <strong>No experience needed.</strong>
       </p>
       <div class="hero-btns">
       </div>
@@ -1564,7 +1566,7 @@
         <div class="holders-actions">
           <!--<button type="button" class="btn-connect xumm" id="connect-xumm-btn">🔵 Sign in with Xaman</button>-->
           <!--<p class="holders-divider">or</p>-->
-          <button type="button" class="btn-connect" id="connect-wallet-btn">🟣 Sign in with Phantom</button>
+          <button type="button" class="btn-connect" id="connect-wallet-btn">🟣 Connect Phantom</button>
         </div>
         <p class="holders-privacy-note" title="PEGD never requests, stores, or has access to your private keys or seed phrase.">🔒 We never have access to your private keys.</p>
         <div class="session-duration-row">
@@ -2016,13 +2018,13 @@
     holdersStatus.textContent = label || chairmanLabel(rail, wallet);
     holdersStatus.className = 'holders-status ok';
     holdersWalletEl.textContent = wallet;
-    connectBtn.textContent = '🟣 Sign out';
+    connectBtn.textContent = '🟣 Disconnect';
     connectXummBtn?.textContent != null && (connectXummBtn.textContent = '🔵 Sign out');
     xummQrEl?.classList.remove('visible');
     const walletAddrEl = document.getElementById('wallet-address');
     if (walletAddrEl) walletAddrEl.textContent = wallet.slice(0, 4) + '…' + wallet.slice(-4);
     const navCta = document.querySelector('.nav-cta');
-    if (navCta) navCta.textContent = 'Sign Out';
+    if (navCta) navCta.textContent = 'Disconnect';
     window.XrpegPortal?.updateBadge();
     loadGatedContent();
   }
@@ -2035,12 +2037,12 @@
     holdersStatus.textContent = msg || '';
     holdersStatus.className = 'holders-status' + (isErr ? ' err' : '');
     holdersWalletEl.textContent = '';
-    connectBtn.textContent = '🟣 Sign in with Phantom';
+    connectBtn.textContent = '🟣 Connect Phantom';
     connectXummBtn?.textContent != null && (connectXummBtn.textContent = '🔵 Sign in with Xaman');
     xummQrEl?.classList.remove('visible');
     xummQrEl?.removeAttribute('src');
     const navCta = document.querySelector('.nav-cta');
-    if (navCta) navCta.textContent = 'Sign In';
+    if (navCta) navCta.textContent = 'Connect';
   }
 
   function getPhantom() {
@@ -2083,11 +2085,6 @@
       holdersStatus.textContent = 'Connecting…';
       const { publicKey } = await provider.connect();
       const address = publicKey.toString();
-      holdersStatus.textContent = 'Sign the message in Phantom to verify…';
-      const nonce = Date.now().toString();
-      const msg = new TextEncoder().encode(`Sign in to PEGD\n${address}\n${nonce}`);
-      const { signature } = await provider.signMessage(msg, 'utf8');
-      if (!signature) throw new Error('Signature cancelled');
       const short = address.slice(0, 4) + '..' + address.slice(-4);
       setHolderUnlocked(address, '🟣 ' + short, 'phantom');
     } catch (err) {

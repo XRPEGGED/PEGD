@@ -137,7 +137,7 @@ async function load() {
   const data = await res.json()
 
   if (!data.pending) {
-    showBanner('none', 'No pending payout — next cycle runs at the top of the next 3-hour mark')
+    showBanner('none', 'No pending payout — will trigger automatically when earnings accumulate')
     return
   }
 

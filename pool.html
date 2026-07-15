@@ -139,6 +139,7 @@
   <a href="#get-started">Get Started</a>
   <a href="/updates.html">Updates</a>
   <a href="/governance.html">Governance</a>
+  <a href="/run.html">Play</a>
 </nav>
 
 <div class="page">
@@ -168,7 +169,7 @@
     <div class="stat-cell">
       <div class="stat-label">Next $PEGD Cycle</div>
       <div class="stat-val" id="countdown">—</div>
-      <div class="stat-sub">every 3 hours</div>
+      <div class="stat-sub">when earned</div>
     </div>
   </div>
 
@@ -339,7 +340,7 @@
   </div>
 
   <div class="badge-row">
-    <span class="badge"><strong>Cycle</strong> every 3 hours</span>
+    <span class="badge"><strong>Cycle</strong> threshold-based</span>
     <span class="badge"><strong>Operator fee</strong> 0.75%</span>
     <span class="badge"><strong>Referral</strong> U-FGJ8HA (built-in)</span>
     <span class="badge"><strong>Pool wallet</strong> 4xpXLWEn…E5C9</span>
@@ -586,7 +587,12 @@ async function loadHistory() {
         <div class="mono" title="${esc(p.wallet)}">${esc(p.wallet.slice(0,6))}…${esc(p.wallet.slice(-4))}</div>
         <div class="c-green">${fmt(Math.floor((p.pegdEarned || 0) / 1e6))}</div>
         <div>${((p.share || 0) * 100).toFixed(2)}%</div>
-        <div class="c-muted">${timeAgo(p.timestamp)}</div>
+        <div class="c-muted" title="${p.status === 'sent' ? 'Sent on-chain — tx ' + esc(p.txSignature || '') : p.status === 'failed' ? 'Send failed — under review' : p.status === 'legacy' ? 'Recorded before payout tracking — status unverified' : 'Credited, not yet sent on-chain'}">${
+          p.status === 'sent' ? 'sent ' + timeAgo(p.paidAt || p.timestamp)
+          : p.status === 'failed' ? 'failed'
+          : p.status === 'legacy' ? 'unverified'
+          : 'pending'
+        }</div>
       </div>`).join('')
   } catch {}
 }

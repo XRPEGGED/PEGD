@@ -80,6 +80,7 @@
   <a href="/mobile.html">Mobile</a>
   <a href="/updates.html" class="active">Updates</a>
   <a href="/#governance">Governance</a>
+  <a href="/run.html">Play</a>
 </nav>
 
 <div class="page">
@@ -92,7 +93,56 @@
   <div class="section-label">July 2026</div>
 
   <div class="entry">
-    <div class="entry-date"><div class="day">Jul 8, 2026</div><div class="rel">today</div></div>
+    <div class="entry-date"><div class="day">Jul 15, 2026</div><div class="rel">today</div></div>
+    <div class="entry-dot fix"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-security">Security</span>
+      <div class="entry-title">RNSM airdrop — re-register &amp; prove XRP ownership with Xaman</div>
+      <div class="entry-desc">
+        <strong>Action required if you already registered.</strong>
+        If you submitted an XRP address and balance <strong>before Jul 15, 2026</strong> (paste + balance only), that registration
+        <strong>will not count</strong> toward the RNSM airdrop. Please re-submit and
+        <strong>verify ownership with Xaman</strong> (free Sign In — no seed, no funds moved).
+        Our first version only checked that an address had XRP on-chain; it did
+        <strong>not</strong> prove you controlled that wallet. That logic was bunk — sorry.
+        No tokens are distributed until ownership is proven.
+        <strong>Re-register window is open through Jul 27, 2026</strong> — complete Xaman verification by then so you stay in the pool.
+        Re-register here when the Xaman step is live on the airdrop page.
+      </div>
+      <div class="entry-pills">
+        <span class="pill"><a href="/rnsm-airdrop">RNSM airdrop →</a></span>
+        <span class="pill">Xaman ownership</span>
+        <span class="pill">Deadline Jul 27</span>
+        <span class="pill">Re-verify required</span>
+        <span class="pill" style="border-color:var(--red);color:var(--red)">Prior regs invalid</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-date"><div class="day">Jul 15, 2026</div><div class="rel">today</div></div>
+    <div class="entry-dot new"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-new">New</span>
+      <div class="entry-title">Worker v1.1 — AI idle mining</div>
+      <div class="entry-desc">The PEGD compute worker now automatically yields GPU and CPU resources to ComfyUI and Ollama while AI jobs are running, then resumes mining the moment they finish. No configuration needed — the worker polls both services locally and shows a purple <strong>Yielding to AI</strong> status while paused. Download the updated worker from the <a href="/mine.html" style="color:var(--neon)">Mine page</a>.</div>
+      <div class="entry-pills"><span class="pill">Worker v1.1.0</span><span class="pill">ComfyUI</span><span class="pill">Ollama</span><span class="pill neon">Auto-yield</span></div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-date"><div class="day">Jul 15, 2026</div><div class="rel">today</div></div>
+    <div class="entry-dot fix"></div>
+    <div class="entry-body">
+      <span class="entry-tag tag-fix">Fix</span>
+      <div class="entry-title">Miner payouts restored — Moonshot DBC routing</div>
+      <div class="entry-desc">Payout cycles were silently skipping because Jupiter's generic routing returned no SOL→PEGD route. All buybacks and payout rate calculations now route directly through the Moonshot bonding curve, where PEGD actually has liquidity. Every buyback now pushes the curve toward the $69,420 graduation target. Payout cycles are running again.</div>
+      <div class="entry-pills"><span class="pill">Jupiter lite API</span><span class="pill">Moonshot DBC</span><span class="pill">dexes=Moonshot</span></div>
+    </div>
+  </div>
+
+  <div class="entry">
+    <div class="entry-date"><div class="day">Jul 8, 2026</div><div class="rel">7 days ago</div></div>
     <div class="entry-dot new"></div>
     <div class="entry-body">
       <span class="entry-tag tag-new">New</span>
@@ -162,7 +212,7 @@
         Native ARM64 APK built with <strong>xmrig + RandomX</strong>, compiled from source via Android NDK.
         Connects to <strong>rx.unmineable.com:3333</strong> as a foreground service — mines while the screen is off.
         Phantom wallet sign-in (Mobile Wallet Adapter) proves ownership before mining starts.
-        Earnings flow XMR → Unmineable auto-convert → SOL treasury → PEGD distribution every 3 hours.
+        Earnings flow XMR → Unmineable auto-convert → SOL treasury → PEGD distribution when accumulated.
         App includes Mine and About tabs; About tab documents how to update the APK.
       </div>
       <div class="entry-pills">
@@ -398,7 +448,7 @@
       <div class="entry-desc">
         No app, no GPU required. Any phone, tablet, or desktop can contribute CPU compute and
         earn PEGD by solving a PoW challenge in-browser. The difficulty auto-adjusts based on
-        your device's speed. Payouts use the same 3-hour cycle as the GPU pool.
+        your device's speed. Payouts use the same cycle as the GPU pool.
       </div>
       <div class="entry-pills">
         <span class="pill"><a href="/mine.html">mine.html</a></span>
@@ -419,7 +469,7 @@
       <span class="entry-tag tag-launch">Launch</span>
       <div class="entry-title">XRPEGGED Compute Pool launched</div>
       <div class="entry-desc">
-        GPU and CPU mining pool that pays out in <strong>$PEGD</strong> every 3 hours.
+        GPU and CPU mining pool that pays out in <strong>$PEGD</strong> automatically as earnings accumulate.
         Miners connect to Unmineable via the PEGD Compute Worker — GPU mines the most
         profitable coin via T-Rex or lolMiner, CPU runs XMRig RandomX simultaneously.
         All mined SOL flows to the treasury; PEGD is distributed proportionally by share-seconds.

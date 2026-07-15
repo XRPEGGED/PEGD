@@ -1,6 +1,7 @@
 # Guardian keys (sensitive!)
 .guardian-keys/
 *.json
+!worker-version.json
 
 # Wrangler cache
 .wrangler/
@@ -10,6 +11,7 @@ wrangler.toml.backup
 node_modules/
 .env
 .env.local
+.env.vanity
 
 # Build
 dist/
