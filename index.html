@@ -15,7 +15,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@XrPegged">
   <meta name="twitter:title" content="PEGD — Mine Compute. Earn PEGD.">
-  <meta name="twitter:description" content="PEGD on Solana. Mine XMR or KAS and earn PEGD automatically. Treasury-backed, transparent, community-run.">
+  <meta name="twitter:description" content="PEGD on Solana. Point compute at Unmineable and earn PEGD automatically. Treasury-backed, transparent, community-run.">
   <meta name="twitter:image" content="https://placehold.co/1200x630/0a0a1a/00f5ff?text=XRPEGGED">
   <link rel="icon" type="image/jpeg" href="/pegged.jpg">
   <link rel="preconnect" href="https://xrplcluster.com">
@@ -914,7 +914,7 @@
           <a href="#treasury">Treasury</a>
           <a href="#mine">Earn</a>
           <a href="/trade.html">Trade</a>
-          <a href="#shop">Market</a>
+          <a href="/market">Market</a>
           <a href="/about-xrp">PEGD Oracle</a>
           <a href="#governance">Governance</a>
           <a href="/updates.html">Updates</a>
@@ -1505,10 +1505,10 @@
       <h2>Prove Its Worth</h2>
       <p class="section-sub">Everyone can browse and buy. Listings are <strong>USD-priced</strong>. Checkout: <strong>PEGD</strong> (preferred), <strong>XRP via Xaman</strong>, or <strong>SOL</strong> on Phantom.</p>
       <div class="shop-demo-banner" id="shop-status-banner">
-        <p id="shop-status-text"><strong style="color:var(--gold);">Order #1 complete.</strong> <span id="shop-pay-instructions">Metapod sold via PEGD/Phantom (first PEGD Market). See remaining listings below or the full market.</span></p>
+        <p id="shop-status-text"><strong style="color:var(--gold);">Order #1 complete (history).</strong> Metapod sold via PEGD/Phantom. <span id="shop-pay-instructions">Live shelf below — open the full Market for the dedicated checkout page.</span></p>
         <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
           <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener" class="shop-cta-market" style="background:var(--neon2);">Get PEGD on Jupiter →</a>
-          <a href="#shop" class="shop-cta-market" id="shop-market-cta">Browse PEGD Market ↓</a>
+          <a href="/market" class="shop-cta-market" id="shop-market-cta">Open PEGD Market →</a>
         </div>
       </div>
       <div class="shop-grid" id="shop-grid">
@@ -1612,7 +1612,7 @@
         <h4>Navigate</h4>
         <a href="#treasury">Treasury</a>
         <a href="#mine">Earn</a>
-        <a href="#shop">Market</a>
+        <a href="/market">Market</a>
         <a href="/about-xrp">PEGD Oracle</a>
         <a href="#governance">Governance</a>
         <a href="/updates.html">Updates</a>
@@ -2403,8 +2403,8 @@
 
   // hero-buy-now listener removed (button is now non-purchase per sold PoC)
 
-  // Stay on pegd.org shop — market.pegd.org currently serves PROOF Digital Legacy (wrong host).
-  const MARKET_URL = 'https://pegd.org/#shop';
+  // Dedicated /market page on pegd.org — never send users to market.pegd.org (PROOF).
+  const MARKET_URL = '/market';
   const API_BASE_URL = 'https://pegd.org';
   const shopMarketCta = document.getElementById('shop-market-cta');
   if (shopMarketCta) shopMarketCta.href = MARKET_URL;
@@ -2478,10 +2478,26 @@
         return;
       }
 
+      if (statusText && listings.length) {
+        const n = listings.length;
+        statusText.innerHTML = '<strong style="color:var(--gold);">Order #1 complete (history).</strong> ' +
+          'Live shelf: <strong style="color:var(--neon);">' + n + ' listing' + (n === 1 ? '' : 's') + '</strong>. ' +
+          '<span id="shop-pay-instructions"></span>';
+        updateShopPayInstructions();
+      }
+
       grid.innerHTML = listings.map(item => {
-        const img = item.mediaUri
-          ? `<div class="shop-img-real"><img src="${item.mediaUri}" alt="" loading="lazy"></div>`
-          : `<div class="shop-img">${item.emoji || '📦'}</div>`;
+        const pending = /photographed listing pending|seller photo pending|photo pending/i.test(String(item.description || '') + ' ' + String(item.title || ''));
+        let img;
+        if (item.mediaUri) {
+          const badge = pending ? '<span style="position:absolute;left:8px;bottom:8px;background:rgba(10,10,26,0.88);border:1px solid rgba(240,185,11,0.45);color:var(--gold);font-size:0.6rem;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;padding:3px 7px;border-radius:4px;">Catalog photo · seller photo pending</span>' : '';
+          img = `<div class="shop-img-real" style="position:relative;"><img src="${item.mediaUri}" alt="" loading="lazy">${badge}</div>`;
+        } else {
+          const badge = pending
+            ? '<span style="position:absolute;left:8px;bottom:8px;background:rgba(10,10,26,0.88);border:1px solid rgba(240,185,11,0.45);color:var(--gold);font-size:0.6rem;font-weight:800;padding:3px 7px;border-radius:4px;">Photo pending</span>'
+            : '';
+          img = `<div class="shop-img" style="position:relative;">${item.emoji || '📦'}${badge}</div>`;
+        }
         return `
         <div class="shop-card">
           ${img}
