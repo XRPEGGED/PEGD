@@ -5,7 +5,11 @@ const MAX     = 5 * 1024 * 1024
 const BUCKET  = 'market-media'
 
 function baseUrl(env) {
-  return (env.SUPABASE_URL || 'https://tmaeezonwjyydkxwpeug.supabase.co').replace(/\/$/, '')
+  const url = env.SUPABASE_URL || ''
+  if (!url) {
+    throw new Error('Supabase not configured — set SUPABASE_URL on Cloudflare Pages')
+  }
+  return url.replace(/\/$/, '')
 }
 
 function serviceKey(env) {

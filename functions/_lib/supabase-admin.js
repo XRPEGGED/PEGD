@@ -1,8 +1,11 @@
-const DEFAULT_URL = 'https://tmaeezonwjyydkxwpeug.supabase.co'
 const BUCKET = 'market-media'
 
 function baseUrl(env) {
-  return (env.SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_URL).replace(/\/$/, '')
+  const url = env.SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL || ''
+  if (!url) {
+    throw new Error('Supabase not configured — set SUPABASE_URL on Cloudflare Pages')
+  }
+  return url.replace(/\/$/, '')
 }
 
 function serviceKey(env) {
@@ -21,7 +24,7 @@ function headers(env, extra = {}) {
 }
 
 export function supabaseConfigured(env) {
-  return Boolean(serviceKey(env))
+  return Boolean(serviceKey(env) && (env.SUPABASE_URL || env.NEXT_PUBLIC_SUPABASE_URL))
 }
 
 async function rest(env, path, options = {}) {

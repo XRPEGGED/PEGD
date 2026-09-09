@@ -54,7 +54,7 @@
 ```bash
 # Install Solana CLI (if not already running)
 sh -c "$(curl -sSfL https://release.solana.com/v1.18.22/install)"
-export PATH="/home/cube/.local/share/solana/install/active_release/bin:$PATH"
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
 
 # Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -69,7 +69,7 @@ avm use 0.30.1
 ### Build
 
 ```bash
-cd /home/cube/Desktop/pegd-site/solana-program
+cd <REPO_ROOT>/solana-program
 
 # Build program
 anchor build
