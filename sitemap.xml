@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://pegd.org/</loc></url>
   <url><loc>https://pegd.org/mine</loc></url>
+  <url><loc>https://pegd.org/market</loc></url>
   <url><loc>https://pegd.org/faq</loc></url>
   <url><loc>https://pegd.org/verify</loc></url>
   <url><loc>https://pegd.org/proof-of-work</loc></url>

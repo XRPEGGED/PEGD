@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PEGD Market — XRPEGGED</title>
+  <meta name="description" content="PEGD Market on pegd.org — USD-priced real goods. Pay with PEGD (preferred), XRP, or SOL. On-chain checkout, seller-handled shipping.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="PEGD Market — XRPEGGED">
+  <meta property="og:description" content="Live inventory. USD prices. Direct wallet checkout with $PEGD. No chargebacks — payments settle on-chain.">
+  <meta property="og:url" content="https://pegd.org/market">
+  <meta property="og:image" content="https://placehold.co/1200x630/0a0a1a/00f5ff?text=PEGD+Market">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@XrPegged">
+  <meta name="twitter:title" content="PEGD Market — XRPEGGED">
+  <meta name="twitter:description" content="Live inventory on pegd.org. USD prices. Pay with PEGD via Phantom. On-chain. Seller ships.">
+  <link rel="icon" type="image/jpeg" href="/pegged.jpg">
+  <style>
+    :root {
+      --bg: #0a0a1a;
+      --bg2: #0d0d22;
+      --bg3: #111130;
+      --neon: #00f5ff;
+      --neon2: #9945ff;
+      --gold: #f0b90b;
+      --text: #e0e0ff;
+      --muted: #7070a0;
+      --card: #13132e;
+      --border: rgba(0,245,255,0.15);
+      --radius: 12px;
+      --ok: #10b981;
+      --warn: #fbbf24;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: var(--neon); }
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,26,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px;
+    }
+    .logo { font-size: 1.15rem; font-weight: 900; color: var(--neon); text-decoration: none; letter-spacing: 0.5px; }
+    .logo span { color: var(--neon2); }
+    nav a { color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-left: 1.25rem; }
+    nav a:hover, nav a.active { color: var(--neon); }
+    @media (max-width: 560px) {
+      nav a.nav-hide { display: none; }
+      nav a { margin-left: 0.85rem; font-size: 0.78rem; }
+    }
+
+    .hero {
+      max-width: 1100px; margin: 0 auto;
+      padding: 2.5rem 1.5rem 1.25rem;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 0.6rem;
+    }
+    h1 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 900; color: var(--neon); margin-bottom: 0.5rem;
+    }
+    .hero-sub { color: var(--muted); max-width: 640px; font-size: 0.95rem; }
+
+    .buyer-notice {
+      max-width: 1100px; margin: 0 auto 1.5rem;
+      padding: 0 1.5rem;
+    }
+    .buyer-notice-inner {
+      background: rgba(240,185,11,0.07);
+      border: 1px solid rgba(240,185,11,0.32);
+      border-radius: var(--radius);
+      padding: 0.95rem 1.15rem;
+      font-size: 0.84rem;
+      color: var(--text);
+    }
+    .buyer-notice-inner strong { color: var(--gold); }
+    .buyer-notice-inner a { color: var(--neon); }
+
+    .shelf-meta {
+      max-width: 1100px; margin: 0 auto 1rem;
+      padding: 0 1.5rem;
+      display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center;
+      font-size: 0.8rem; color: var(--muted);
+    }
+    .pill {
+      display: inline-block;
+      background: rgba(0,245,255,0.08);
+      border: 1px solid rgba(0,245,255,0.25);
+      color: var(--neon);
+      font-size: 0.68rem; font-weight: 800; letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 4px 10px; border-radius: 999px;
+    }
+    .pill-gold {
+      background: rgba(240,185,11,0.12);
+      border-color: rgba(240,185,11,0.35);
+      color: var(--gold);
+    }
+
+    #shop { padding: 0 1.5rem 3rem; max-width: 1100px; margin: 0 auto; }
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.35rem;
+    }
+    .shop-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+      display: flex; flex-direction: column;
+    }
+    .shop-card:hover { transform: translateY(-3px); border-color: var(--neon2); }
+    .shop-img {
+      width: 100%; height: 200px;
+      background: linear-gradient(135deg, var(--bg3), var(--bg));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; position: relative;
+    }
+    .shop-img-real {
+      height: 200px; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.28); overflow: hidden; position: relative;
+    }
+    .shop-img-real img { width: 100%; height: 100%; object-fit: cover; }
+    .media-badge {
+      position: absolute; left: 10px; bottom: 10px;
+      background: rgba(10,10,26,0.88);
+      border: 1px solid rgba(240,185,11,0.45);
+      color: var(--gold);
+      font-size: 0.62rem; font-weight: 800; letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 8px; border-radius: 6px;
+    }
+    .shop-info { padding: 1.2rem; display: flex; flex-direction: column; flex: 1; }
+    .shop-info h3 { font-size: 1.02rem; font-weight: 800; margin-bottom: 0.35rem; line-height: 1.35; }
+    .shop-info .desc { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.85rem; flex: 1; }
+    .shop-price { font-size: 1.05rem; font-weight: 900; color: var(--gold); margin-bottom: 0.15rem; }
+    .shop-price span { font-size: 0.72rem; color: var(--muted); font-weight: 400; display: block; margin-top: 2px; }
+    .btn-pay-pegd {
+      margin-top: 0.85rem; width: 100%; padding: 11px; border: none; border-radius: 8px;
+      background: linear-gradient(135deg, #9945ff, #7c3aed); color: #fff; font-weight: 800;
+      font-size: 0.85rem; cursor: pointer;
+    }
+    .btn-pay-pegd:disabled { opacity: 0.5; cursor: not-allowed; }
+    .shop-pay-hint {
+      margin-top: 8px; font-size: 0.72rem; color: var(--muted); line-height: 1.45;
+    }
+    .shop-pay-hint strong { color: var(--neon2); }
+    .shop-empty {
+      grid-column: 1 / -1; text-align: center; padding: 2.5rem 1.5rem;
+      background: var(--card); border: 1px dashed rgba(240,185,11,0.35);
+      border-radius: var(--radius);
+    }
+    .shop-empty h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--gold); }
+    .shop-empty p { color: var(--muted); font-size: 0.88rem; max-width: 520px; margin: 0 auto; }
+
+    .history {
+      max-width: 1100px; margin: 0 auto 2.5rem;
+      padding: 0 1.5rem;
+    }
+    .history-card {
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.28);
+      border-radius: var(--radius);
+      padding: 1rem 1.15rem;
+      font-size: 0.84rem;
+    }
+    .history-card strong { color: var(--ok); }
+
+    .skel { background: linear-gradient(90deg, #13132e 25%, #1a1a3a 50%, #13132e 75%); background-size: 200% 100%; animation: sk 1.2s infinite; border-radius: 8px; }
+    .skel-block { height: 200px; border-radius: 0; }
+    .skel-line { height: 14px; margin: 12px 1.2rem; }
+    .skel-line.short { width: 40%; margin-bottom: 1.2rem; }
+    @keyframes sk { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.75rem 1.5rem 2.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    footer a { color: var(--muted); text-decoration: none; margin: 0 0.55rem; }
+    footer a:hover { color: var(--neon); }
+    .data-error { color: var(--muted); font-size: 0.9rem; padding: 1.5rem; text-align: center; }
+    .data-error-retry {
+      margin-left: 0.75rem; background: transparent; border: 1px solid var(--border);
+      color: var(--neon); border-radius: 6px; padding: 4px 10px; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-inner">
+      <a href="/" class="logo">XR<span>PEGGED</span></a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/market" class="active">Market</a>
+        <a href="/mine" class="nav-hide">Mine</a>
+        <a href="/faq" class="nav-hide">FAQ</a>
+        <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">Get PEGD</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <p class="eyebrow">💎 PEGD Market · pegd.org</p>
+    <h1>Live shelf</h1>
+    <p class="hero-sub">
+      USD-priced goods from XRPEGGED / $PEGD. Checkout with <strong style="color:var(--text)">PEGD</strong> (preferred via Phantom),
+      or XRP / SOL where available. Same on-chain flow as the homepage shop — no middleman card processor.
+    </p>
+  </section>
+
+  <div class="buyer-notice">
+    <div class="buyer-notice-inner">
+      <strong>Before you connect a wallet:</strong>
+      Payments settle on-chain and are irreversible — there are no chargebacks.
+      Shipping is arranged seller-to-buyer after checkout (XRPEGGED does not warehouse goods).
+      Treat this like peer-to-peer commerce; see the <a href="/faq">FAQ</a> for full buyer reality.
+    </div>
+  </div>
+
+  <div class="shelf-meta" id="shelf-meta">
+    <span class="pill" id="shelf-count">Loading inventory…</span>
+    <span id="shelf-note">Pulling live listings from PEGD Market API.</span>
+  </div>
+
+  <section id="shop">
+    <div class="shop-grid" id="shop-grid" aria-live="polite">
+      <div class="shop-card" aria-hidden="true">
+        <div class="skel skel-block"></div>
+        <div class="skel skel-line"></div>
+        <div class="skel skel-line short"></div>
+      </div>
+      <div class="shop-card" aria-hidden="true">
+        <div class="skel skel-block"></div>
+        <div class="skel skel-line"></div>
+        <div class="skel skel-line short"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="history">
+    <div class="history-card">
+      <strong>Order #1 (history):</strong>
+      Metapod sold via PEGD / Phantom — first completed PEGD Market proof.
+      Current shelf below is live inventory only (not the sold Metapod).
+    </div>
+  </div>
+
+  <footer>
+    <div>
+      <a href="/">Home</a>
+      <a href="/#shop">Homepage shop</a>
+      <a href="/faq">FAQ</a>
+      <a href="/order-status">Order status</a>
+      <a href="https://x.com/XrPegged" target="_blank" rel="noopener">@XrPegged</a>
+    </div>
+    <p style="margin-top:1rem;">© 2026 XRPEGGED · $PEGD on Solana</p>
+  </footer>
+
+  <script src="/js/pegd-checkout.js"></script>
+  <script>
+  (() => {
+    const PEGD_PER_USD = 1 / 0.00000510777;
+
+    function isMobileShop() {
+      return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || navigator.maxTouchPoints > 1;
+    }
+
+    function fmtUsd(n) {
+      return '$' + Number(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function escapeHtml(s) {
+      return String(s || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function photoPending(item) {
+      const blob = `${item.description || ''} ${item.title || ''}`.toLowerCase();
+      return /photographed listing pending|seller photo pending|photo pending/.test(blob);
+    }
+
+    function mediaBlock(item) {
+      const pending = photoPending(item);
+      if (item.mediaUri) {
+        const badge = pending
+          ? '<span class="media-badge">Catalog photo · seller photo pending</span>'
+          : '';
+        return `<div class="shop-img-real"><img src="${escapeHtml(item.mediaUri)}" alt="${escapeHtml(item.title)}" loading="lazy">${badge}</div>`;
+      }
+      const badge = pending
+        ? '<span class="media-badge">Photo pending</span>'
+        : '<span class="media-badge">No photo yet</span>';
+      return `<div class="shop-img">${escapeHtml(item.emoji || '📦')}${badge}</div>`;
+    }
+
+    function startShopPay(listingId, title) {
+      if (!window.XrpegCheckout) return;
+      if (isMobileShop() && window.XrpegCheckout.redirectToPhantom && !window.XrpegCheckout.hasRealPhantom?.()) {
+        window.XrpegCheckout.redirectToPhantom(listingId);
+        return;
+      }
+      window.XrpegCheckout.payListing?.({ id: listingId, title })
+        || window.XrpegCheckout.payWithPegd?.({ listingId, title })
+        || window.XrpegCheckout.openInPhantom?.(listingId);
+    }
+
+    async function fetchShopListings() {
+      const urls = ['/api/market/listings', 'https://pegd.pages.dev/api/market/listings'];
+      for (const url of urls) {
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data?.success && Array.isArray(data.listings)) return data;
+        } catch { /* try next */ }
+      }
+      throw new Error('Market API unavailable');
+    }
+
+    async function loadShop(isRetry) {
+      const grid = document.getElementById('shop-grid');
+      const countEl = document.getElementById('shelf-count');
+      const noteEl = document.getElementById('shelf-note');
+      if (!grid) return;
+
+      try {
+        const data = await fetchShopListings();
+        const listings = data.listings || [];
+        const n = listings.length;
+
+        if (countEl) {
+          countEl.textContent = n === 1 ? '1 live listing' : `${n} live listings`;
+          countEl.className = n > 0 ? 'pill' : 'pill pill-gold';
+        }
+        if (noteEl) {
+          if (n === 0) {
+            noteEl.textContent = data.demoCount
+              ? `${data.demoCount} placeholder ad${data.demoCount === 1 ? '' : 's'} hidden until photos are added.`
+              : 'Shelf is empty — nothing for sale yet.';
+          } else {
+            noteEl.textContent = 'USD price shown. PEGD amount estimated at checkout from live quotes.';
+          }
+        }
+
+        if (!listings.length) {
+          grid.innerHTML = `
+            <div class="shop-empty">
+              <h3>Nothing on the shelf right now</h3>
+              <p>PEGD Market is live on pegd.org, but there is no active inventory to show. Check back soon — we do not invent fake products.</p>
+            </div>`;
+          return;
+        }
+
+        grid.innerHTML = listings.map((item) => {
+          const pegdEst = Math.ceil(Number(item.priceUsd) * PEGD_PER_USD);
+          return `
+            <div class="shop-card">
+              ${mediaBlock(item)}
+              <div class="shop-info">
+                <h3>${escapeHtml(item.title)}</h3>
+                <p class="desc">${escapeHtml(item.description || '')}</p>
+                <div class="shop-price">${fmtUsd(item.priceUsd)} <span>${item.quotes ? escapeHtml(item.quotes) : ''}</span></div>
+                <button type="button" class="btn-pay-pegd" data-listing-id="${escapeHtml(item.id)}" data-listing-title="${escapeHtml(item.title)}">${isMobileShop() ? '🟣 Pay with PEGD (Phantom)' : '🟣 Pay with PEGD'}</button>
+                <p class="shop-pay-hint">${isMobileShop()
+                  ? '<strong>Phone:</strong> opens Phantom app. Need ~' + pegdEst.toLocaleString() + ' PEGD + 0.002 SOL for fees.'
+                  : '<strong>Desktop:</strong> Phantom extension. Need ~' + pegdEst.toLocaleString() + ' PEGD + 0.002 SOL for fees.'}</p>
+              </div>
+            </div>`;
+        }).join('');
+
+        grid.querySelectorAll('.btn-pay-pegd').forEach((btn) => {
+          btn.addEventListener('click', () => startShopPay(btn.dataset.listingId, btn.dataset.listingTitle));
+        });
+      } catch {
+        if (!isRetry) {
+          setTimeout(() => loadShop(true), 1500);
+          return;
+        }
+        if (countEl) {
+          countEl.textContent = 'Unavailable';
+          countEl.className = 'pill pill-gold';
+        }
+        if (noteEl) noteEl.textContent = 'Could not load listings — retry or refresh.';
+        grid.innerHTML = `<div class="data-error" style="grid-column:1/-1;">Data temporarily unavailable. <button type="button" class="data-error-retry">Retry</button></div>`;
+        grid.querySelector('.data-error-retry')?.addEventListener('click', () => loadShop());
+      }
+    }
+
+    loadShop();
+  })();
+  </script>
+</body>
+</html>
