@@ -62,6 +62,19 @@ export async function onRequest(context) {
   const url = new URL(request.url)
   const isApi = url.pathname.startsWith('/api/')
 
+  // Public payout admin UI unpublished — use compute worker API with operator secret offline.
+  if (url.pathname === '/admin' || url.pathname === '/admin.html') {
+    return new Response('Not Found', {
+      status: 404,
+      headers: {
+        ...securityHeaders(),
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'X-Robots-Tag': 'noindex, nofollow',
+      },
+    })
+  }
+
   if (isApi && !guardApiOrigin(request, env)) {
     return jsonError('Origin not allowed', 403)
   }
