@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Chairman / portal tools (wallet-allowlisted) — keep out of indexes
+Disallow: /command
+Disallow: /command.html
+Disallow: /portal
+Disallow: /portal.html
+
+# Unpublished ops surfaces
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /token-launcher
+Disallow: /token-launcher.html
+Disallow: /lock-token
+Disallow: /lock-token.html
+Disallow: /set-metadata
+Disallow: /set-metadata.html
+
+Sitemap: https://pegd.org/sitemap.xml

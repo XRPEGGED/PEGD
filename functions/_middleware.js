@@ -63,7 +63,18 @@ export async function onRequest(context) {
   const isApi = url.pathname.startsWith('/api/')
 
   // Public payout admin UI unpublished — use compute worker API with operator secret offline.
-  if (url.pathname === '/admin' || url.pathname === '/admin.html') {
+  // Treasurer/ops UIs unpublished — keep offline; do not re-expose on the marketing site.
+  const unpublished = new Set([
+    '/admin',
+    '/admin.html',
+    '/token-launcher',
+    '/token-launcher.html',
+    '/lock-token',
+    '/lock-token.html',
+    '/set-metadata',
+    '/set-metadata.html',
+  ])
+  if (unpublished.has(url.pathname)) {
     return new Response('Not Found', {
       status: 404,
       headers: {
