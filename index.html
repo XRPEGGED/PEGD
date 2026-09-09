@@ -1509,7 +1509,7 @@
         <p id="shop-status-text"><strong style="color:var(--gold);">Order #1 complete.</strong> <span id="shop-pay-instructions">Metapod sold via PEGD/Phantom (first PEGD Market). See remaining listings below or the full market.</span></p>
         <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
           <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener" class="shop-cta-market" style="background:var(--neon2);">Get PEGD on Jupiter →</a>
-          <a href="https://market.pegd.org/proof" target="_blank" rel="noopener" class="shop-cta-market" id="shop-market-cta">Open PEGD Market →</a>
+          <a href="#shop" class="shop-cta-market" id="shop-market-cta">Browse PEGD Market ↓</a>
         </div>
       </div>
       <div class="shop-grid" id="shop-grid">
@@ -2404,8 +2404,9 @@
 
   // hero-buy-now listener removed (button is now non-purchase per sold PoC)
 
-  const MARKET_URL = 'https://market.pegd.org/proof';
-  const API_BASE_URL = 'https://market.pegd.org';
+  // Stay on pegd.org shop — market.pegd.org currently serves PROOF Digital Legacy (wrong host).
+  const MARKET_URL = 'https://pegd.org/#shop';
+  const API_BASE_URL = 'https://pegd.org';
   const shopMarketCta = document.getElementById('shop-market-cta');
   if (shopMarketCta) shopMarketCta.href = MARKET_URL;
 
@@ -2435,7 +2436,7 @@
             <h3>List the first real item</h3>
             <p>Collectibles, merch, digital goods — USD-priced. Add a photo so buyers know it is real.</p>
             <div class="shop-price">Free to list</div>
-            <a href="${MARKET_URL}?create=1" target="_blank" rel="noopener" class="btn-shop">Post on PEGD Market</a>
+            <a href="${MARKET_URL}" class="btn-shop">Browse PEGD Market</a>
           </div>
         </div>`;
     async function fetchShopListings() {
@@ -2473,7 +2474,7 @@
             <span class="shop-demo-badge">Awaiting first listing</span>
             <h3>Nothing for sale yet</h3>
             <p>PEGD Market is live, but we are not showing seed placeholder ads. List something real with a photo — that becomes the hero proof.</p>
-            <a href="${MARKET_URL}?create=1" target="_blank" rel="noopener" class="shop-cta-market">List on PEGD Market →</a>
+            <a href="${MARKET_URL}" class="shop-cta-market">Browse PEGD Market →</a>
           </div>` + listCta;
         return;
       }
@@ -2489,7 +2490,7 @@
             <h3>${item.title}</h3>
             <p>${item.description || ''}</p>
             <div class="shop-price">${fmtUsd(item.priceUsd)} <span>${item.quotes ? '· ' + item.quotes : ''}</span></div>
-            <a href="${MARKET_URL}" target="_blank" rel="noopener" class="btn-shop">View in Market</a>
+            <a href="${MARKET_URL}" class="btn-shop">View in Market</a>
             <button type="button" class="btn-pay-pegd" data-listing-id="${item.id}" data-listing-title="${item.title.replace(/"/g, '&quot;')}">${isMobileShop() ? '🟣 Pay with PEGD (Phantom)' : '🟣 Pay with PEGD'}</button>
             <p class="shop-pay-hint">${isMobileShop()
               ? '<strong>Phone:</strong> Phantom app only. Need <strong>~' + Math.ceil(item.priceUsd / 0.000005108).toLocaleString() + ' PEGD</strong> + <strong>0.002 SOL</strong> for fees.'
@@ -2507,7 +2508,7 @@
         setTimeout(() => loadShop(true), 1500);
         return;
       }
-      grid.innerHTML = `<div class="data-error" style="grid-column:1/-1;">Data temporarily unavailable. <a href="${MARKET_URL}" target="_blank" rel="noopener" style="color:var(--neon);">Open PEGD Market</a><button type="button" class="data-error-retry">Retry</button></div>`;
+      grid.innerHTML = `<div class="data-error" style="grid-column:1/-1;">Data temporarily unavailable. <a href="${MARKET_URL}" style="color:var(--neon);">Open PEGD Market</a><button type="button" class="data-error-retry">Retry</button></div>`;
       grid.querySelector('.data-error-retry')?.addEventListener('click', () => loadShop());
     }
   }

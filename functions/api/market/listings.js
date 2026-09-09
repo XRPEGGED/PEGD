@@ -95,7 +95,7 @@ export async function onRequest() {
         demoCount: listings.length - liveListings.length,
         hasRealInventory: liveListings.length > 0,
         source: 'proof-market',
-        marketUrl: 'https://xrpegged-market.xrpegged.workers.dev/proof',
+        marketUrl: 'https://pegd.org/#shop',
       }),
       {
         headers: {
