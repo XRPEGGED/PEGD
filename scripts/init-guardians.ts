@@ -2,6 +2,9 @@
 
 /**
  * Initialize 3 Guardian Durable Objects with their keypairs
+ *
+ * WARNING: reads private keys from .guardian-keys/ (gitignored) and
+ * POSTs them to your guardian init endpoints. Do not embed secrets here.
  */
 
 import fs from 'fs';

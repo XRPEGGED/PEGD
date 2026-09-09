@@ -1,21 +1,29 @@
-# Guardian keys (sensitive!)
+# Local / secret state (never commit)
+.wrangler/
+.env
+.env.*
+!.env.example
 .guardian-keys/
-*.json
+*.pem
+wrangler.toml.backup
+relayer-keypair.json
+guardian*.json
 !worker-version.json
 
-# Wrangler cache
-.wrangler/
-wrangler.toml.backup
+# Intentional public JSON (override any broad ignores)
+!package.json
+!package-lock.json
+!data/listings.json
+!data/metapod-nft-metadata.json
+!solana-program/package.json
+!solana-program/tsconfig.json
 
-# Node
+# Node / build
 node_modules/
-.env
-.env.local
-.env.vanity
-
-# Build
 dist/
 build/
+target/
+.anchor/
 
 # Logs
 *.log

@@ -2,6 +2,9 @@
 
 /**
  * Generate 3 Guardian Keypairs for Multi-Sig Bridge
+ *
+ * WARNING: writes private keys ONLY under .guardian-keys/ (gitignored).
+ * Never commit, paste, or embed secret key material in this repo.
  */
 
 const fs = require('fs');

@@ -2,21 +2,27 @@
 
 ## Cloudflare Pages secrets (pegd project)
 
+Set these via `wrangler` or the Cloudflare Dashboard (never commit values):
+
 ```bash
-cd /home/cube/Desktop/pegd-site
+cd <REPO_ROOT>
 
 # Random 32+ char secret for session cookies
 npx wrangler pages secret put PORTAL_SESSION_SECRET --project-name pegd
 
-# Comma-separated allowlist — YOUR wallets only (examples)
+# Comma-separated allowlist — your wallets only
 # XRPL addresses start with r; Solana base58
 npx wrangler pages secret put PORTAL_ALLOWLIST --project-name pegd
-# Value example:
-# rYourXamanAddress...,YourPhantomBase58Address...
 
 # Already required for Xaman sign-in:
 # XUMM_API_KEY, XUMM_API_SECRET
+
+# Supabase (environment-specific)
+npx wrangler pages secret put SUPABASE_URL --project-name pegd
+npx wrangler pages secret put SUPABASE_SERVICE_ROLE_KEY --project-name pegd
 ```
+
+Or run `bash setup-portal-secrets.sh` for a guided helper that generates a fresh session secret and prints put commands with placeholders.
 
 ## Samsung (cell data)
 
@@ -32,22 +38,22 @@ After first deploy with `wrangler.toml`, confirm in Cloudflare Dashboard → Pag
 
 ## Holder directives
 
-- **Read:** `GET /api/portal/directives` (public)
+- **Read:** `GET /api/portal/directives` (session required)
 - **Move:** `POST /api/portal/directives` with holder or Chairman session
-- **Holder sign-in:** `POST /api/portal/verify-holder-phantom` — Phantom message + **≥ treasury PEGD balance** (dynamic; ~20.8M as of 2026-06-10). Override: Pages secret `HOLDER_MIN_PEGD` (number).
-- **Chairman sign-in:** existing allowlist routes (`verify-phantom`, `verify-xumm`)
+- **Holder sign-in:** `POST /api/portal/verify-holder-phantom` — Phantom message + minimum PEGD balance. Override: Pages secret `HOLDER_MIN_PEGD` (number).
+- **Chairman sign-in:** allowlist routes (`verify-phantom`, `verify-xumm`)
 - UI: pegd.org **Governance** section + `/portal.html` Command HUD
 
 Treasury moves and deploys remain Chairman-only; reordering is advisory input from holders.
 
-## Security hardening (2026-06-10)
+## Security hardening
 
 - **Rate limits** (KV): portal verify, challenge, directives, officers brief, solana proxy, xumm
 - **Origin lock**: API calls must come from `pegd.org` / `pegd.pages.dev` (override: `PORTAL_ORIGINS`)
-- **Directives GET**: holder/chairman session required — no public ops intel
+- **Directives GET**: holder/chairman session required
 - **Solana proxy**: pegd origins only; allowlisted RPC methods (`getBalance`, `getTokenAccountsByOwner`, `getAccountInfo`)
 - **Headers**: `X-Frame-Options: DENY`, `nosniff`, `CORP: same-site` on all responses
-- **Chairman must set**: `PORTAL_SESSION_SECRET` + `PORTAL_ALLOWLIST` before unpause
+- **Required before unpause**: `PORTAL_SESSION_SECRET` + `PORTAL_ALLOWLIST`
 
 ## Security
 
