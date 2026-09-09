@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XRPL Studio — XRPEGGED</title>
+  <meta name="description" content="Interact with the XRP Ledger on pegd.org — connect Xaman, build any XRPL transaction, sign in your wallet. Keys never touch this site.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="XRPL Studio — XRPEGGED">
+  <meta property="og:description" content="Build and sign XRPL transactions on pegd.org with Xaman. No keys on this site.">
+  <meta property="og:url" content="https://pegd.org/xrpl">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@XrPegged">
+  <link rel="icon" type="image/jpeg" href="/pegged.jpg">
+  <style>
+    :root {
+      --bg: #0a0a1a;
+      --bg2: #0d0d22;
+      --bg3: #111130;
+      --neon: #00f5ff;
+      --neon2: #9945ff;
+      --gold: #f0b90b;
+      --text: #e0e0ff;
+      --muted: #7070a0;
+      --card: #13132e;
+      --border: rgba(0,245,255,0.15);
+      --radius: 12px;
+      --ok: #10b981;
+      --err: #ff6b8a;
+      --xumm: #0052ff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+    a { color: var(--neon); }
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,26,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px;
+    }
+    .logo { font-size: 1.15rem; font-weight: 900; color: var(--neon); text-decoration: none; letter-spacing: 0.5px; }
+    .logo span { color: var(--neon2); }
+    nav a { color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-left: 1.25rem; }
+    nav a:hover, nav a.active { color: var(--neon); }
+    .badge {
+      margin-left: 1rem; font-size: 0.72rem; font-weight: 700;
+      background: rgba(0,245,255,0.1); border: 1px solid rgba(0,245,255,0.3);
+      color: var(--neon); padding: 4px 10px; border-radius: 999px;
+    }
+    .badge.hidden { display: none; }
+    @media (max-width: 640px) {
+      nav a.nav-hide { display: none; }
+      nav a { margin-left: 0.7rem; font-size: 0.78rem; }
+    }
+
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+    .eyebrow {
+      display: inline-block; font-size: 0.7rem; font-weight: 800;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    h1 { font-size: clamp(1.5rem, 4vw, 2.1rem); font-weight: 900; color: var(--neon); margin-bottom: 0.45rem; }
+    .hero-sub { color: var(--muted); max-width: 720px; font-size: 0.95rem; margin-bottom: 1.25rem; }
+
+    .warn {
+      background: rgba(240,185,11,0.08);
+      border: 1px solid rgba(240,185,11,0.35);
+      border-radius: var(--radius);
+      padding: 0.9rem 1.1rem;
+      font-size: 0.84rem;
+      margin-bottom: 1.5rem;
+    }
+    .warn strong { color: var(--gold); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.15rem;
+      margin-bottom: 1.15rem;
+    }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.15rem 1.25rem;
+    }
+    .card h2 {
+      font-size: 0.95rem; font-weight: 800; color: var(--neon);
+      margin-bottom: 0.75rem; letter-spacing: 0.02em;
+    }
+    .muted { color: var(--muted); font-size: 0.82rem; }
+    .pill {
+      display: inline-block; font-size: 0.65rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      background: rgba(153,69,255,0.15); border: 1px solid rgba(153,69,255,0.35);
+      color: #c4b5fd; padding: 2px 7px; border-radius: 6px; margin-right: 6px;
+    }
+    .mono { font-family: ui-monospace, 'Courier New', monospace; font-size: 0.82rem; word-break: break-all; }
+    .row { display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center; margin-top: 0.75rem; }
+    label.field { display: block; font-size: 0.72rem; color: var(--muted); margin: 0.65rem 0 0.25rem; }
+    input, select, textarea {
+      width: 100%; padding: 10px 12px; border-radius: 8px;
+      border: 1px solid rgba(0,245,255,0.2); background: #0a0a1a; color: var(--text);
+      font-size: 0.88rem; font-family: inherit;
+    }
+    textarea { min-height: 160px; font-family: ui-monospace, monospace; font-size: 0.78rem; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    @media (max-width: 560px) { .field-grid { grid-template-columns: 1fr; } }
+
+    button, .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.35rem; padding: 10px 14px; border-radius: 8px; border: none;
+      font-weight: 800; font-size: 0.82rem; cursor: pointer; text-decoration: none;
+    }
+    .btn-primary { background: linear-gradient(135deg, #00f5ff, #0099aa); color: #0a0a1a; }
+    .btn-crossmark { background: linear-gradient(135deg, #22c55e, #15803d); color: #fff; }
+    .btn-xaman { background: linear-gradient(135deg, #0052ff, #0039b3); color: #fff; }
+    .btn-ghost {
+      background: transparent; border: 1px solid rgba(0,245,255,0.25); color: var(--muted);
+    }
+    .btn-danger { background: rgba(255,107,138,0.15); border: 1px solid rgba(255,107,138,0.35); color: var(--err); }
+    .btn-gold { background: linear-gradient(135deg, #f0b90b, #d4a017); color: #1a1200; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .hidden { display: none !important; }
+
+    .studio-status { min-height: 1.2rem; font-size: 0.8rem; margin-top: 0.65rem; color: var(--muted); }
+    .studio-status.ok { color: var(--ok); }
+    .studio-status.err { color: var(--err); }
+
+    .ctas { display: flex; flex-wrap: wrap; gap: 0.65rem; margin: 1.25rem 0 0.5rem; }
+    .ctas a.btn { padding: 12px 18px; }
+
+    pre.preview {
+      background: #070714; border: 1px solid rgba(0,245,255,0.12);
+      border-radius: 8px; padding: 12px; overflow: auto; max-height: 280px;
+      font-size: 0.75rem; color: #a5b4fc; margin-top: 0.75rem;
+    }
+    ul.tx-list { list-style: none; margin-top: 0.6rem; }
+    ul.tx-list li { font-size: 0.8rem; padding: 0.35rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+
+    .mode-toggle { display: flex; gap: 1rem; font-size: 0.82rem; margin-bottom: 0.75rem; }
+    .mode-toggle label { cursor: pointer; color: var(--muted); }
+    .mode-toggle input { width: auto; margin-right: 0.35rem; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.75rem 1.5rem 2.5rem;
+      text-align: center; color: var(--muted); font-size: 0.8rem;
+    }
+    footer a { color: var(--muted); text-decoration: none; margin: 0 0.55rem; }
+    footer a:hover { color: var(--neon); }
+    .footnote { font-size: 0.75rem; color: var(--muted); margin-top: 1rem; opacity: 0.85; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-inner">
+      <a href="/" class="logo">XR<span>PEGGED</span></a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/xrpl" class="active">XRPL</a>
+        <a href="/market">Market</a>
+        <a href="/mine" class="nav-hide">Mine</a>
+        <a href="/verify" class="nav-hide">Verify</a>
+        <span id="wallet-badge" class="badge hidden"></span>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <p class="eyebrow">XRP Ledger · pegd.org</p>
+    <h1>XRPL Studio</h1>
+    <p class="hero-sub">
+      Build any XRPL transaction in the browser. Connect and sign with <strong style="color:var(--text)">Xaman</strong>.
+      Keys never leave your wallet — this site only builds JSON and creates a Xaman sign request.
+      Crossmark and signed-blob submit are coming later.
+    </p>
+
+    <div class="warn">
+      <strong>Irreversible on-ledger.</strong>
+      Validated XRPL transactions cannot be undone. Double-check Destination, Amount, and flags before signing.
+      This page is a public tool — not an admin console, and it never asks for a family seed or secret.
+    </div>
+
+    <div class="ctas">
+      <a class="btn btn-gold" href="/market">Pay with XRP on Market →</a>
+      <a class="btn btn-ghost" href="/verify">Verify treasuries →</a>
+    </div>
+
+    <div class="grid" style="margin-top:1.5rem">
+      <section class="card" id="connect-card">
+        <h2>1 · Connect with Xaman</h2>
+        <p class="muted">Scan or open Xaman to SignIn. No seed is ever entered on pegd.org.</p>
+        <div class="row">
+          <button type="button" class="btn-xaman" id="btn-connect-xaman">Connect Xaman</button>
+          <button type="button" class="btn-danger hidden" id="btn-disconnect">Disconnect</button>
+        </div>
+        <div id="xaman-qr-wrap" class="hidden" style="margin-top:0.85rem;text-align:center">
+          <img id="xaman-qr" alt="Xaman QR" width="200" height="200" style="border-radius:10px;max-width:200px">
+        </div>
+        <p id="xaman-unavailable" class="studio-status err hidden">Xaman connect unavailable (API keys not configured on this host).</p>
+        <div id="readonly-row" style="margin-top:0.85rem">
+          <label class="field" for="readonly-address">Or classic address (read-only preview)</label>
+          <div class="row">
+            <input id="readonly-address" placeholder="r…" autocomplete="off" spellcheck="false" style="flex:1;min-width:180px">
+            <button type="button" class="btn-ghost" id="btn-readonly">Use read-only</button>
+          </div>
+        </div>
+        <p class="studio-status" id="connect-status"></p>
+        <p class="footnote">More wallets (Crossmark, paste signed blob) coming later — Xaman is the MVP path.</p>
+      </section>
+
+      <section class="card hidden" id="account-panel">
+        <h2>Your account</h2>
+        <p class="muted" id="acct-mode"></p>
+        <p style="margin-top:0.5rem"><span class="muted">Address</span><br>
+          <a class="mono" id="acct-address" href="#" target="_blank" rel="noopener"></a>
+        </p>
+        <p style="margin-top:0.65rem"><span class="muted">XRP balance</span><br>
+          <strong id="acct-balance" style="color:var(--gold);font-size:1.15rem">…</strong>
+        </p>
+        <div class="row">
+          <button type="button" class="btn-ghost" id="btn-refresh-acct">Refresh</button>
+        </div>
+        <ul class="tx-list" id="acct-tx"></ul>
+      </section>
+    </div>
+
+    <section class="card" style="margin-bottom:1.15rem">
+      <h2>Live treasury</h2>
+      <p class="muted">Public XRPEGGED XRPL treasury — no wallet required.</p>
+      <p style="margin-top:0.55rem" class="mono">
+        <a href="https://bithomp.com/explorer/rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" target="_blank" rel="noopener">rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78</a>
+      </p>
+      <p style="margin-top:0.5rem"><span class="muted">Balance</span>
+        <strong id="treasury-balance" style="color:var(--neon);margin-left:0.35rem">…</strong>
+      </p>
+      <div class="row">
+        <a class="btn btn-ghost" href="https://bithomp.com/explorer/rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" target="_blank" rel="noopener">Bithomp</a>
+        <a class="btn btn-ghost" href="https://xrpscan.com/account/rPEGGED33W7WnBkLKwb1aLMaWvw5cbWX78" target="_blank" rel="noopener">xrpscan</a>
+        <button type="button" class="btn-ghost" id="btn-refresh-treasury">Refresh</button>
+      </div>
+      <ul class="tx-list" id="treasury-tx"></ul>
+    </section>
+
+    <section class="card">
+      <h2>2 · Transaction builder</h2>
+      <div class="mode-toggle">
+        <label><input type="radio" name="builder-mode" id="mode-form" checked> Guided form</label>
+        <label><input type="radio" name="builder-mode" id="mode-raw"> Advanced / Raw JSON (any TransactionType)</label>
+      </div>
+
+      <div id="form-builder">
+        <label class="field" for="tx-type">Transaction type</label>
+        <select id="tx-type"></select>
+
+        <div class="field-grid">
+          <div>
+            <label class="field" for="tx-fee">Fee (drops or XRP, optional — wallet may fill)</label>
+            <input id="tx-fee" placeholder="e.g. 12 or 0.000012">
+          </div>
+          <div>
+            <label class="field" for="tx-memo">Memo (optional plain text)</label>
+            <input id="tx-memo" maxlength="200" placeholder="Optional">
+          </div>
+        </div>
+
+        <!-- Payment -->
+        <div data-tx-fields="Payment">
+          <label class="field" for="pay-dest">Destination</label>
+          <input id="pay-dest" placeholder="r…">
+          <div class="field-grid">
+            <div>
+              <label class="field" for="pay-amount">Amount</label>
+              <input id="pay-amount" placeholder="1.5">
+            </div>
+            <div>
+              <label class="field" for="pay-currency">Currency</label>
+              <input id="pay-currency" value="XRP" placeholder="XRP or code">
+            </div>
+            <div>
+              <label class="field" for="pay-issuer">Issuer (if not XRP)</label>
+              <input id="pay-issuer" placeholder="r…">
+            </div>
+            <div>
+              <label class="field" for="pay-tag">DestinationTag</label>
+              <input id="pay-tag" type="number" min="0" placeholder="optional">
+            </div>
+            <div>
+              <label class="field" for="pay-sendmax">SendMax (optional)</label>
+              <input id="pay-sendmax" placeholder="">
+            </div>
+            <div>
+              <label class="field" for="pay-sendmax-currency">SendMax currency</label>
+              <input id="pay-sendmax-currency" value="XRP">
+            </div>
+            <div>
+              <label class="field" for="pay-sendmax-issuer">SendMax issuer</label>
+              <input id="pay-sendmax-issuer" placeholder="r…">
+            </div>
+          </div>
+        </div>
+
+        <!-- TrustSet -->
+        <div data-tx-fields="TrustSet" class="hidden">
+          <div class="field-grid">
+            <div>
+              <label class="field" for="trust-currency">Currency</label>
+              <input id="trust-currency" placeholder="USD">
+            </div>
+            <div>
+              <label class="field" for="trust-issuer">Issuer</label>
+              <input id="trust-issuer" placeholder="r…">
+            </div>
+            <div>
+              <label class="field" for="trust-limit">Limit</label>
+              <input id="trust-limit" placeholder="1000000">
+            </div>
+            <div>
+              <label class="field" for="trust-flags">Flags (optional)</label>
+              <input id="trust-flags" type="number" placeholder="e.g. 131072">
+            </div>
+          </div>
+        </div>
+
+        <!-- AccountSet -->
+        <div data-tx-fields="AccountSet" class="hidden">
+          <div class="field-grid">
+            <div>
+              <label class="field" for="aset-domain">Domain (plain → hex)</label>
+              <input id="aset-domain" placeholder="example.com">
+            </div>
+            <div>
+              <label class="field" for="aset-email">EmailHash (32-hex)</label>
+              <input id="aset-email" placeholder="optional">
+            </div>
+            <div>
+              <label class="field" for="aset-setflag">SetFlag</label>
+              <input id="aset-setflag" type="number" placeholder="">
+            </div>
+            <div>
+              <label class="field" for="aset-clearflag">ClearFlag</label>
+              <input id="aset-clearflag" type="number" placeholder="">
+            </div>
+            <div>
+              <label class="field" for="aset-transferrate">TransferRate</label>
+              <input id="aset-transferrate" type="number" placeholder="">
+            </div>
+          </div>
+        </div>
+
+        <!-- OfferCreate -->
+        <div data-tx-fields="OfferCreate" class="hidden">
+          <label class="field"><input type="checkbox" id="offer-gets-xrp" checked style="width:auto"> TakerGets is XRP</label>
+          <div class="field-grid">
+            <div>
+              <label class="field" for="offer-gets">TakerGets amount</label>
+              <input id="offer-gets" placeholder="">
+            </div>
+            <div>
+              <label class="field" for="offer-gets-cur">TakerGets currency</label>
+              <input id="offer-gets-cur" placeholder="">
+            </div>
+            <div>
+              <label class="field" for="offer-gets-iss">TakerGets issuer</label>
+              <input id="offer-gets-iss" placeholder="r…">
+            </div>
+          </div>
+          <label class="field" style="margin-top:0.75rem"><input type="checkbox" id="offer-pays-xrp" style="width:auto"> TakerPays is XRP</label>
+          <div class="field-grid">
+            <div>
+              <label class="field" for="offer-pays">TakerPays amount</label>
+              <input id="offer-pays" placeholder="">
+            </div>
+            <div>
+              <label class="field" for="offer-pays-cur">TakerPays currency</label>
+              <input id="offer-pays-cur" placeholder="">
+            </div>
+            <div>
+              <label class="field" for="offer-pays-iss">TakerPays issuer</label>
+              <input id="offer-pays-iss" placeholder="r…">
+            </div>
+            <div>
+              <label class="field" for="offer-flags">Flags</label>
+              <input id="offer-flags" type="number" placeholder="optional">
+            </div>
+          </div>
+        </div>
+
+        <!-- OfferCancel -->
+        <div data-tx-fields="OfferCancel" class="hidden">
+          <label class="field" for="offer-cancel-seq">OfferSequence</label>
+          <input id="offer-cancel-seq" type="number" placeholder="">
+        </div>
+
+        <!-- EscrowCreate -->
+        <div data-tx-fields="EscrowCreate" class="hidden">
+          <div class="field-grid">
+            <div>
+              <label class="field" for="esc-dest">Destination</label>
+              <input id="esc-dest" placeholder="r…">
+            </div>
+            <div>
+              <label class="field" for="esc-amount">Amount (XRP)</label>
+              <input id="esc-amount" placeholder="10">
+            </div>
+            <div>
+              <label class="field" for="esc-finish">FinishAfter (Ripple epoch)</label>
+              <input id="esc-finish" type="number" placeholder="optional">
+            </div>
+            <div>
+              <label class="field" for="esc-cancel">CancelAfter (Ripple epoch)</label>
+              <input id="esc-cancel" type="number" placeholder="optional">
+            </div>
+            <div>
+              <label class="field" for="esc-condition">Condition (hex)</label>
+              <input id="esc-condition" placeholder="optional">
+            </div>
+          </div>
+        </div>
+
+        <!-- EscrowFinish -->
+        <div data-tx-fields="EscrowFinish" class="hidden">
+          <div class="field-grid">
+            <div>
+              <label class="field" for="escf-owner">Owner</label>
+              <input id="escf-owner" placeholder="r…">
+            </div>
+            <div>
+              <label class="field" for="escf-seq">OfferSequence</label>
+              <input id="escf-seq" type="number">
+            </div>
+            <div>
+              <label class="field" for="escf-condition">Condition</label>
+              <input id="escf-condition" placeholder="optional">
+            </div>
+            <div>
+              <label class="field" for="escf-fulfillment">Fulfillment</label>
+              <input id="escf-fulfillment" placeholder="optional">
+            </div>
+          </div>
+        </div>
+
+        <!-- EscrowCancel -->
+        <div data-tx-fields="EscrowCancel" class="hidden">
+          <div class="field-grid">
+            <div>
+              <label class="field" for="escc-owner">Owner</label>
+              <input id="escc-owner" placeholder="r…">
+            </div>
+            <div>
+              <label class="field" for="escc-seq">OfferSequence</label>
+              <input id="escc-seq" type="number">
+            </div>
+          </div>
+        </div>
+
+        <!-- NFTokenMint -->
+        <div data-tx-fields="NFTokenMint" class="hidden">
+          <div class="field-grid">
+            <div>
+              <label class="field" for="nft-taxon">NFTokenTaxon</label>
+              <input id="nft-taxon" type="number" value="0">
+            </div>
+            <div>
+              <label class="field" for="nft-uri">URI (plain → hex)</label>
+              <input id="nft-uri" placeholder="https://…">
+            </div>
+            <div>
+              <label class="field" for="nft-flags">Flags</label>
+              <input id="nft-flags" type="number" placeholder="e.g. 8">
+            </div>
+            <div>
+              <label class="field" for="nft-transferfee">TransferFee</label>
+              <input id="nft-transferfee" type="number" placeholder="optional">
+            </div>
+            <div>
+              <label class="field" for="nft-issuer">Issuer (optional)</label>
+              <input id="nft-issuer" placeholder="r…">
+            </div>
+          </div>
+        </div>
+
+        <!-- NFTokenBurn -->
+        <div data-tx-fields="NFTokenBurn" class="hidden">
+          <label class="field" for="nft-burn-id">NFTokenID</label>
+          <input id="nft-burn-id" placeholder="64-hex">
+          <label class="field" for="nft-burn-owner">Owner (optional)</label>
+          <input id="nft-burn-owner" placeholder="r…">
+        </div>
+
+        <!-- NFTokenCreateOffer -->
+        <div data-tx-fields="NFTokenCreateOffer" class="hidden">
+          <div class="field-grid">
+            <div>
+              <label class="field" for="nft-co-id">NFTokenID</label>
+              <input id="nft-co-id" placeholder="64-hex">
+            </div>
+            <div>
+              <label class="field" for="nft-co-amount">Amount</label>
+              <input id="nft-co-amount" placeholder="0 for giveaway / XRP">
+            </div>
+            <div>
+              <label class="field" for="nft-co-currency">Currency</label>
+              <input id="nft-co-currency" value="XRP">
+            </div>
+            <div>
+              <label class="field" for="nft-co-issuer">Issuer</label>
+              <input id="nft-co-issuer" placeholder="if IOU">
+            </div>
+            <div>
+              <label class="field" for="nft-co-dest">Destination</label>
+              <input id="nft-co-dest" placeholder="optional">
+            </div>
+            <div>
+              <label class="field" for="nft-co-owner">Owner (buy offer)</label>
+              <input id="nft-co-owner" placeholder="optional">
+            </div>
+            <div>
+              <label class="field" for="nft-co-flags">Flags (1 = sell)</label>
+              <input id="nft-co-flags" type="number" placeholder="1">
+            </div>
+            <div>
+              <label class="field" for="nft-co-exp">Expiration</label>
+              <input id="nft-co-exp" type="number" placeholder="Ripple epoch">
+            </div>
+          </div>
+        </div>
+
+        <!-- NFTokenAcceptOffer -->
+        <div data-tx-fields="NFTokenAcceptOffer" class="hidden">
+          <div class="field-grid">
+            <div>
+              <label class="field" for="nft-ao-sell">NFTokenSellOffer</label>
+              <input id="nft-ao-sell" placeholder="offer index">
+            </div>
+            <div>
+              <label class="field" for="nft-ao-buy">NFTokenBuyOffer</label>
+              <input id="nft-ao-buy" placeholder="optional">
+            </div>
+            <div>
+              <label class="field" for="nft-ao-broker">Broker fee</label>
+              <input id="nft-ao-broker" placeholder="optional">
+            </div>
+            <div>
+              <label class="field" for="nft-ao-broker-cur">Broker fee currency</label>
+              <input id="nft-ao-broker-cur" value="XRP">
+            </div>
+            <div>
+              <label class="field" for="nft-ao-broker-iss">Broker fee issuer</label>
+              <input id="nft-ao-broker-iss" placeholder="">
+            </div>
+          </div>
+        </div>
+
+        <!-- NFTokenCancelOffer -->
+        <div data-tx-fields="NFTokenCancelOffer" class="hidden">
+          <label class="field" for="nft-cancel-ids">NFTokenOfferIDs (comma or space separated)</label>
+          <textarea id="nft-cancel-ids" style="min-height:80px" placeholder="offer id(s)"></textarea>
+        </div>
+      </div>
+
+      <div id="raw-builder" class="hidden">
+        <label class="field" for="raw-json">Full transaction JSON (any TransactionType XRPL allows)</label>
+        <textarea id="raw-json" spellcheck="false" placeholder='{"TransactionType":"Payment","Account":"r…","Destination":"r…","Amount":"1000000"}'></textarea>
+      </div>
+
+      <div class="row" style="margin-top:1rem">
+        <button type="button" class="btn-ghost" id="btn-preview">Preview JSON</button>
+        <button type="button" class="btn-ghost" id="btn-export-json">Export → Raw</button>
+        <button type="button" class="btn-xaman" id="btn-sign-xaman">Sign with Xaman</button>
+      </div>
+
+      <pre class="preview" id="tx-preview">// Preview appears here</pre>
+
+      <h2 style="margin-top:1.25rem">3 · Other wallets</h2>
+      <p class="muted">Crossmark and paste-signed-blob submit are planned next. MVP signing is Xaman only — keys never touch this site.</p>
+      <p class="studio-status" id="builder-status"></p>
+
+      <div id="result-panel" class="hidden" style="margin-top:0.75rem;padding:0.85rem;border-radius:8px;border:1px solid rgba(16,185,129,0.35);background:rgba(16,185,129,0.08)">
+        <strong style="color:var(--ok)">Result hash</strong>
+        <div class="mono" id="result-hash" style="margin-top:0.35rem"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div>
+      <a href="/">Home</a>
+      <a href="/market">Market</a>
+      <a href="/mine">Mine</a>
+      <a href="/verify">Verify</a>
+      <a href="/faq">FAQ</a>
+      <a href="https://x.com/XrPegged" target="_blank" rel="noopener">@XrPegged</a>
+    </div>
+    <p style="margin-top:1rem;">© 2026 XRPEGGED · XRPL interaction on pegd.org · no seeds on this site</p>
+  </footer>
+
+  <script src="/js/xrpl-studio.js"></script>
+</body>
+</html>
