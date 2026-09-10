@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RNSM Airdrop — XRP Holders | XRPEGGED</title>
-  <meta name="description" content="150 million RNSM permanently reserved for XRP holders. Connect your Solana wallet, verify your XRP balance, and claim your share.">
-  <meta property="og:title" content="RNSM Airdrop for XRP Holders">
-  <meta property="og:description" content="150M RNSM locked on-chain for XRP holders. Register your Solana wallet to receive your share.">
+  <title>RNSM Season 2 — Mine PEGD, earn RNSM | XRPEGGED</title>
+  <meta name="description" content="150 million RNSM reserved for PEGD miners. Connect Phantom, mine PEGD, and earn a share proportional to lifetime mined PEGD.">
+  <meta property="og:title" content="RNSM Season 2 — Mine PEGD, earn RNSM">
+  <meta property="og:description" content="150M RNSM pool. Allocation weight = lifetime mined PEGD. Connect Phantom and mine on /mine or /pool.">
   <meta property="og:image" content="https://pegd.org/pegd-logo.png">
   <meta property="og:url" content="https://pegd.org/rnsm-airdrop">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Free RNSM for XRP Holders">
-  <meta name="twitter:description" content="150 million RNSM reserved for XRP holders. Takes 2 minutes. No purchase required.">
+  <meta name="twitter:title" content="RNSM Season 2 — Mine PEGD, earn RNSM">
+  <meta name="twitter:description" content="150M RNSM. Weight from lifetime mined PEGD — not XRP holdings.">
   <meta name="twitter:image" content="https://pegd.org/pegd-logo.png">
   <link rel="icon" type="image/jpeg" href="/pegged.jpg">
   <style>
@@ -33,12 +33,17 @@
     .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
     .nav-links a:hover { color: var(--neon); }
 
-    #hero { padding: 7rem 1.5rem 3rem; max-width: 960px; margin: 0 auto; text-align: center; }
+    .season-banner { margin-top: 60px; background: linear-gradient(90deg, rgba(153,69,255,0.18), rgba(0,245,255,0.12)); border-bottom: 1px solid rgba(153,69,255,0.35); padding: 0.75rem 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text); line-height: 1.55; }
+    .season-banner strong { color: var(--neon); }
+    .season-banner a { color: var(--neon2); text-decoration: none; font-weight: 700; }
+    .season-banner a:hover { text-decoration: underline; }
+
+    #hero { padding: 2.5rem 1.5rem 3rem; max-width: 960px; margin: 0 auto; text-align: center; }
     .badge { display: inline-block; background: rgba(153,69,255,0.12); border: 1px solid rgba(153,69,255,0.35); color: var(--neon2); font-size: 0.7rem; font-weight: 700; letter-spacing: 2.5px; padding: 4px 14px; border-radius: 20px; margin-bottom: 1.5rem; text-transform: uppercase; }
     h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.1; margin-bottom: 1rem; }
     .neon { color: var(--neon); }
     .neon2 { color: var(--neon2); }
-    #hero > p { color: var(--muted); font-size: 1rem; max-width: 540px; margin: 0 auto 2.5rem; }
+    #hero > p { color: var(--muted); font-size: 1rem; max-width: 560px; margin: 0 auto 2.5rem; }
 
     .stats-bar { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
     .stat-item { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.5rem; text-align: center; min-width: 140px; }
@@ -63,6 +68,7 @@
     .step-content.active { display: block; }
     h2 { font-size: 1.15rem; margin-bottom: 0.4rem; }
     .step-desc { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+    .step-desc a { color: var(--neon); text-decoration: none; }
 
     input[type="text"] { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; color: var(--text); font-family: monospace; font-size: 0.85rem; outline: none; transition: border-color 0.2s; margin-bottom: 0.75rem; }
     input[type="text"]:focus { border-color: var(--neon); }
@@ -80,6 +86,12 @@
     .balance-card { background: rgba(0,245,255,0.05); border: 1px solid rgba(0,245,255,0.2); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
     .balance-val { font-size: 1.8rem; font-weight: 900; color: var(--neon); font-family: monospace; }
     .balance-sub { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.15rem; }
+    .mine-meta { display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 0.75rem 0 1rem; }
+    .mine-chip { flex: 1; min-width: 120px; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 8px; padding: 0.65rem 0.75rem; }
+    .mine-chip .v { font-family: monospace; font-weight: 800; color: var(--neon2); font-size: 0.95rem; }
+    .mine-chip .l { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 0.15rem; }
+    .mine-links { font-size: 0.8rem; color: var(--muted); margin-bottom: 1rem; }
+    .mine-links a { color: var(--neon); text-decoration: none; font-weight: 700; }
 
     .tasks { display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.25rem; }
     .task-row { background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; transition: border-color 0.2s, background 0.2s; }
@@ -124,6 +136,10 @@
     .copy-btn:hover { background: rgba(0,245,255,0.16); }
     .referral-note { font-size: 0.72rem; color: var(--muted); margin-top: 0.5rem; }
 
+    .proof-needed { display: none; background: rgba(255,85,85,0.08); border: 1px solid rgba(255,85,85,0.35); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.8rem; color: #ffaaaa; line-height: 1.5; }
+    .proof-needed.visible { display: block; }
+    .xaman-optional { margin-top: 0.75rem; }
+
     #how { max-width: 960px; margin: 4rem auto 0; padding: 0 1.5rem; }
     #how h2 { text-align: center; margin-bottom: 2rem; font-size: 1.4rem; }
     .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
@@ -131,6 +147,9 @@
     .how-num { font-size: 0.65rem; color: var(--neon2); font-weight: 700; letter-spacing: 2px; margin-bottom: 0.5rem; text-transform: uppercase; }
     .how-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
     .how-desc { font-size: 0.8rem; color: var(--muted); }
+    .how-note { margin-top: 1.5rem; background: rgba(0,245,255,0.05); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1.1rem; font-size: 0.82rem; color: var(--muted); line-height: 1.6; text-align: center; }
+    .how-note strong { color: var(--text); }
+    .how-note a { color: var(--neon); text-decoration: none; }
 
     #check-status { max-width: 560px; margin: 3rem auto; padding: 0 1.5rem; }
     .check-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
@@ -148,7 +167,7 @@
     .qa-answer.visible { display: block; }
     .qa-thinking { color: var(--muted); font-style: italic; }
 
-    #before-you-start { max-width: 560px; margin: 2rem auto 0; padding: 0 1.5rem; }
+    #before-you-start { max-width: 560px; margin: 0 auto; padding: 0 1.5rem; }
     .prereq-box { background: rgba(153,69,255,0.06); border: 1px solid rgba(153,69,255,0.25); border-radius: 12px; padding: 1.25rem 1.5rem; }
     .prereq-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 1rem; }
     .prereq-list { display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1rem; }
@@ -160,9 +179,6 @@
     .prereq-desc a { color: var(--neon); text-decoration: none; }
     .prereq-safe { font-size: 0.78rem; color: var(--muted); border-top: 1px solid rgba(153,69,255,0.15); padding-top: 0.75rem; line-height: 1.5; }
     .prereq-safe strong { color: var(--text); }
-    .how-note { margin-top: 1.5rem; background: rgba(0,245,255,0.05); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1.1rem; font-size: 0.82rem; color: var(--muted); line-height: 1.6; text-align: center; }
-    .how-note strong { color: var(--text); }
-    .how-note a { color: var(--neon); text-decoration: none; }
 
     footer { text-align: center; padding: 2.5rem 1.5rem 3rem; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); margin-top: 3rem; }
     footer a { color: var(--neon2); text-decoration: none; }
@@ -184,21 +200,20 @@
 <nav>
   <div class="nav-inner">
     <a href="/" class="nav-brand">XRPEGGED</a>
-    <div class="nav-links"><a href="/">Home</a><a href="/rnsm-airdrop">Airdrop</a><a href="/advisor">Advisor</a><a href="/pool.html">Pools</a><a href="/updates.html">Updates</a><a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a></div>
+    <div class="nav-links"><a href="/">Home</a><a href="/rnsm-airdrop">Airdrop</a><a href="/mine.html">Mine</a><a href="/pool.html">Pools</a><a href="/updates.html">Updates</a><a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a></div>
   </div>
 </nav>
 
-<div style="background:#1a0808;border-bottom:2px solid #ff4444;padding:0.7rem 1.5rem;text-align:center;font-size:0.82rem;color:#ffaaaa;line-height:1.6;">
-  <strong style="color:#ff5555">Re-registration required.</strong>
-  Registrations submitted before Jul 15, 2026 (balance-only, no Xaman proof) <strong>do not count</strong>.
-  Prove ownership with Xaman below. Window open through <strong>Jul 27, 2026</strong>.
-  <a href="/updates.html" style="color:#ff7777;margin-left:0.5rem">Details →</a>
+<div class="season-banner">
+  <strong>Season 2 — Mine PEGD, earn RNSM.</strong>
+  Allocation weight tracks <strong>lifetime mined PEGD</strong> on your Phantom wallet.
+  Start on <a href="/mine.html">/mine</a> or <a href="/pool.html">/pool</a> · optional Xaman proof = +10% bonus (not required to register).
 </div>
 
 <section id="hero">
-  <div class="badge">RNSM · XRP Holder Airdrop</div>
-  <h1>RNSM Airdrop<br><span class="neon">For XRP Holders</span></h1>
-  <p>If you own XRP, you may qualify to receive RNSM tokens at no cost — no purchase required. Takes about 2 minutes to register. Tokens will be sent directly to your wallet when distribution happens.</p>
+  <div class="badge">RNSM · Season 2 · Mine-weighted</div>
+  <h1>Mine PEGD,<br><span class="neon">earn RNSM</span></h1>
+  <p>150 million RNSM is reserved for miners. Connect Phantom, mine PEGD on /mine or /pool, and your share grows with <strong style="color:var(--text)">lifetime mined PEGD</strong> — not primarily XRP holdings.</p>
 
   <div class="stats-bar">
     <div class="stat-item">
@@ -206,16 +221,16 @@
       <div class="stat-label">Registered</div>
     </div>
     <div class="stat-item">
-      <span class="stat-val" id="stat-xrp">—</span>
-      <div class="stat-label">XRP Qualifying</div>
-    </div>
-    <div class="stat-item">
-      <span class="stat-val" id="stat-per1k">—</span>
-      <div class="stat-label">RNSM / 1K XRP</div>
+      <span class="stat-val" id="stat-mined">—</span>
+      <div class="stat-label">Total mined PEGD</div>
     </div>
     <div class="stat-item">
       <span class="stat-val" style="color:var(--neon2)">150M</span>
       <div class="stat-label">RNSM Pool</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-val" id="stat-yours">—</span>
+      <div class="stat-label">Your mined PEGD</div>
     </div>
   </div>
 
@@ -229,31 +244,31 @@
 
 <section id="before-you-start">
   <div class="prereq-box">
-    <div class="prereq-title">📋 Before you start — you need these 3 things:</div>
+    <div class="prereq-title">Before you start</div>
     <div class="prereq-list">
       <div class="prereq-item">
         <div class="prereq-icon">👻</div>
         <div>
-          <div class="prereq-name">Phantom Wallet <span class="prereq-tag">free</span></div>
-          <div class="prereq-desc">A free Solana wallet app for your phone or browser — this is where your RNSM tokens will be sent. <a href="https://phantom.app" target="_blank" rel="noopener">Download at phantom.app →</a></div>
+          <div class="prereq-name">Phantom Wallet <span class="prereq-tag">required</span></div>
+          <div class="prereq-desc">Free Solana wallet — RNSM is sent here. Mining weight is tied to this address. <a href="https://phantom.app" target="_blank" rel="noopener">phantom.app →</a></div>
+        </div>
+      </div>
+      <div class="prereq-item">
+        <div class="prereq-icon">⛏️</div>
+        <div>
+          <div class="prereq-name">Mine PEGD <span class="prereq-tag">primary weight</span></div>
+          <div class="prereq-desc">Run the miner on <a href="/mine.html">/mine</a> or join <a href="/pool.html">/pool</a>. Lifetime mined PEGD drives your RNSM weight at snapshot.</div>
         </div>
       </div>
       <div class="prereq-item">
         <div class="prereq-icon">🔑</div>
         <div>
-          <div class="prereq-name">Xaman app <span class="prereq-tag">free · required</span></div>
-          <div class="prereq-desc">Xaman (formerly Xumm) is a free XRP wallet app. You'll use it to <strong>prove you control</strong> your XRP address via a free Sign In — no seed phrase entered, no funds moved. <a href="https://xumm.app" target="_blank" rel="noopener">Download at xumm.app →</a></div>
-        </div>
-      </div>
-      <div class="prereq-item">
-        <div class="prereq-icon">💧</div>
-        <div>
-          <div class="prereq-name">At least 10 XRP in your Xaman wallet</div>
-          <div class="prereq-desc">You need ≥ 10 XRP in the wallet you sign with. Buy XRP on Coinbase, Kraken, or Binance and send it to Xaman.</div>
+          <div class="prereq-name">Xaman (optional) <span class="prereq-tag">+10% bonus</span></div>
+          <div class="prereq-desc">Optional ownership proof for a small bonus — <strong>not required</strong> for Season 2 registration. <a href="https://xumm.app" target="_blank" rel="noopener">xumm.app →</a></div>
         </div>
       </div>
     </div>
-    <div class="prereq-safe">🔒 <strong>Is this safe?</strong> Yes. We never ask for your seed phrase or password. Xaman Sign In is a free cryptographic proof — no transaction fee, no funds moved, just a signature that proves you own the wallet.</div>
+    <div class="prereq-safe">🔒 <strong>Safe:</strong> We never ask for seed phrases. Phantom message signing and optional Xaman Sign In are free proofs — no funds moved.</div>
   </div>
 </section>
 
@@ -261,67 +276,48 @@
   <div class="card">
     <div class="steps">
       <div class="step-ind active" id="step-ind-1">1 · Wallet</div>
-      <div class="step-ind" id="step-ind-2">2 · XRP</div>
+      <div class="step-ind" id="step-ind-2">2 · Mining</div>
       <div class="step-ind" id="step-ind-3">3 · Bonuses</div>
       <div class="step-ind" id="step-ind-4">✓ Done</div>
     </div>
 
-    <!-- Step 1: Connect Solana wallet -->
     <div class="step-content active" id="step-1">
-      <h2>Step 1 — Connect your Phantom wallet</h2>
-      <p class="step-desc">This is the wallet where you'll <strong>receive your free RNSM tokens</strong>. If you don't have Phantom yet, <a href="https://phantom.app" target="_blank" rel="noopener">download it free at phantom.app</a> — it takes 2 minutes to set up.</p>
+      <h2>Step 1 — Connect Phantom</h2>
+      <p class="step-desc">This Solana wallet receives RNSM and is the wallet we score for lifetime mined PEGD.</p>
       <button class="btn-primary" id="btn-connect">Connect Phantom</button>
       <div id="step1-connected" style="display:none; margin-top:1rem;">
-        <div class="address-label">Receiving Wallet</div>
+        <div class="address-label">Receiving / mining wallet</div>
         <div class="address-display" id="sol-addr-display"></div>
-        <button class="btn-primary" id="btn-sol-next">Continue →</button>
+        <button class="btn-primary" id="btn-sol-next">Load mining weight →</button>
         <button class="btn-secondary" id="btn-disconnect">Use different wallet</button>
       </div>
       <p class="status-msg" id="status-step1"></p>
     </div>
 
-    <!-- Step 2: Prove XRP with Xaman -->
     <div class="step-content" id="step-2">
-      <h2>Step 2 — Prove your XRP wallet with Xaman</h2>
-      <p class="step-desc">Tap the button to open a free <strong>Xaman Sign In</strong>. We never ask for your seed phrase and no funds move — this is a cryptographic proof that you control the wallet.</p>
+      <h2>Step 2 — Your mined PEGD</h2>
+      <p class="step-desc">Primary weight = lifetime mined PEGD from the payout ledger + pending. Share-seconds are shown for context.</p>
 
-      <div id="xaman-sign-section">
-        <button class="btn-primary" id="btn-xaman-signin">Sign with Xaman</button>
+      <div class="balance-card" style="text-align:center;">
+        <div class="balance-val" id="mined-val">—</div>
+        <div class="balance-sub">Lifetime mined PEGD</div>
       </div>
-
-      <div id="xaman-qr-section" style="display:none;text-align:center;margin:1rem 0;">
-        <img id="xaman-qr-img" src="" alt="Xaman QR code" style="width:190px;height:190px;border-radius:10px;margin-bottom:0.75rem;" />
-        <br>
-        <a id="xaman-deeplink" href="#" target="_blank" rel="noopener" style="font-size:0.82rem;color:var(--neon);text-decoration:none;">Open in Xaman app →</a>
-        <p class="status-msg" id="status-step2">Waiting for Xaman signature...</p>
+      <div class="mine-meta">
+        <div class="mine-chip"><div class="v" id="pending-val">—</div><div class="l">Pending PEGD</div></div>
+        <div class="mine-chip"><div class="v" id="share-val">—</div><div class="l">Share-seconds</div></div>
+        <div class="mine-chip"><div class="v" id="payouts-val">—</div><div class="l">Payouts sum (raw/1e6)</div></div>
       </div>
-
-      <div id="xaman-proven-section" style="display:none;margin-top:0.75rem;">
-        <div class="address-label">Proven XRP Wallet</div>
-        <div class="address-display" id="xrp-addr-display"></div>
-        <div class="balance-card">
-          <div class="balance-val" id="xrp-bal-val">0.00</div>
-          <div class="balance-sub">XRP Balance (live on XRPL)</div>
-        </div>
-        <p class="status-msg error" id="xrp-balance-warn" style="display:none;">Balance too low — minimum 10 XRP required</p>
-        <button class="btn-primary" id="btn-xrp-next" disabled>Continue →</button>
-        <button class="btn-secondary" id="btn-xaman-retry">Use a different XRP wallet</button>
-      </div>
-
-      <p style="margin-top:1rem;font-size:0.75rem;color:var(--muted);text-align:center;">
-        Don't have Xaman? <a href="https://xumm.app" target="_blank" rel="noopener" style="color:var(--neon)">Download free at xumm.app →</a>
-      </p>
-      <p class="status-msg error" id="status-step2-err"></p>
+      <p class="mine-links">Not mining yet? Start on <a href="/mine.html">/mine</a> or check the pool on <a href="/pool.html">/pool</a>, then refresh.</p>
+      <button class="btn-secondary" id="btn-refresh-mine" style="margin-top:0;">Refresh mining weight</button>
+      <button class="btn-primary" id="btn-mine-next" style="margin-top:0.5rem;">Continue →</button>
+      <p class="status-msg" id="status-step2"></p>
     </div>
 
-    <!-- Step 3: Boost tasks + register -->
     <div class="step-content" id="step-3">
-      <h2>Step 3 — Get more RNSM (optional)</h2>
-      <p class="step-desc">You can skip this and just register — but completing these tasks earns you a bigger share of the 150M RNSM pool. Everything is free. The "Sign" button just proves you own the wallet — it costs nothing and cannot move your funds.</p>
+      <h2>Step 3 — Small bonuses (optional)</h2>
+      <p class="step-desc">Mining dominates. These are small multipliers on top of your mined PEGD weight. You can skip and register now.</p>
 
       <div class="tasks">
-
-        <!-- Telegram — signed verification -->
         <div class="task-row" id="task-row-telegram">
           <div class="task-top">
             <div class="task-check" id="check-telegram"></div>
@@ -329,17 +325,16 @@
               <div class="task-name">Join Telegram</div>
               <div class="task-sub" id="tg-sub"><a href="https://t.me/xrpegged" target="_blank" rel="noopener">t.me/xrpegged</a> — join, then sign to verify</div>
             </div>
-            <div class="task-bonus">+15%</div>
+            <div class="task-bonus">+5%</div>
             <button class="btn-verify-task" id="btn-verify-tg" onclick="openSign('telegram')">Verify →</button>
           </div>
           <div class="task-sign-area" id="sign-area-telegram">
             <input class="task-handle-input" id="handle-telegram" placeholder="Your Telegram @username" autocomplete="off" spellcheck="false" />
             <button class="btn-sign" id="btn-sign-telegram" onclick="signTask('telegram')">Sign with Phantom to verify</button>
-            <div class="task-sign-note">Phantom will ask you to sign a message — no transaction, no fee. Proves you own this wallet + links your handle. We verify membership before distribution.</div>
+            <div class="task-sign-note">Free message signature — no transaction, no fee.</div>
           </div>
         </div>
 
-        <!-- Twitter — signed verification -->
         <div class="task-row" id="task-row-twitter">
           <div class="task-top">
             <div class="task-check" id="check-twitter"></div>
@@ -347,17 +342,16 @@
               <div class="task-name">Follow on X / Twitter</div>
               <div class="task-sub" id="tw-sub"><a href="https://x.com/xrpegged" target="_blank" rel="noopener">@xrpegged</a> — follow, then sign to verify</div>
             </div>
-            <div class="task-bonus">+15%</div>
+            <div class="task-bonus">+5%</div>
             <button class="btn-verify-task" id="btn-verify-tw" onclick="openSign('twitter')">Verify →</button>
           </div>
           <div class="task-sign-area" id="sign-area-twitter">
             <input class="task-handle-input" id="handle-twitter" placeholder="Your Twitter @username" autocomplete="off" spellcheck="false" />
             <button class="btn-sign" id="btn-sign-twitter" onclick="signTask('twitter')">Sign with Phantom to verify</button>
-            <div class="task-sign-note">No transaction, no fee. Phantom signs a message linking your Twitter handle to this wallet. Verified against @xrpegged followers before RNSM is sent.</div>
+            <div class="task-sign-note">Free message signature — no transaction, no fee.</div>
           </div>
         </div>
 
-        <!-- PEGD — auto on-chain -->
         <div class="task-row" id="task-row-pegd">
           <div class="task-top">
             <div class="task-check" id="check-pegd"></div>
@@ -365,35 +359,67 @@
               <div class="task-name">Hold ≥ 1,000 PEGD</div>
               <div class="task-sub" id="pegd-status-text">Checking on-chain...</div>
             </div>
-            <div class="task-bonus">+25%</div>
+            <div class="task-bonus">+10%</div>
           </div>
         </div>
 
+        <div class="task-row" id="task-row-xaman">
+          <div class="task-top">
+            <div class="task-check" id="check-xaman"></div>
+            <div class="task-info">
+              <div class="task-name">Optional Xaman proof</div>
+              <div class="task-sub" id="xaman-status-text">Not required for Season 2 — adds a small bonus if you want it</div>
+            </div>
+            <div class="task-bonus">+10%</div>
+            <button class="btn-verify-task" id="btn-verify-xaman">Add →</button>
+          </div>
+          <div class="xaman-optional" id="xaman-panel" style="display:none;">
+            <button class="btn-primary" id="btn-xaman-signin">Sign with Xaman</button>
+            <div id="xaman-qr-section" style="display:none;text-align:center;margin:1rem 0;">
+              <img id="xaman-qr-img" src="" alt="Xaman QR code" style="width:190px;height:190px;border-radius:10px;margin-bottom:0.75rem;" />
+              <br>
+              <a id="xaman-deeplink" href="#" target="_blank" rel="noopener" style="font-size:0.82rem;color:var(--neon);text-decoration:none;">Open in Xaman app →</a>
+              <p class="status-msg" id="status-xaman-wait">Waiting for Xaman signature...</p>
+            </div>
+            <div id="xaman-proven-section" style="display:none;margin-top:0.75rem;">
+              <div class="address-label">Proven XRP Wallet</div>
+              <div class="address-display" id="xrp-addr-display"></div>
+            </div>
+            <p class="status-msg error" id="status-xaman-err"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="proof-needed" id="proof-needed">
+        The registration API still requires Xaman ownership proof. Complete the optional Xaman step above, then register again. Frontend already sends mined-PEGD fields — worker should accept Season 2 registrations without proof once updated.
       </div>
 
       <div class="estimate-box">
         <span class="est-val" id="est-rnsm">—</span>
-        <div class="est-label">Estimated RNSM Allocation</div>
-        <div class="est-note">Based on current registrations · final amount calculated at snapshot</div>
+        <div class="est-label" id="est-label">Your mined PEGD (weight)</div>
+        <div class="est-note" id="est-note">Share TBD at snapshot from all miners' lifetime mined PEGD</div>
       </div>
 
-      <button class="btn-primary" id="btn-register">Register for Airdrop →</button>
+      <button class="btn-primary" id="btn-register">Register for Season 2 →</button>
       <p class="status-msg" id="status-step3"></p>
     </div>
 
-    <!-- Success -->
     <div class="step-content" id="step-success">
       <div class="success-icon">🎯</div>
       <h2 style="text-align:center; margin-bottom:0.4rem;">You're registered!</h2>
-      <p class="step-desc" style="text-align:center;">Your wallet is queued. RNSM will be sent directly to your Solana wallet after snapshot — no claiming needed.</p>
+      <p class="step-desc" style="text-align:center;">Your Phantom wallet is queued. Final RNSM = your lifetime mined PEGD weight ÷ total registered miner weight × 150M at snapshot.</p>
 
       <div class="balance-card" style="text-align:center; margin: 1rem 0;">
-        <div class="balance-val" id="success-est">—</div>
-        <div class="balance-sub">Estimated RNSM (updates as more people register)</div>
+        <div class="balance-val" id="success-mined">—</div>
+        <div class="balance-sub">Lifetime mined PEGD at registration</div>
+      </div>
+      <div class="balance-card" style="text-align:center; margin: 1rem 0;">
+        <div class="balance-val" id="success-est" style="color:var(--neon2)">—</div>
+        <div class="balance-sub">Estimated RNSM (updates as miners register)</div>
       </div>
 
       <div class="referral-box">
-        <div class="referral-label">Referral link — earn +10% per referral (up to 5 people)</div>
+        <div class="referral-label">Referral link — earn +10% per referral (up to 5)</div>
         <div class="referral-link" id="referral-link-text"></div>
         <button class="copy-btn" id="copy-referral-btn" onclick="copyReferral()">Copy Referral Link</button>
         <div class="referral-note">Share this link. Each person who registers with it gives you +10% more RNSM.</div>
@@ -407,29 +433,29 @@
   <div class="how-grid">
     <div class="how-item">
       <div class="how-num">Step 01</div>
-      <div class="how-title">Sign Up (2 min)</div>
-      <div class="how-desc">Connect your Phantom wallet, enter your XRP address, and optionally complete bonus tasks to earn a bigger share. Free and takes about 2 minutes.</div>
+      <div class="how-title">Connect Phantom</div>
+      <div class="how-desc">Link the Solana wallet that mines PEGD and will receive RNSM. Takes about a minute.</div>
     </div>
     <div class="how-item">
       <div class="how-num">Step 02</div>
-      <div class="how-title">Hold Your XRP</div>
-      <div class="how-desc">Keep your XRP in your wallet. Don't move it out — when we close registration, we check every XRP address again. The more XRP you hold, the more RNSM you receive.</div>
+      <div class="how-title">Mine on /mine or /pool</div>
+      <div class="how-desc">RNSM weight accrues with lifetime mined PEGD (pending + payout ledger). Keep mining — weight grows until snapshot.</div>
     </div>
     <div class="how-item">
       <div class="how-num">Step 03</div>
-      <div class="how-title">Receive RNSM</div>
-      <div class="how-desc">RNSM tokens are sent directly to your Phantom wallet. You don't have to do anything — they just appear. No extra steps, no fees on your end.</div>
+      <div class="how-title">Proportional distribution</div>
+      <div class="how-desc">At snapshot: your share = (your lifetime mined PEGD × bonuses) ÷ total registered miner weight × 150M RNSM. Tokens land in Phantom.</div>
     </div>
   </div>
-  <div class="how-note">📬 <strong>When does it happen?</strong> We haven't set a date yet — join our <a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a> to be the first to know. You're registered as long as you keep your XRP.</div>
+  <div class="how-note">📬 <strong>Formula shown to users:</strong> Estimated RNSM = (yourWeight / totalWeight) × 150,000,000 where yourWeight = lifetimeMinedPegd × (1 + bonuses). Join <a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a> for snapshot timing.</div>
 </section>
 
 <section id="qa">
   <div class="qa-card">
-    <h3>Have a question about the airdrop?</h3>
-    <p>Ask our AI — it knows the rules, eligibility, and multipliers.</p>
+    <h3>Have a question about Season 2?</h3>
+    <p>Ask our AI — mine-weighted rules, bonuses, and eligibility.</p>
     <div class="qa-input-row">
-      <input type="text" id="qa-input" placeholder="e.g. How do multipliers work?" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')askQA()" />
+      <input type="text" id="qa-input" placeholder="e.g. How is mined PEGD counted?" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')askQA()" />
       <button type="button" class="btn-secondary qa-btn" onclick="askQA()">Ask</button>
     </div>
     <div class="qa-answer" id="qa-answer"></div>
@@ -438,16 +464,18 @@
 
 <section id="check-status">
   <div class="check-card">
-    <h3>Already registered? Check your status</h3>
-    <input type="text" id="check-xrp" placeholder="Your XRP address" autocomplete="off" spellcheck="false" />
+    <h3>Already registered? Check status</h3>
+    <input type="text" id="check-xrp" placeholder="XRP address (if you used optional Xaman)" autocomplete="off" spellcheck="false" />
     <button class="btn-secondary" style="margin-top:0;" onclick="checkStatus()">Check Status</button>
     <div class="check-result" id="check-result"></div>
   </div>
 </section>
 
 <footer>
-  <p>RNSM Airdrop ·
+  <p>RNSM Season 2 ·
     <a href="/">XRPEGGED</a> ·
+    <a href="/mine.html">Mine</a> ·
+    <a href="/pool.html">Pool</a> ·
     <a href="https://solscan.io/token/2trs5nXvrHyiLxBCmSJcRKFzULUDzMbmtm5mRWutnWhE" target="_blank" rel="noopener">Token on Solscan</a> ·
     <a href="https://t.me/xrpegged" target="_blank" rel="noopener">Telegram</a>
   </p>
@@ -459,40 +487,75 @@
 const COMPUTE    = 'https://pegd-compute.xrpegged.workers.dev'
 const PEGD_MINT  = 'BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon'
 const TOTAL_RNSM = 150_000_000
-const MIN_XRP    = 10
 
 const state = {
   solAddress: null,
   xrpAddress: null,
-  xrpBalance: 0,
   xamanProof: null,
-  tasks: { telegram: false, twitter: false, pegd: false },
+  minedPegdUi: 0,
+  pendingPegd: 0,
+  shareSeconds: 0,
+  payoutsSum: 0,
+  tasks: { telegram: false, twitter: false, pegd: false, xaman: false },
   referredBy: null,
-  stats: { count: 0, totalXrp: 0, totalEffectiveXrp: 0 }
+  stats: { count: 0, totalWeight: null, totalMinedPegdUi: null },
+  proofRequiredByApi: false,
 }
 
-// Pick up referral code from URL
 const _params = new URLSearchParams(location.search)
 state.referredBy = _params.get('ref') || null
 
-// ── Stats ────────────────────────────────────────────────────────────────────
+function fmtNum(n, digits = 2) {
+  if (n == null || Number.isNaN(n)) return '—'
+  return Number(n).toLocaleString(undefined, { maximumFractionDigits: digits })
+}
 
 async function loadStats() {
   try {
     const res  = await fetch(`${COMPUTE}/airdrop-stats`)
     const data = await res.json()
-    if (typeof data.count !== 'number') return
-    state.stats = data
-    document.getElementById('stat-count').textContent = data.count.toLocaleString()
-    document.getElementById('stat-xrp').textContent   = Math.round(data.totalXrp || 0).toLocaleString()
-    document.getElementById('stat-per1k').textContent = data.perThousandXrp ? Math.round(data.perThousandXrp).toLocaleString() : '—'
-    if (state.xrpBalance > 0) updateEstimate()
+    if (typeof data.count === 'number') {
+      state.stats.count = data.count
+      document.getElementById('stat-count').textContent = data.count.toLocaleString()
+      if (typeof data.totalMinedPegdUi === 'number') {
+        state.stats.totalMinedPegdUi = data.totalMinedPegdUi
+        state.stats.totalWeight = data.totalWeight ?? data.totalMinedPegdUi
+        document.getElementById('stat-mined').textContent = fmtNum(data.totalMinedPegdUi, 0)
+      } else if (typeof data.totalWeight === 'number') {
+        state.stats.totalWeight = data.totalWeight
+      }
+    }
   } catch {}
+
+  // Client-side aggregate from public miner APIs when stats lack total mined
+  if (state.stats.totalMinedPegdUi == null) {
+    try {
+      const [lbRes, payRes] = await Promise.all([
+        fetch(`${COMPUTE}/leaderboard`),
+        fetch(`${COMPUTE}/payouts`),
+      ])
+      let pending = 0
+      let payouts = 0
+      if (lbRes.ok) {
+        const lb = await lbRes.json()
+        if (Array.isArray(lb)) pending = lb.reduce((s, w) => s + (Number(w.pendingPegd) || 0), 0)
+      }
+      if (payRes.ok) {
+        const rows = await payRes.json()
+        if (Array.isArray(rows)) payouts = rows.reduce((s, p) => s + (Number(p.pegdEarned) || 0), 0)
+      }
+      const totalUi = (pending + payouts) / 1e6
+      state.stats.totalMinedPegdUi = totalUi
+      document.getElementById('stat-mined').textContent = fmtNum(totalUi, 0)
+    } catch {
+      document.getElementById('stat-mined').textContent = '—'
+    }
+  }
+
+  updateEstimate()
 }
 loadStats()
 setInterval(loadStats, 30_000)
-
-// ── Step navigation ──────────────────────────────────────────────────────────
 
 function setStep(n) {
   const ids = [1, 2, 3, 'success']
@@ -512,8 +575,6 @@ function setStatus(stepId, msg, type = '') {
   if (el) { el.textContent = msg; el.className = `status-msg ${type}` }
 }
 
-// ── Step 1: Connect wallet ───────────────────────────────────────────────────
-
 document.getElementById('btn-connect').addEventListener('click', async () => {
   if (!window.solana?.isPhantom) {
     setStatus(1, 'Phantom not found — install it at phantom.app', 'error')
@@ -532,52 +593,121 @@ document.getElementById('btn-connect').addEventListener('click', async () => {
   }
 })
 
-document.getElementById('btn-sol-next').addEventListener('click', () => setStep(2))
+document.getElementById('btn-sol-next').addEventListener('click', async () => {
+  setStep(2)
+  await loadMineWeight()
+})
 
 document.getElementById('btn-disconnect').addEventListener('click', () => {
   state.solAddress = null
+  state.minedPegdUi = 0
   document.getElementById('step1-connected').style.display = 'none'
   document.getElementById('btn-connect').style.display = 'block'
+  document.getElementById('stat-yours').textContent = '—'
   setStatus(1, '')
 })
 
-// ── Step 2: Xaman SignIn ─────────────────────────────────────────────────────
+document.getElementById('btn-refresh-mine').addEventListener('click', () => loadMineWeight())
+document.getElementById('btn-mine-next').addEventListener('click', () => {
+  setStep(3)
+  checkPegdBalance()
+  updateEstimate()
+})
+
+async function loadMineWeight() {
+  if (!state.solAddress) return
+  setStatus(2, 'Loading mining weight...')
+  try {
+    let data = null
+    try {
+      const local = await fetch(`/api/airdrop/mine-weight?wallet=${encodeURIComponent(state.solAddress)}`)
+      if (local.ok) data = await local.json()
+    } catch {}
+
+    if (!data || data.error) {
+      // Direct compute fallback (may hit CORS in some browsers)
+      const [minerRes, payRes] = await Promise.all([
+        fetch(`${COMPUTE}/miner?wallet=${encodeURIComponent(state.solAddress)}`),
+        fetch(`${COMPUTE}/payouts`),
+      ])
+      const miner = minerRes.ok ? await minerRes.json() : {}
+      const payouts = payRes.ok ? await payRes.json() : []
+      const pendingPegd = Number(miner.pendingPegd) || 0
+      const shareSeconds = Number(miner.shareSeconds) || 0
+      let payoutsSum = 0
+      if (Array.isArray(payouts)) {
+        for (const p of payouts) {
+          if (p && p.wallet === state.solAddress) payoutsSum += Number(p.pegdEarned) || 0
+        }
+      }
+      data = {
+        lifetimeMinedPegdUi: (pendingPegd + payoutsSum) / 1e6,
+        pendingPegd,
+        shareSeconds,
+        payoutsSum,
+      }
+    }
+
+    state.minedPegdUi = Number(data.lifetimeMinedPegdUi) || 0
+    state.pendingPegd = Number(data.pendingPegd) || 0
+    state.shareSeconds = Number(data.shareSeconds) || 0
+    state.payoutsSum = Number(data.payoutsSum) || 0
+
+    document.getElementById('mined-val').textContent = fmtNum(state.minedPegdUi, 4)
+    document.getElementById('pending-val').textContent = fmtNum(state.pendingPegd / 1e6, 4)
+    document.getElementById('share-val').textContent = fmtNum(state.shareSeconds, 4)
+    document.getElementById('payouts-val').textContent = fmtNum(state.payoutsSum / 1e6, 4)
+    document.getElementById('stat-yours').textContent = fmtNum(state.minedPegdUi, 2)
+
+    if (state.minedPegdUi <= 0) {
+      setStatus(2, 'No mined PEGD yet — you can still register; weight accrues as you mine.', 'ok')
+    } else {
+      setStatus(2, '', 'ok')
+    }
+    updateEstimate()
+  } catch (e) {
+    setStatus(2, e.message || 'Could not load mining weight', 'error')
+  }
+}
 
 let xamanPollTimer = null
 
-function resetXamanStep() {
+function resetXamanOptional() {
   clearTimeout(xamanPollTimer)
   state.xamanProof = null
   state.xrpAddress = null
-  state.xrpBalance = 0
-  document.getElementById('xaman-sign-section').style.display = 'block'
+  state.tasks.xaman = false
   document.getElementById('xaman-qr-section').style.display = 'none'
   document.getElementById('xaman-proven-section').style.display = 'none'
+  document.getElementById('btn-xaman-signin').style.display = 'block'
   document.getElementById('btn-xaman-signin').disabled = false
-  document.getElementById('status-step2').textContent = 'Waiting for Xaman signature...'
-  document.getElementById('status-step2-err').textContent = ''
+  document.getElementById('status-xaman-err').textContent = ''
+  document.getElementById('status-xaman-wait').textContent = 'Waiting for Xaman signature...'
+  document.getElementById('xaman-status-text').textContent = 'Not required for Season 2 — adds a small bonus if you want it'
+  document.getElementById('task-row-xaman').classList.remove('verified')
+  document.getElementById('check-xaman').textContent = ''
 }
 
-document.getElementById('btn-xaman-retry').addEventListener('click', resetXamanStep)
+document.getElementById('btn-verify-xaman').addEventListener('click', () => {
+  const panel = document.getElementById('xaman-panel')
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none'
+})
 
 document.getElementById('btn-xaman-signin').addEventListener('click', async () => {
   const btn = document.getElementById('btn-xaman-signin')
   btn.disabled = true
-  document.getElementById('status-step2-err').textContent = ''
-
+  document.getElementById('status-xaman-err').textContent = ''
   try {
     const res = await fetch('/api/xumm/auth', { method: 'POST' })
     const payload = await res.json()
     if (!payload.success) throw new Error(payload.error || 'Xaman request failed')
-
-    document.getElementById('xaman-sign-section').style.display = 'none'
+    btn.style.display = 'none'
     document.getElementById('xaman-qr-section').style.display = 'block'
     if (payload.qr) document.getElementById('xaman-qr-img').src = payload.qr
     if (payload.deeplink) document.getElementById('xaman-deeplink').href = payload.deeplink
-
     pollXaman(payload.uuid)
   } catch (e) {
-    document.getElementById('status-step2-err').textContent = e.message || 'Failed to start Xaman — try again'
+    document.getElementById('status-xaman-err').textContent = e.message || 'Failed to start Xaman — try again'
     btn.disabled = false
   }
 })
@@ -595,13 +725,11 @@ async function pollXaman(payloadId) {
       return
     }
     if (!data.signed || !data.account) {
-      resetXamanStep()
-      document.getElementById('status-step2-err').textContent = 'Sign-in cancelled — try again'
+      resetXamanOptional()
+      document.getElementById('status-xaman-err').textContent = 'Sign-in cancelled — try again'
       return
     }
-
-    document.getElementById('status-step2').textContent = 'Verifying proof...'
-
+    document.getElementById('status-xaman-wait').textContent = 'Verifying proof...'
     const proofRes = await fetch('/api/airdrop/xrp-proof', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -612,97 +740,50 @@ async function pollXaman(payloadId) {
 
     state.xamanProof = proofData.xamanProof
     state.xrpAddress = proofData.xrpAddress
+    state.tasks.xaman = true
 
     document.getElementById('xaman-qr-section').style.display = 'none'
     document.getElementById('xrp-addr-display').textContent = proofData.xrpAddress
     document.getElementById('xaman-proven-section').style.display = 'block'
-
-    await fetchProvenBalance(proofData.xrpAddress)
+    document.getElementById('task-row-xaman').classList.add('verified')
+    document.getElementById('check-xaman').textContent = '✓'
+    document.getElementById('xaman-status-text').textContent = `Proven ${proofData.xrpAddress.slice(0, 8)}… — +10% applied`
+    document.getElementById('proof-needed').classList.remove('visible')
+    updateEstimate()
   } catch (e) {
-    resetXamanStep()
-    document.getElementById('status-step2-err').textContent = e.message || 'Verification failed — try again'
+    resetXamanOptional()
+    document.getElementById('status-xaman-err').textContent = e.message || 'Verification failed — try again'
   }
 }
-
-async function fetchProvenBalance(xrpAddress) {
-  document.getElementById('xrp-bal-val').textContent = '…'
-  try {
-    const res = await fetch('https://xrplcluster.com', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ method: 'account_info', params: [{ account: xrpAddress, ledger_index: 'validated' }] })
-    })
-    const data = await res.json()
-    if (data.result?.error || !data.result?.account_data) {
-      document.getElementById('xrp-bal-val').textContent = '0.00'
-      document.getElementById('xrp-balance-warn').style.display = 'block'
-      return
-    }
-    const balance = parseInt(data.result.account_data.Balance || '0') / 1_000_000
-    state.xrpBalance = balance
-    document.getElementById('xrp-bal-val').textContent = balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-    if (balance < MIN_XRP) {
-      document.getElementById('xrp-balance-warn').style.display = 'block'
-      document.getElementById('btn-xrp-next').disabled = true
-    } else {
-      document.getElementById('xrp-balance-warn').style.display = 'none'
-      document.getElementById('btn-xrp-next').disabled = false
-    }
-  } catch {
-    document.getElementById('xrp-bal-val').textContent = '?'
-    document.getElementById('status-step2-err').textContent = 'Could not fetch balance — check your XRP wallet'
-    document.getElementById('btn-xrp-next').disabled = false
-  }
-}
-
-document.getElementById('btn-xrp-next').addEventListener('click', () => {
-  setStep(3)
-  checkPegdBalance()
-  updateEstimate()
-})
-
-// ── Step 3: Social verification via Phantom message signing ──────────────────
 
 function openSign(platform) {
-  const area = document.getElementById(`sign-area-${platform}`)
-  area.classList.toggle('open')
+  document.getElementById(`sign-area-${platform}`).classList.toggle('open')
 }
 
 async function signTask(platform) {
   const handleInput = document.getElementById(`handle-${platform}`)
   const btn         = document.getElementById(`btn-sign-${platform}`)
   let handle = handleInput.value.trim().replace(/^@/, '')
-
-  if (!handle) {
-    handleInput.focus()
-    return
-  }
+  if (!handle) { handleInput.focus(); return }
   handle = '@' + handle
-
   if (!window.solana?.isPhantom) {
     setStatus(3, 'Phantom not found', 'error')
     return
   }
-
   btn.disabled = true
   btn.textContent = 'Waiting for Phantom...'
-
   const platformName = platform === 'telegram' ? 'Telegram (t.me/xrpegged)' : 'Twitter/X (@xrpegged)'
   const date         = new Date().toISOString().slice(0, 10)
   const message      = `XRPEGGED AIRDROP VERIFICATION\nPlatform: ${platformName}\nHandle: ${handle}\nWallet: ${state.solAddress}\nDate: ${date}`
-
   try {
     const encoded = new TextEncoder().encode(message)
     const signed  = await window.solana.signMessage(encoded, 'utf8')
     const sigHex  = Array.from(signed.signature).map(b => b.toString(16).padStart(2, '0')).join('')
-
     state.tasks[platform] = { verified: true, handle, signature: sigHex, message }
-
     const row   = document.getElementById(`task-row-${platform}`)
     const check = document.getElementById(`check-${platform}`)
     const sub   = document.getElementById(platform === 'telegram' ? 'tg-sub' : 'tw-sub')
     const verifyBtn = document.getElementById(`btn-verify-${platform === 'telegram' ? 'tg' : 'tw'}`)
-
     row.classList.add('verified')
     check.textContent = '✓'
     sub.textContent   = `Verified as ${handle} ✓`
@@ -732,22 +813,20 @@ async function checkPegdBalance() {
     const data   = await res.json()
     const amount = data.result?.value?.[0]?.account?.data?.parsed?.info?.tokenAmount?.uiAmount || 0
     state.tasks.pegd = amount >= 1000
-
     const row    = document.getElementById('task-row-pegd')
     const check  = document.getElementById('check-pegd')
     const subTxt = document.getElementById('pegd-status-text')
-
     if (state.tasks.pegd) {
       row.classList.add('auto-good')
       check.textContent = '✓'
-      subTxt.textContent = `${Math.floor(amount).toLocaleString()} PEGD detected — +25% applied!`
+      subTxt.textContent = `${Math.floor(amount).toLocaleString()} PEGD detected — +10% applied!`
     } else {
       row.classList.add('auto-bad')
       check.textContent = ''
       if (amount > 0) {
         subTxt.textContent = `${Math.floor(amount).toLocaleString()} PEGD — need ≥ 1,000 to unlock`
       } else {
-        subTxt.innerHTML = `No PEGD found — <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">buy some</a> to unlock +25%`
+        subTxt.innerHTML = `No PEGD found — <a href="https://jup.ag/swap/SOL-BKSHGmoZ16nCGSLbgRWcXc9qPZGgpufZ4kX3PJc1moon" target="_blank" rel="noopener">buy some</a> for +10%`
       }
     }
     updateEstimate()
@@ -763,69 +842,96 @@ function taskVerified(name) {
 
 function getMultiplier() {
   let m = 1.0
-  if (taskVerified('telegram')) m += 0.15
-  if (taskVerified('twitter'))  m += 0.15
-  if (taskVerified('pegd'))     m += 0.25
+  if (taskVerified('telegram')) m += 0.05
+  if (taskVerified('twitter'))  m += 0.05
+  if (taskVerified('pegd'))     m += 0.10
+  if (taskVerified('xaman') || state.xamanProof) m += 0.10
   return m
 }
 
-function updateEstimate() {
-  const m           = getMultiplier()
-  const effectiveXrp = state.xrpBalance * m
-  const totalEff    = (state.stats.totalEffectiveXrp || 0) + effectiveXrp
-  const est         = totalEff > 0 ? Math.round((effectiveXrp / totalEff) * TOTAL_RNSM) : 0
-  document.getElementById('est-rnsm').textContent = est > 0 ? est.toLocaleString() : '—'
+function userWeight() {
+  return state.minedPegdUi * getMultiplier()
 }
 
-// ── Register ─────────────────────────────────────────────────────────────────
+function updateEstimate() {
+  const w = userWeight()
+  document.getElementById('stat-yours').textContent = state.solAddress ? fmtNum(state.minedPegdUi, 2) : '—'
+
+  const totalW = state.stats.totalWeight
+  if (typeof totalW === 'number' && totalW > 0 && w > 0) {
+    const est = Math.round((w / (totalW + w)) * TOTAL_RNSM)
+    document.getElementById('est-rnsm').textContent = est.toLocaleString()
+    document.getElementById('est-label').textContent = 'Estimated RNSM Allocation'
+    document.getElementById('est-note').textContent = `yourWeight ${fmtNum(w, 4)} / totalWeight · final at snapshot`
+  } else {
+    document.getElementById('est-rnsm').textContent = state.minedPegdUi > 0 ? fmtNum(state.minedPegdUi, 4) : '—'
+    document.getElementById('est-label').textContent = 'Your mined PEGD (primary weight)'
+    document.getElementById('est-note').textContent = "Share TBD at snapshot from all miners' lifetime mined PEGD"
+  }
+}
+
+function proofError(msg) {
+  if (!msg) return false
+  const m = String(msg).toLowerCase()
+  return m.includes('ownership proof') || m.includes('xaman') || m.includes('proof required')
+}
 
 document.getElementById('btn-register').addEventListener('click', async () => {
   const btn = document.getElementById('btn-register')
   btn.disabled = true
   setStatus(3, 'Submitting...')
 
-  try {
-    if (!state.xamanProof) {
-      setStatus(3, 'Ownership proof missing — go back to Step 2 and sign with Xaman', 'error')
-      btn.disabled = false
-      return
-    }
+  const body = {
+    solAddress: state.solAddress,
+    minedPegdUi: state.minedPegdUi,
+    pendingPegd: state.pendingPegd,
+    shareSeconds: state.shareSeconds,
+    referredBy: state.referredBy,
+    tasks: {
+      pegd: taskVerified('pegd'),
+      telegram: state.tasks.telegram || false,
+      twitter: state.tasks.twitter || false,
+      xamanBonus: !!(state.xamanProof),
+    },
+  }
+  if (state.xamanProof) body.xamanProof = state.xamanProof
 
+  try {
     const res  = await fetch(`${COMPUTE}/airdrop-register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        xamanProof:       state.xamanProof,
-        solAddress:       state.solAddress,
-        referredBy:       state.referredBy,
-        tasks: {
-          pegd:     taskVerified('pegd'),
-          telegram: state.tasks.telegram || false,
-          twitter:  state.tasks.twitter  || false,
-        }
-      })
+      body: JSON.stringify(body),
     })
     const data = await res.json()
 
     if (!data.ok) {
       if (data.error?.includes('already registered')) {
-        setStatus(3, 'This XRP wallet is already registered with Xaman proof!', 'ok')
-      } else {
-        setStatus(3, data.error || 'Registration failed', 'error')
-        btn.disabled = false
+        setStatus(3, 'This wallet is already registered.', 'ok')
+        return
       }
+      if (proofError(data.error) && !state.xamanProof) {
+        state.proofRequiredByApi = true
+        document.getElementById('proof-needed').classList.add('visible')
+        document.getElementById('xaman-panel').style.display = 'block'
+        setStatus(3, 'API still requires Xaman proof — complete optional Xaman above, then retry.', 'error')
+        btn.disabled = false
+        return
+      }
+      setStatus(3, data.error || 'Registration failed', 'error')
+      btn.disabled = false
       return
     }
 
-    // Calculate estimate for success screen
-    const m           = getMultiplier()
-    const effectiveXrp = state.xrpBalance * m
-    const totalEff    = (state.stats.totalEffectiveXrp || 0) + effectiveXrp
-    const est         = totalEff > 0 ? Math.round((effectiveXrp / totalEff) * TOTAL_RNSM) : 0
-
-    document.getElementById('success-est').textContent = est.toLocaleString()
-    document.getElementById('referral-link-text').textContent = `https://pegd.org/rnsm-airdrop?ref=${encodeURIComponent(state.xrpAddress)}`
-
+    const w = userWeight()
+    const totalW = state.stats.totalWeight
+    let estLabel = 'TBD at snapshot'
+    if (typeof totalW === 'number' && totalW > 0 && w > 0) {
+      estLabel = Math.round((w / (totalW + w)) * TOTAL_RNSM).toLocaleString()
+    }
+    document.getElementById('success-mined').textContent = fmtNum(state.minedPegdUi, 4)
+    document.getElementById('success-est').textContent = estLabel
+    const refKey = state.solAddress || state.xrpAddress || ''
+    document.getElementById('referral-link-text').textContent = `https://pegd.org/rnsm-airdrop?ref=${encodeURIComponent(refKey)}`
     setStep(4)
     loadStats()
   } catch {
@@ -835,15 +941,14 @@ document.getElementById('btn-register').addEventListener('click', async () => {
 })
 
 function copyReferral() {
-  const link = `https://pegd.org/rnsm-airdrop?ref=${encodeURIComponent(state.xrpAddress)}`
+  const refKey = state.solAddress || state.xrpAddress || ''
+  const link = `https://pegd.org/rnsm-airdrop?ref=${encodeURIComponent(refKey)}`
   navigator.clipboard.writeText(link).then(() => {
     const btn = document.getElementById('copy-referral-btn')
     btn.textContent = 'Copied!'
     setTimeout(() => btn.textContent = 'Copy Referral Link', 2000)
   })
 }
-
-// ── Check status ─────────────────────────────────────────────────────────────
 
 async function checkStatus() {
   const xrp    = document.getElementById('check-xrp').value.trim()
@@ -855,11 +960,11 @@ async function checkStatus() {
     const res  = await fetch(`${COMPUTE}/airdrop-check?xrp=${encodeURIComponent(xrp)}`)
     const data = await res.json()
     if (data.mustReRegister) {
-      result.innerHTML = `<span style="color:#ff5555">⚠ Invalid registration</span> — you registered before Xaman ownership was required. <strong>Re-register with Xaman by Jul 27, 2026</strong>. <a href="/rnsm-airdrop" style="color:var(--neon)">Re-register →</a>`
+      result.innerHTML = `<span style="color:var(--neon)">Season 2 is open</span> — prior XRP-only regs are superseded. Register with your <strong>Phantom mining wallet</strong> above; weight = lifetime mined PEGD.`
     } else if (data.registered && data.valid) {
-      result.innerHTML = `<span style="color:var(--neon)">✓ Registered (Xaman verified)</span> · ${data.balanceXrp.toLocaleString()} XRP · Estimated <strong style="color:var(--neon2)">${(data.estimatedRnsm || 0).toLocaleString()} RNSM</strong>`
+      result.innerHTML = `<span style="color:var(--neon)">✓ Registered</span> · Estimated <strong style="color:var(--neon2)">${(data.estimatedRnsm || 0).toLocaleString()} RNSM</strong> (legacy XRP path may still show until worker migrates to mine-weight)`
     } else {
-      result.innerHTML = `<span style="color:var(--muted)">Not registered yet</span>`
+      result.innerHTML = `<span style="color:var(--muted)">Not registered yet — use Phantom + mined PEGD flow above</span>`
     }
   } catch {
     result.textContent = 'Error — try again'
@@ -874,10 +979,8 @@ async function askQA() {
   const answer = document.getElementById('qa-answer')
   const q = input.value.trim()
   if (!q) return
-
   answer.className = 'qa-answer visible'
   answer.innerHTML = '<span class="qa-thinking">Thinking...</span>'
-
   try {
     const res  = await fetch(`${COMPUTE}/airdrop-qa`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
